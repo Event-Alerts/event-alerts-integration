@@ -19,9 +19,13 @@ permissions:
     description: Allows the player to use /eventalerts reload
   eventalerts.config:
     description: Allows the player to use /eventalerts config
+  eventalerts.linking.check:
+    description: Allows the player to use /eventalerts linking check
   eventalerts.linking.bypass:
     description: Allows the player to bypass the linking requirement
     default: false
+  eventalerts.crossban.check:
+    description: Allows the player to use /eventalerts crossban check
   eventalerts.crossban.bypass:
     description: Allows the player to bypass the cross-banning system
     default: false
