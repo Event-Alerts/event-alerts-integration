@@ -16,10 +16,13 @@ setupAnnoyingAPI("7d41870d27", "gg.eventalerts", "1.0.0", "A plugin to integrate
 
 repository("https://repo.triumphteam.dev/snapshots/")
 dependencies {
-    implementationRelocate(project, "dev.triumphteam:triumph-gui-paper:4.0.0-SNAPSHOT", "dev.triumphteam.gui")
+    implementationRelocate(project, "dev.triumphteam:triumph-gui-paper:4.0.0-SNAPSHOT", "dev.triumphteam")
     compileOnly("org.mongodb", "bson", "5.3.0")
     compileOnly("net.fellbaum", "jemoji", "1.6.0")
 }
 
 relocate("org.bson")
 relocate("net.fellbaum")
+relocate("com.google")
+relocate("javax.annotation")
+relocate("org.checkerframework")
