@@ -6,4 +6,22 @@ website: https://srnyx.com
 
 main: ${mainPackage}.${name}
 version: ${version}
-api-version: 1.13
+api-version: 1.16.5
+
+commands:
+  eventalerts:
+    description: Primary command for Event Alerts
+    aliases:
+      - ea
+
+permissions:
+  eventalerts.reload:
+    description: Allows the player to use /eventalerts reload
+  eventalerts.config:
+    description: Allows the player to use /eventalerts config
+  eventalerts.linking.bypass:
+    description: Allows the player to bypass the linking requirement
+    default: false
+  eventalerts.crossban.bypass:
+    description: Allows the player to bypass the cross-banning system
+    default: false

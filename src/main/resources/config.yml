@@ -1,0 +1,80 @@
+# WIKI: https://wiki.eventalerts.gg/EventAlertsIntegration/configuration
+
+
+
+# Settings related to Event Alerts' Minecraft-Discord linking system
+linking:
+
+  # Whether to force players to be linked with Event Alerts to join the server
+  # To bypass the requirement, give the player the eventalerts.linking.bypass permission
+  require-link: false
+
+  # Whether to allow players to join the server when the linking check fails
+  allow-join-on-failure: false
+
+
+
+# Settings related to Event Alerts' cross-banning feature
+cross-ban:
+
+  # Whether to enable cross-banning
+  # Anyone with eventalerts.crossban.bypass will be exempt from cross-bans
+  enabled: true
+
+  # Whether to allow players to join the server when the cross-ban check fails
+  allow-join-on-failure: false
+
+
+
+# Settings related to Event Alerts' event messages being broadcast in-game
+event-messages:
+
+  # Whether to enable event messages being broadcast in the server chat
+  enabled: true
+
+  # 1.20.5+
+  # If an IP is detected in an event message, players will be able to click a button to join the event's server using transfer packets
+  detect-ips: true
+
+  # Types of events that shouldn't be broadcasted in the server chat
+  # Possible values: SKEPPY, POTENTIAL_FAMOUS, SIGHTING, FAMOUS, PARTNER, COMMUNITY
+  ignored-types:
+    - SIGHTING
+
+  # Ignore Partner events that mention any of these roles
+  # Possible values: MONEY, FUN, HOUSING, CIVILIZATION
+  ignored-partner-roles:
+    - HOUSING
+    - CIVILIZATION
+
+  # Ignore Partner/Community events that are posted using any of these formats
+  # Possible values: CUSTOM, BUILT
+  ignored-formats: []
+
+
+
+# Advanced settings that you probably shouldn't touch...
+advanced:
+  # Whether to enable using the testing API hosts
+  # Only the developer really needs to enable this
+  user-testing-api: false
+  # Settings for websocket connections
+  websockets:
+    # Minutes until a websocket attempts to reconnect after being disconnected (min: 3, -1 to disable retries)
+    retry-delay: 5
+    # Whether to log websocket connection messages
+    logs: true
+  # Known names for Discord user IDs, role IDs, channel IDs, etc...
+  id-mappings:
+    314853603695394817: "Skeppy"
+    365630764244664320: "Oiiink"
+    242385234992037888: "srnyx"
+    604377897662414854: "hailey"
+    267734235224211467: "bacca"
+    381890968971902976: "Rame"
+    468890330763231270: "hayech"
+    1111741660892762142: "Server Events"
+    1006349851241480242: "Famous Events"
+    1216096556713906288: "Potential Skeppy Events"
+    1280002787446493256: "Skeppy Sighting"
+    1096205843113967669: "Random Pings"

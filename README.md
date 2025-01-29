@@ -1,17 +1,17 @@
-# Plugin Template
+# Event Alerts Integration
 
-Public Minecraft plugin template repository used when I create a new repository for one of my plugins. Feel free to use this or create a pull request to improve it!
+A plugin to integrate your Minecraft server with the Event Alerts ecosystem
 
-**🐛 Bugs / 💡 Suggestions:** Please [open an issue](https://github.com/srnyx/plugin-template/issues/new/choose) to report a bug or suggest an idea
+**🐛 Bugs / 💡 Suggestions:** Please [open an issue](https://github.com/Event-Alerts/event-alerts-core/issues/new/choose) to report a bug or suggest an idea
 
-**🆘 Support:** Please [join the Discord](https://srnyx.com/discord) to get support
+**🆘 Support:** Please [join the Discord](https://discord.gg/skeppy) to get support
 
 ## Download
 
-**✅ Stable:** You can download the latest **stable** version at [Modrinth](https://modrinth.com/plugin/plugin-template), [Hangar](https://hangar.papermc.io/srnyx/PluginTemplate), [Spigot](https://spigotmc.org/resources/123456), [Bukkit](https://dev.bukkit.org/projects/plugin-template), or [GitHub](https://github.com/srnyx/plugin-template/releases)
+**✅ Stable:** You can download the latest **stable** version at [Modrinth](https://modrinth.com/plugin/event-alerts-core), [Hangar](https://hangar.papermc.io/EventAlerts/EventAlertsCore), [Bukkit](https://dev.bukkit.org/projects/event-alerts-core), or [GitHub](https://github.com/Event-Alerts/event-alerts-core/releases)
 
-**🚧 Snapshot:** You can download the latest **snapshot** version at [github.com/srnyx/plugin-template/actions/workflows/build.yml](https://github.com/srnyx/plugin-template/actions/workflows/build.yml)
+**🚧 Snapshot:** You can download the latest **snapshot** version at [github.com/Event-Alerts/event-alerts-core/actions/workflows/build.yml](https://github.com/srnyx/plugin-template/actions/workflows/build.yml)
 
 # Wiki
 
-For all information about the plugin (commands, permissions, etc...) please see the wiki at [github.com/srnyx/plugin-template/wiki](https://github.com/srnyx/plugin-template/wiki)
+For all information about the plugin (commands, permissions, etc...) please see the wiki at [github.com/Event-Alerts/event-alerts-core/wiki](https://github.com/srnyx/plugin-template/wiki)
