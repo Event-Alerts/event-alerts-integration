@@ -57,7 +57,7 @@ event-messages:
 advanced:
   # Whether to enable using the testing API hosts
   # Only the developer really needs to enable this
-  user-testing-api: false
+  use-testing-api: false
   # Settings for websocket connections
   websockets:
     # Minutes until a websocket attempts to reconnect after being disconnected (min: 3, -1 to disable retries)
