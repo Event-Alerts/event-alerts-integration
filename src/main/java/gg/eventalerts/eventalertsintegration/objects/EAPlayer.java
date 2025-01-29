@@ -11,7 +11,9 @@ import java.util.UUID;
 
 
 public class EAPlayer extends EAObject {
+    // Database + Websocket
     @Nullable public final UUID uuid;
+    // Websocket
     @Nullable public final LinkStatus linkStatus;
 
     public EAPlayer(@NotNull JsonObject json) {

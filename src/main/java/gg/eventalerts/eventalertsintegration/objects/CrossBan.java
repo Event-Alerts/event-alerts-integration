@@ -22,7 +22,6 @@ public class CrossBan extends EAObject {
     @NotNull public final UUID uuid;
     @NotNull public final String reason;
     @Nullable public final Date expiration;
-    @NotNull public final Date created;
     // Websocket
     @Nullable public final Status status;
 
@@ -31,7 +30,6 @@ public class CrossBan extends EAObject {
         uuid = UUID.fromString(json.get("uuid").getAsString());
         reason = json.get("reason").getAsString();
         expiration = json.has("expiration") ? new Date(json.get("expiration").getAsLong()) : null;
-        created = new Date(json.get("created").getAsLong());
         status = json.has("status") ? EventAlertsIntegration.getEnum(Status.class, json.get("status").getAsString()) : null;
     }
 
