@@ -72,13 +72,14 @@ public class EventAlertsCmd extends AnnoyingCommand {
                     .collect(Collectors.joining(","));
 
             // Make API request
-            HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "players?uuid=" + onlineString)
+            HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "players?minecraft_uuid=" + onlineString)
                     .flatMap(json -> MiscUtility.handleException(json::getAsJsonObject))
                     .flatMap(json -> MiscUtility.handleException(() -> json.getAsJsonArray("players")))
                     .ifPresent(players -> {
                         // Get linked
                         final Set<UUID> linked = new HashSet<>();
                         for (final JsonElement player : players) MiscUtility.handleException(player::getAsJsonObject)
+                                .flatMap(json -> MiscUtility.handleException(() -> json.getAsJsonObject("minecraft")))
                                 .flatMap(json -> MiscUtility.handleException(() -> json.get("uuid").getAsString()))
                                 .flatMap(uuidString -> MiscUtility.handleException(() -> UUID.fromString(uuidString)))
                                 .ifPresent(linked::add);
@@ -90,7 +91,7 @@ public class EventAlertsCmd extends AnnoyingCommand {
                         // Kick unlinked players
                         final TextComponent reason = Component.text()
                                 .append(EventAlertsIntegration.GATE)
-                                .append(Component.text("This server now requires you to link your account to a Discord account!\n\n", NamedTextColor.RED))
+                                .append(Component.text("All unlinked players have been kicked!\n\n", NamedTextColor.RED))
                                 .append(EventAlertsIntegration.LINKING_INSTRUCTIONS)
                                 .build();
                         unlinked.forEach(player -> player.kick(reason));

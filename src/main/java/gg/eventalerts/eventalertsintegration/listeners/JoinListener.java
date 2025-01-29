@@ -50,7 +50,7 @@ public class JoinListener extends AnnoyingListener {
         // Make API request
         JsonElement json = null;
         try {
-            json = HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "players/uuid/" + player.getUniqueId()).orElse(null);
+            json = HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "players/minecraft/uuid/" + player.getUniqueId()).orElse(null);
         } catch (final Exception ignored) {}
         if (json == null) {
             failLinking(event, "Failed to get JSON response");
