@@ -1,8 +1,5 @@
 import xyz.srnyx.gradlegalaxy.enums.repository
-import xyz.srnyx.gradlegalaxy.utility.implementationRelocate
-import xyz.srnyx.gradlegalaxy.utility.paper
-import xyz.srnyx.gradlegalaxy.utility.relocate
-import xyz.srnyx.gradlegalaxy.utility.setupAnnoyingAPI
+import xyz.srnyx.gradlegalaxy.utility.*
 
 
 plugins {
@@ -21,8 +18,11 @@ dependencies {
     compileOnly("net.fellbaum", "jemoji", "1.6.0")
 }
 
+val projectPackage = getPackage()
 relocate("org.bson")
 relocate("net.fellbaum")
-relocate("com.google")
+relocate("com.google.common", "$projectPackage.libs.google.common")
+relocate("com.google.errorprone", "$projectPackage.libs.google.errorprone")
+relocate("com.google.thirdparty", "$projectPackage.libs.google.thirdparty")
 relocate("javax.annotation")
 relocate("org.checkerframework")
