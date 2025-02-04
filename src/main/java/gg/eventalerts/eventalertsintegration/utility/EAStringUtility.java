@@ -2,6 +2,7 @@ package gg.eventalerts.eventalertsintegration.utility;
 
 import gg.eventalerts.eventalertsintegration.EALibrary;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
+
 import net.fellbaum.jemoji.Emoji;
 import net.fellbaum.jemoji.EmojiManager;
 
@@ -21,16 +22,16 @@ public class EAStringUtility {
     @NotNull
     public static String replaceEmojis(@NotNull EventAlertsIntegration plugin, @NotNull String string) {
         final Matcher emojiMatcher = EMOJI_PATTERN.matcher(string);
+        if (!emojiMatcher.find()) return string;
+        emojiMatcher.reset();
+
+        // Load JEmoji library for EmojiManager
+        if (!plugin.libraryManager.isLoaded(EALibrary.JEMOJI)) plugin.libraryManager.loadLibrary(EALibrary.JEMOJI);
+
+        // Replace emojis
         final StringBuilder description = new StringBuilder();
-        boolean libraryLoaded = false;
         while (emojiMatcher.find()) {
-            // Load JEmoji library for EmojiManager
-            if (!libraryLoaded) {
-                plugin.libraryManager.loadLibrary(EALibrary.JEMOJI);
-                libraryLoaded = true;
-            }
-            // Replace emoji
-            emojiMatcher.appendReplacement(description, EmojiManager.getByAlias(emojiMatcher.group(1))
+            emojiMatcher.appendReplacement(description, EmojiManager.getByDiscordAlias(emojiMatcher.group(1))
                     .map(Emoji::getEmoji)
                     .orElse(emojiMatcher.group()));
         }
