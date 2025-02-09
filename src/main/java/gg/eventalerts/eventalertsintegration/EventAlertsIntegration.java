@@ -20,7 +20,6 @@ import xyz.srnyx.annoyingapi.PluginPlatform;
 import java.util.logging.Level;
 
 
-//TODO obfuscate
 public class EventAlertsIntegration extends AnnoyingPlugin {
     @NotNull public static final TextComponent GATE = Component.text("EVENT ALERTS GATE\n\n", NamedTextColor.GOLD, TextDecoration.BOLD);
     @NotNull public static final TextComponent LINKING_INSTRUCTIONS = Component.text()
@@ -76,7 +75,7 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
 
     @NotNull
     public String getUserAgent() {
-        return getName() + "/" + getDescription().getVersion();
+        return getName() + "/" + getDescription().getVersion() + " (MC/" + AnnoyingPlugin.MINECRAFT_VERSION + ")";
     }
 
     public void runOnMainThread(@NotNull Runnable runnable) {
