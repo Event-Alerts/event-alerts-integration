@@ -1,5 +1,7 @@
 package gg.eventalerts.eventalertsintegration.utility;
 
+import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
+
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -12,6 +14,8 @@ import org.bukkit.entity.Player;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import xyz.srnyx.annoyingapi.file.PlayableSound;
 
 
 public class EventMessageUtility {
@@ -54,7 +58,14 @@ public class EventMessageUtility {
                         .build());
     }
 
-    public static void broadcast(@NotNull TextComponent message) {
-        for (final Player player : Bukkit.getOnlinePlayers()) player.sendMessage(message);
+    public static void broadcast(@NotNull EventAlertsIntegration plugin, @NotNull TextComponent message) {
+        final PlayableSound sound = plugin.config.eventMessages.sound;
+        final boolean playSound = sound != null;
+        for (final Player player : Bukkit.getOnlinePlayers()) {
+            // Message
+            player.sendMessage(message);
+            // Sound
+            if (playSound) sound.play(player);
+        }
     }
 }

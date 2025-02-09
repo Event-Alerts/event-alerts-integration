@@ -157,6 +157,6 @@ public class EventPostedClient extends WebSocketClient<Event> {
         }
 
         // Broadcast
-        broadcast(builder.append(END).build());
+        broadcast(plugin, builder.append(END).build());
     }
 }

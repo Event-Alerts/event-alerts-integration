@@ -16,11 +16,13 @@ import org.jetbrains.annotations.Nullable;
 
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.file.AnnoyingResource;
+import xyz.srnyx.annoyingapi.file.PlayableSound;
 import xyz.srnyx.annoyingapi.libs.javautilities.MapGenerator;
 import xyz.srnyx.annoyingapi.libs.javautilities.MiscUtility;
 import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.Mapper;
 
 import java.util.*;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 
@@ -99,6 +101,8 @@ public class ConfigYml extends AnnoyingResource {
     public class EventMessages {
         @NotNull public static final String PATH_ENABLED = PATH_EVENT_MESSAGES + ".enabled";
         @NotNull public static final String PATH_DETECT_IPS = PATH_EVENT_MESSAGES + ".detect-ips";
+        @NotNull public static final String PATH_SOUND = PATH_EVENT_MESSAGES + ".sound";
+        @NotNull public static final String PATH_SOUND_ENABLED = PATH_SOUND + ".enabled";
         @NotNull public static final String PATH_IGNORED_TYPES = PATH_EVENT_MESSAGES + ".ignored-types";
         @NotNull public static final String PATH_IGNORED_PARTNER_ROLES = PATH_EVENT_MESSAGES + ".ignored-partner-roles";
         @NotNull public static final String PATH_IGNORED_FORMATS = PATH_EVENT_MESSAGES + ".ignored-formats";
@@ -106,6 +110,7 @@ public class ConfigYml extends AnnoyingResource {
 
         public boolean enabled = getBoolean(PATH_ENABLED, true);
         public boolean detectIps = getBoolean(PATH_DETECT_IPS);
+        @Nullable public final PlayableSound sound;
         @NotNull public final Set<EventType> ignoredTypes = getEnumSet(EventType.class, PATH_IGNORED_TYPES);
         @NotNull public final Set<PartnerPingRole> ignoredPartnerRoles = getEnumSet(PartnerPingRole.class, PATH_IGNORED_PARTNER_ROLES);
         @NotNull public final Set<EventFormat> ignoredFormats = getEnumSet(EventFormat.class, PATH_IGNORED_FORMATS);
@@ -113,6 +118,8 @@ public class ConfigYml extends AnnoyingResource {
         @NotNull public final Set<String> hostFilterUsers = new HashSet<>();
 
         public EventMessages() {
+            sound = getBoolean(PATH_SOUND_ENABLED, true) ? getPlayableSound(PATH_SOUND).orElse(null) : null;
+
             // Get host filter
             final List<String> hostFilter = getStringList(PATH_HOST_FILTER);
             for (final String filter : hostFilter) {

@@ -93,6 +93,6 @@ public class FamousEventPostedClient extends WebSocketClient<FamousEvent> {
         }
 
         // Broadcast
-        broadcast(builder.append(END).build());
+        broadcast(plugin, builder.append(END).build());
     }
 }

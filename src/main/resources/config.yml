@@ -1,4 +1,6 @@
-# WIKI: https://wiki.eventalerts.gg/EventAlertsIntegration/configuration
+# WIKIS
+# 1: https://wiki.eventalerts.gg/EventAlertsIntegration/configuration
+# 2: https://github.com/srnyx/annoying-api/wiki/File-objects
 
 
 
@@ -41,6 +43,12 @@ event-messages:
   # 1.20.5+
   # If an IP is detected in an event message, players will be able to click a button to join the event's server using transfer packets
   detect-ips: true
+
+  # The sound to play when an event message is broadcasted
+  sound: # SOUND (see wiki 2)
+    enabled: true
+    sound: BLOCK_NOTE_BLOCK_CHIME
+    category: AMBIENT
 
   # Types of events that shouldn't be broadcasted in the server chat
   # Possible values: SKEPPY, POTENTIAL_FAMOUS, SIGHTING, FAMOUS, PARTNER, COMMUNITY
