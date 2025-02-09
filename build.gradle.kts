@@ -14,15 +14,21 @@ setupAnnoyingAPI("7d41870d27", "gg.eventalerts", "1.0.0", "A plugin to integrate
 repository("https://repo.triumphteam.dev/snapshots/")
 dependencies {
     implementationRelocate(project, "dev.triumphteam:triumph-gui-paper:4.0.0-SNAPSHOT", "dev.triumphteam")
+    compileOnly("org.java-websocket", "Java-WebSocket", "1.6.0")
     compileOnly("org.mongodb", "bson", "5.3.0")
     compileOnly("net.fellbaum", "jemoji", "1.7.0")
 }
 
 val projectPackage = getPackage()
+// Java-WebSocket
+relocate("org.java_websocket")
+// BSON
 relocate("org.bson")
+relocate("org.checkerframework")
+// JEmoji
 relocate("net.fellbaum")
+// Unknown
 relocate("com.google.common", "$projectPackage.libs.google.common")
 relocate("com.google.errorprone", "$projectPackage.libs.google.errorprone")
 relocate("com.google.thirdparty", "$projectPackage.libs.google.thirdparty")
 relocate("javax.annotation")
-relocate("org.checkerframework")

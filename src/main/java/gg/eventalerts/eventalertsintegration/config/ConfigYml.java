@@ -2,10 +2,7 @@ package gg.eventalerts.eventalertsintegration.config;
 
 import gg.eventalerts.eventalertsintegration.EALibrary;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
-import gg.eventalerts.eventalertsintegration.socket.clients.CrossBanClient;
-import gg.eventalerts.eventalertsintegration.socket.clients.EventPostedClient;
-import gg.eventalerts.eventalertsintegration.socket.clients.FamousEventPostedClient;
-import gg.eventalerts.eventalertsintegration.socket.clients.LinkClient;
+import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
 
 import org.bson.types.ObjectId;
 
@@ -64,12 +61,8 @@ public class ConfigYml extends AnnoyingResource {
             requireLink = newStatus;
             setSave(PATH_REQUIRE_LINK, newStatus);
 
-            // Connect/disconnect websocket
-            if (newStatus) {
-                eaPlugin.webSockets.connect(LinkClient.class);
-            } else {
-                eaPlugin.webSockets.close("Config updated", LinkClient.class);
-            }
+            // Reconnect websocket
+            eaPlugin.webSockets.reconnect("Config updated", SocketEndpoint.LINK);
         }
     }
 
@@ -89,12 +82,8 @@ public class ConfigYml extends AnnoyingResource {
             enabled = newStatus;
             setSave(PATH_ENABLED, newStatus);
 
-            // Connect/disconnect websocket
-            if (newStatus) {
-                eaPlugin.webSockets.connect(CrossBanClient.class);
-            } else {
-                eaPlugin.webSockets.close("Config updated", CrossBanClient.class);
-            }
+            // Reconnect websocket
+            eaPlugin.webSockets.reconnect("Config updated", SocketEndpoint.CROSS_BAN);
         }
     }
 
@@ -159,12 +148,8 @@ public class ConfigYml extends AnnoyingResource {
             enabled = newStatus;
             setSave(PATH_ENABLED, newStatus);
 
-            // Connect/disconnect websocket
-            if (newStatus) {
-                eaPlugin.webSockets.connect(EventPostedClient.class, FamousEventPostedClient.class);
-            } else {
-                eaPlugin.webSockets.close("Config updated", EventPostedClient.class, FamousEventPostedClient.class);
-            }
+            // Reconnect websocket
+            eaPlugin.webSockets.reconnect("Config updated", SocketEndpoint.EVENT_POSTED, SocketEndpoint.FAMOUS_EVENT_POSTED);
         }
     }
 
@@ -184,6 +169,17 @@ public class ConfigYml extends AnnoyingResource {
             if (section != null) for (final Map.Entry<String, Object> entry : section.getValues(false).entrySet()) {
                 Mapper.toLong(entry.getKey()).ifPresent(id -> idMappings.put(id, entry.getValue().toString()));
             }
+        }
+
+        public void setUseTestingApi(boolean newStatus) {
+            if (useTestingApi == newStatus) return;
+
+            // Update config
+            useTestingApi = newStatus;
+            setSave(PATH_USE_TESTING_API, newStatus);
+
+            // Reconnect websockets
+            eaPlugin.webSockets.reconnectAll("Testing API toggled");
         }
 
         public class Websockets {

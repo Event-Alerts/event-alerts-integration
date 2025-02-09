@@ -5,7 +5,7 @@ import gg.eventalerts.eventalertsintegration.utility.EAStringUtility;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.objects.FamousEvent;
 import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
-import gg.eventalerts.eventalertsintegration.socket.WebSocketClient;
+import gg.eventalerts.eventalertsintegration.socket.SocketClient;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 import static gg.eventalerts.eventalertsintegration.utility.EventMessageUtility.*;
 
 
-public class FamousEventPostedClient extends WebSocketClient<FamousEvent> {
+public class FamousEventPostedClient extends SocketClient<FamousEvent> {
     @NotNull private final Pattern ID_PATTERN = Pattern.compile("<@[!&]?(\\d+)>|<#(\\d+)>");
     @Nullable private static final TextColor MENTION_HIGHLIGHT = TextColor.color(215, 215, 215);
 

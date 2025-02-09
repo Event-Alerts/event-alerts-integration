@@ -3,7 +3,7 @@ package gg.eventalerts.eventalertsintegration.socket.clients;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.objects.CrossBan;
 import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
-import gg.eventalerts.eventalertsintegration.socket.WebSocketClient;
+import gg.eventalerts.eventalertsintegration.socket.SocketClient;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -16,7 +16,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.jetbrains.annotations.NotNull;
 
 
-public class CrossBanClient extends WebSocketClient<CrossBan> {
+public class CrossBanClient extends SocketClient<CrossBan> {
     public CrossBanClient(@NotNull EventAlertsIntegration plugin) {
         super(plugin, SocketEndpoint.CROSS_BAN, CrossBan.class);
     }

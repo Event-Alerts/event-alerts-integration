@@ -16,6 +16,16 @@ import java.util.function.Supplier;
 
 public enum EALibrary implements AnnoyingLibrary {
     /**
+     * {@code org.java-websocket:Java-WebSocket}
+     */
+    JAVA_WEBSOCKET(
+            () -> Library.builder()
+                    .repository(Repositories.MAVEN_CENTRAL)
+                    .groupId("org{}java-websocket")
+                    .artifactId("Java-WebSocket")
+                    .version("1.6.0"),
+            plugin -> Collections.singleton(plugin.getRelocation("org{}java_websocket"))),
+    /**
      * {@code org.mongodb:bson}
      */
     BSON(

@@ -34,7 +34,7 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
 
 
     @NotNull public ConfigYml config;
-    @NotNull public WebSockets webSockets = new  WebSockets(this);
+    public WebSockets webSockets;
 
     public EventAlertsIntegration() {
         options
@@ -51,11 +51,11 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
 
     @Override
     public void reload() {
+        // Load config
         config = new ConfigYml(this);
-
-        // Reload websockets
-        webSockets.closeAll("Plugin reload");
-        webSockets.connectAll();
+        // Reconnect websockets
+        if (webSockets == null) webSockets = new WebSockets(this);
+        webSockets.reconnectAll("Plugin reload");
     }
 
     @Override

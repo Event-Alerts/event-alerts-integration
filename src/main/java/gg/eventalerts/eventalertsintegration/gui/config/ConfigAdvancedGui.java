@@ -30,8 +30,7 @@ public class ConfigAdvancedGui extends ConfigMainGui {
                                 "Whether to enable using the testing API hosts\nOnly the developer really needs to enable this",
                                 (player, context) -> {
                                     final boolean newStatus = !plugin.config.advanced.useTestingApi;
-                                    plugin.config.advanced.useTestingApi = newStatus;
-                                    plugin.config.setSave(ConfigYml.Advanced.PATH_USE_TESTING_API, newStatus);
+                                    plugin.config.advanced.setUseTestingApi(newStatus);
                                     playDingSound(newStatus);
                                     open(false);
                                 })))

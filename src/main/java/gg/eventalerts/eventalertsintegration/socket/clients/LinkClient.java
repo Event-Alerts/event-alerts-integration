@@ -3,7 +3,7 @@ package gg.eventalerts.eventalertsintegration.socket.clients;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.objects.EAPlayer;
 import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
-import gg.eventalerts.eventalertsintegration.socket.WebSocketClient;
+import gg.eventalerts.eventalertsintegration.socket.SocketClient;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 
-public class LinkClient extends WebSocketClient<EAPlayer> {
+public class LinkClient extends SocketClient<EAPlayer> {
     public LinkClient(@NotNull EventAlertsIntegration plugin) {
         super(plugin, SocketEndpoint.LINK, EAPlayer.class);
     }

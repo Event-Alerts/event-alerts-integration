@@ -12,7 +12,7 @@ import gg.eventalerts.eventalertsintegration.objects.EAObject;
 import gg.eventalerts.eventalertsintegration.objects.Event;
 import gg.eventalerts.eventalertsintegration.objects.Server;
 import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
-import gg.eventalerts.eventalertsintegration.socket.WebSocketClient;
+import gg.eventalerts.eventalertsintegration.socket.SocketClient;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -31,7 +31,7 @@ import java.util.*;
 import static gg.eventalerts.eventalertsintegration.utility.EventMessageUtility.*;
 
 
-public class EventPostedClient extends WebSocketClient<Event> {
+public class EventPostedClient extends SocketClient<Event> {
     public EventPostedClient(@NotNull EventAlertsIntegration plugin) {
         super(plugin, SocketEndpoint.EVENT_POSTED, Event.class);
     }
