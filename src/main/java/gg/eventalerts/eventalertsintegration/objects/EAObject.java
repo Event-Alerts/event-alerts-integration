@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 
 import gg.eventalerts.eventalertsintegration.EALibrary;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,7 +33,7 @@ public abstract class EAObject {
     @Nullable
     public static <T> T newObject(@NotNull EventAlertsIntegration plugin, @NotNull Class<T> clazz, @NotNull JsonObject json) {
         // Install BSON if needed
-        if (clazz == Event.class) plugin.libraryManager.loadLibrary(EALibrary.BSON);
+        if (clazz == Event.class && !plugin.libraryManager.isLoaded(EALibrary.BSON)) plugin.libraryManager.loadLibrary(EALibrary.BSON);
 
         // Return new object from JSON
         try {
