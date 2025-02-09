@@ -38,14 +38,14 @@ error:
   disabled-command: "%prefix%%se%%command%%pe% is disabled!@@%pe%%command%@@%command%"
 
 command:
-  reload: "%prefix%%s%Plugin reloaded successfully!@@%p%%command%@@%command%"
+  reload: "%prefix%Plugin reloaded successfully!@@%p%%command%@@%command%"
 
   linking:
     check:
       linking-not-required: "%prefix%%pe%Linking is not required!@@%pe%%command%@@%command%"
-      result: "%prefix%%s%Successfully kicked %s%%unlinked%%p% unlinked players of the %s%%total%%p% online!@@%p%%command%@@%command%" # %unlinked%
+      result: "%prefix%Successfully kicked %s%%unlinked%%p% unlinked players of the %s%%total%%p% online!@@%p%%command%@@%command%" # %unlinked%
 
   crossban:
     check:
       disabled: "%prefix%%pe%Cross-ban checking is disabled!@@%pe%%command%@@%command%"
-      result: "%prefix%%s%Successfully kicked %s%%banned%%p% banned players!@@%p%%command%@@%command%" # %banned%
+      result: "%prefix%Successfully kicked %s%%banned%%p% banned players!@@%p%%command%@@%command%" # %banned%
