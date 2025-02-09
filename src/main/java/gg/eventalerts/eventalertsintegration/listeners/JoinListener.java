@@ -41,7 +41,7 @@ public class JoinListener extends AnnoyingListener {
     }
 
     private boolean checkLinking(@NotNull PlayerLoginEvent event) {
-        if (!plugin.config.linking.requireLink) return true;
+        if (!plugin.config.linking.requireLink || !plugin.config.linking.checkOnJoin) return true;
         final Player player = event.getPlayer();
 
         // Check permission
@@ -92,7 +92,7 @@ public class JoinListener extends AnnoyingListener {
     }
 
     private boolean checkCrossBan(@NotNull PlayerLoginEvent event) {
-        if (!plugin.config.crossBan.enabled) return true;
+        if (!plugin.config.crossBan.enabled || !plugin.config.crossBan.checkOnJoin) return true;
         final Player player = event.getPlayer();
 
         // Check permission

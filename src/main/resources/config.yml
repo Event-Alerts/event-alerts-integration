@@ -5,9 +5,12 @@
 # Settings related to Event Alerts' Minecraft-Discord linking system
 linking:
 
-  # Whether to force players to be linked with Event Alerts to join the server
+  # Whether to force players to be linked with Event Alerts to join/stay on the server
   # To bypass the requirement, give the player the eventalerts.linking.bypass permission
   require-link: false
+
+  # Whether to check link status when a player joins the server
+  check-on-join: true
 
   # Whether to allow players to join the server when the linking check fails
   allow-join-on-failure: false
@@ -17,9 +20,12 @@ linking:
 # Settings related to Event Alerts' cross-banning feature
 cross-ban:
 
-  # Whether to enable cross-banning
+  # Whether to enable cross-ban checking
   # Anyone with eventalerts.crossban.bypass will be exempt from cross-bans
   enabled: true
+
+  # Whether to check cross-ban status when a player joins the server
+  check-on-join: true
 
   # Whether to allow players to join the server when the cross-ban check fails
   allow-join-on-failure: false

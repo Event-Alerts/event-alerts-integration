@@ -43,9 +43,11 @@ public class ConfigYml extends AnnoyingResource {
 
     public class Linking {
         @NotNull public static final String PATH_REQUIRE_LINK = PATH_LINKING + ".require-link";
+        @NotNull public static final String PATH_CHECK_ON_JOIN = PATH_LINKING + ".check-on-join";
         @NotNull public static final String PATH_ALLOW_JOIN_ON_FAILURE = PATH_LINKING + ".allow-join-on-failure";
 
         public boolean requireLink = getBoolean(PATH_REQUIRE_LINK);
+        public boolean checkOnJoin = getBoolean(PATH_CHECK_ON_JOIN, true);
         public boolean allowJoinOnFailure = getBoolean(PATH_ALLOW_JOIN_ON_FAILURE);
 
         public void setRequireLink(boolean newStatus) {
@@ -66,9 +68,11 @@ public class ConfigYml extends AnnoyingResource {
 
     public class CrossBan {
         @NotNull public static final String PATH_ENABLED = PATH_CROSS_BAN + ".enabled";
+        @NotNull public static final String PATH_CHECK_ON_JOIN = PATH_CROSS_BAN + ".check-on-join";
         @NotNull public static final String PATH_ALLOW_JOIN_ON_FAILURE = PATH_CROSS_BAN + ".allow-join-on-failure";
 
         public boolean enabled = getBoolean(PATH_ENABLED, true);
+        public boolean checkOnJoin = getBoolean(PATH_CHECK_ON_JOIN, true);
         public boolean allowJoinOnFailure = getBoolean(PATH_ALLOW_JOIN_ON_FAILURE);
 
         public void setEnabled(boolean newStatus) {
