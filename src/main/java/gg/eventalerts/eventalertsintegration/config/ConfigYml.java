@@ -1,18 +1,23 @@
 package gg.eventalerts.eventalertsintegration.config;
 
+import gg.eventalerts.eventalertsintegration.EALibrary;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.socket.clients.CrossBanClient;
 import gg.eventalerts.eventalertsintegration.socket.clients.EventPostedClient;
 import gg.eventalerts.eventalertsintegration.socket.clients.FamousEventPostedClient;
 import gg.eventalerts.eventalertsintegration.socket.clients.LinkClient;
 
+import org.bson.types.ObjectId;
+
 import org.bukkit.configuration.ConfigurationSection;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.file.AnnoyingResource;
 import xyz.srnyx.annoyingapi.libs.javautilities.MapGenerator;
+import xyz.srnyx.annoyingapi.libs.javautilities.MiscUtility;
 import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.Mapper;
 
 import java.util.*;
@@ -97,12 +102,40 @@ public class ConfigYml extends AnnoyingResource {
         @NotNull public static final String PATH_IGNORED_TYPES = PATH_EVENT_MESSAGES + ".ignored-types";
         @NotNull public static final String PATH_IGNORED_PARTNER_ROLES = PATH_EVENT_MESSAGES + ".ignored-partner-roles";
         @NotNull public static final String PATH_IGNORED_FORMATS = PATH_EVENT_MESSAGES + ".ignored-formats";
+        @NotNull public static final String PATH_HOST_FILTER = PATH_EVENT_MESSAGES + ".host-filter";
 
         public boolean enabled = getBoolean(PATH_ENABLED, true);
         public boolean detectIps = getBoolean(PATH_DETECT_IPS);
         @NotNull public final Set<EventType> ignoredTypes = getEnumSet(EventType.class, PATH_IGNORED_TYPES);
         @NotNull public final Set<PartnerPingRole> ignoredPartnerRoles = getEnumSet(PartnerPingRole.class, PATH_IGNORED_PARTNER_ROLES);
         @NotNull public final Set<EventFormat> ignoredFormats = getEnumSet(EventFormat.class, PATH_IGNORED_FORMATS);
+        @NotNull public final Set<String> hostFilterServers = new HashSet<>();
+        @NotNull public final Set<String> hostFilterUsers = new HashSet<>();
+
+        public EventMessages() {
+            // Get host filter
+            final List<String> hostFilter = getStringList(PATH_HOST_FILTER);
+            for (final String filter : hostFilter) {
+                // User
+                final Optional<Long> userId = Mapper.toLong(filter);
+                if (userId.isPresent()) {
+                    hostFilterUsers.add(userId.get().toString());
+                    continue;
+                }
+
+                // Install BSON
+                if (!plugin.libraryManager.isLoaded(EALibrary.BSON)) plugin.libraryManager.loadLibrary(EALibrary.BSON);
+
+                // Server
+                if (MiscUtility.handleException(() -> new ObjectId(filter)).isPresent()) {
+                    hostFilterServers.add(filter);
+                    continue;
+                }
+
+                // Invalid
+                AnnoyingPlugin.log(Level.WARNING, "Invalid host filter entry: " + filter);
+            }
+        }
 
         @NotNull
         private <T extends Enum<T>> Set<T> getEnumSet(@NotNull Class<T> enumClass, @NotNull String path) {

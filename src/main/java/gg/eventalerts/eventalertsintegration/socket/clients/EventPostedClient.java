@@ -51,6 +51,12 @@ public class EventPostedClient extends WebSocketClient<Event> {
         final EventFormat format = object.custom ? EventFormat.CUSTOM : EventFormat.BUILT;
         if (plugin.config.eventMessages.ignoredFormats.contains(format)) return;
 
+        // Check server
+        if (object.server != null && !plugin.config.eventMessages.hostFilterServers.isEmpty() && !plugin.config.eventMessages.hostFilterServers.contains(object.server.toString())) return;
+
+        // Check host
+        if (!plugin.config.eventMessages.hostFilterUsers.isEmpty() && !plugin.config.eventMessages.hostFilterUsers.contains(object.host)) return;
+
         // Check Partner ping roles
         final List<PartnerPingRole> partnerRoles = object.roles == null ? List.of() : object.roles.stream()
                 .map(PartnerPingRole::fromId)

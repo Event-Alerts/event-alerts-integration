@@ -57,6 +57,10 @@ event-messages:
   # Possible values: CUSTOM, BUILT
   ignored-formats: []
 
+  # Only broadcast events from these specific hosts
+  # You can include both server IDs (found in footer of '/server get') and host IDs (Discord user IDs)
+  host-filter: []
+
 
 
 # Advanced settings that you probably shouldn't touch...

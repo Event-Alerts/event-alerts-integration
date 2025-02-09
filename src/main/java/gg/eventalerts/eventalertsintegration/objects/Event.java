@@ -13,6 +13,7 @@ import java.util.Set;
 
 public class Event extends EAObject {
     public final boolean custom;
+    @NotNull public final String host;
     @Nullable public final ObjectId server;
     @Nullable public final String title;
     @Nullable public final String description;
@@ -31,6 +32,7 @@ public class Event extends EAObject {
         super(json);
         custom = json.get("custom").getAsBoolean();
         server = json.has("server") ? new ObjectId(json.get("server").getAsString()) : null;
+        host = json.get("host").getAsString();
         title = json.has("title") ? json.get("title").getAsString() : null;
         description = json.has("description") ? json.get("description").getAsString() : null;
         roles = json.has("roles") ? toLongSet(json.getAsJsonArray("roles")) : null;
