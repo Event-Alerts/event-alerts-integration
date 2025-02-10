@@ -39,16 +39,9 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
 
     public abstract boolean shouldConnect();
 
-    public void open() {
-        if (getReadyState() == ReadyState.NOT_YET_CONNECTED) {
-            connect();
-            return;
-        }
-        reconnect();
-    }
-
     public void close(int code, @NotNull String reason, @Nullable Runnable toRunOnStop) {
-        if (getReadyState() == ReadyState.NOT_YET_CONNECTED) {
+        final ReadyState readyState = getReadyState();
+        if (readyState == ReadyState.NOT_YET_CONNECTED || readyState == ReadyState.CLOSED) {
             if (toRunOnStop != null) toRunOnStop.run();
             return;
         }
@@ -70,8 +63,9 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
         close(1001, "Retrying connection");
 
         // Schedule retry
+        if (plugin.config.advanced.websockets.logs) AnnoyingPlugin.log(Level.INFO, "We will try to reconnect to " + endpoint + " in " + finalRetryDelay + " minutes");
         retryTask = SCHEDULER.schedule(() -> {
-            if (plugin.config.advanced.websockets.logs) AnnoyingPlugin.log(Level.WARNING, "Retrying websocket connection for " + endpoint + " with reason: " + reason);
+            if (plugin.config.advanced.websockets.logs) AnnoyingPlugin.log(Level.INFO, "Retrying websocket connection for " + endpoint + " with reason: " + reason);
             retryTask = null;
             connect();
         }, finalRetryDelay, TimeUnit.MINUTES);
@@ -108,7 +102,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
             retryTask = null;
         }
 
-        if (code == 1006){
+        if (code == -1 || code == 1006){
             retryConnection("Experienced abnormal closure", null);
             return;
         }

@@ -7,7 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -29,15 +31,19 @@ public class WebSockets {
             return;
         }
 
-        // Disconnect old clients
-        final AtomicInteger disconnected = new AtomicInteger();
-        final int size = clients.size();
-        for (final SocketClient<?> client : clients.values()) client.close(1001, reason, () -> {
-            // Wait for all clients to disconnect before creating new ones
-            if (disconnected.incrementAndGet() != size) return;
-            createNewClients();
-        });
+        // Remove clients from map
+        final Set<SocketClient<?>> clientsValues = new HashSet<>(clients.values());
         clients.clear();
+
+        // Disconnect clients
+        final AtomicInteger disconnected = new AtomicInteger();
+        final int size = clientsValues.size();
+        for (final SocketClient<?> client : clientsValues) {
+            client.close(1001, reason, () -> {
+                // Wait for all clients to disconnect before creating new ones
+                if (disconnected.incrementAndGet() == size) createNewClients();
+            });
+        }
     }
 
     public final void reconnect(@Nullable String reason, @NotNull SocketEndpoint... endpoints) {
@@ -52,8 +58,8 @@ public class WebSockets {
             }
 
             // Disconnect old client
-            client.close(1001, reason, () -> createNewClient(endpoint)); // Wait for disconnect before creating new
             clients.remove(endpoint);
+            client.close(1001, reason, () -> createNewClient(endpoint)); // Wait for disconnect before creating new
         }
     }
 
@@ -62,7 +68,7 @@ public class WebSockets {
     }
 
     private void createNewClient(@NotNull SocketEndpoint endpoint) {
-        final SocketClient<?> client = endpoint.createClient(plugin);
+        final SocketClient<?> client = endpoint.newClient(plugin);
         if (client == null || !client.shouldConnect()) return;
         clients.put(endpoint, client);
         client.connect();

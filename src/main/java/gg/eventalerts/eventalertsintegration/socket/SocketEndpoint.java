@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 
+import java.lang.reflect.Constructor;
 import java.util.logging.Level;
 
 
@@ -20,16 +21,22 @@ public enum SocketEndpoint {
     CROSS_BAN(CrossBanClient.class),
     LINK(LinkClient.class);
 
-    @NotNull public final Class<? extends SocketClient<?>> clientClass;
+    @Nullable public final Constructor<? extends SocketClient<?>> clientConstructor;
 
     SocketEndpoint(@NotNull Class<? extends SocketClient<?>> clientClass) {
-        this.clientClass = clientClass;
+        Constructor<? extends SocketClient<?>> constructor = null;
+        try {
+            constructor = clientClass.getConstructor(EventAlertsIntegration.class);
+        } catch (final Exception e) {
+            AnnoyingPlugin.log(Level.SEVERE, "Failed to get client constructor for " + this, e);
+        }
+        this.clientConstructor = constructor;
     }
 
     @Nullable
-    public SocketClient<?> createClient(@NotNull EventAlertsIntegration plugin) {
-        try {
-            return clientClass.getConstructor(EventAlertsIntegration.class).newInstance(plugin);
+    public SocketClient<?> newClient(@NotNull EventAlertsIntegration plugin) {
+        if (clientConstructor != null) try {
+            return clientConstructor.newInstance(plugin);
         } catch (final Exception e) {
             AnnoyingPlugin.log(Level.SEVERE, "Failed to create socket client for " + this, e);
         }
