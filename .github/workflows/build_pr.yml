@@ -14,4 +14,5 @@ jobs:
   build:
     uses: srnyx/tools/.github/workflows/build.yml@main
     with:
-      name: Event Alerts Core
+      name: Event Alerts Integration
+      java: 21
