@@ -25,7 +25,7 @@ public class ConfigLinkingGui extends ConfigMainGui {
                 .statelessComponent(container -> container.setItem(0,
                         ConfigMainGui.booleanItem(
                                 plugin.config.linking.requireLink,
-                                Component.text("Require linking"),
+                                "Require linking",
                                 "Whether to force players to be linked\nwith Event Alerts to join the server",
                                 (player, context) -> {
                                     final boolean newStatus = !plugin.config.linking.requireLink;
@@ -36,7 +36,7 @@ public class ConfigLinkingGui extends ConfigMainGui {
                 .statelessComponent(container -> container.setItem(1,
                         ConfigMainGui.booleanItem(
                                 plugin.config.linking.allowJoinOnFailure,
-                                Component.text("Allow join on failure"),
+                                "Allow join on failure",
                                 "Whether to allow players to join the\nserver when the linking check fails",
                                 (player, context) -> {
                                     final boolean newStatus = !plugin.config.linking.allowJoinOnFailure;

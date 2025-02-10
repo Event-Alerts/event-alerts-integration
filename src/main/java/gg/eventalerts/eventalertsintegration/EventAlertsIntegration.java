@@ -8,6 +8,7 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 
 import org.bukkit.Bukkit;
 
@@ -21,6 +22,7 @@ import java.util.logging.Level;
 
 
 public class EventAlertsIntegration extends AnnoyingPlugin {
+    @NotNull public static final MiniMessage miniMessage = MiniMessage.miniMessage();
     @NotNull public static final TextComponent GATE = Component.text("EVENT ALERTS GATE\n\n", NamedTextColor.GOLD, TextDecoration.BOLD);
     @NotNull public static final TextComponent LINKING_INSTRUCTIONS = Component.text()
             .append(Component.text("Join the ", NamedTextColor.GRAY))

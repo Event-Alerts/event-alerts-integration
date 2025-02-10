@@ -25,7 +25,7 @@ public class ConfigCrossBanGui extends ConfigMainGui {
                 .statelessComponent(container -> container.setItem(0,
                         ConfigMainGui.booleanItem(
                                 plugin.config.crossBan.enabled,
-                                Component.text("Enabled"),
+                                "Enabled",
                                 "Whether to enable\ncross-ban checking",
                                 (player, context) -> {
                                     final boolean newStatus = !plugin.config.crossBan.enabled;
@@ -36,7 +36,7 @@ public class ConfigCrossBanGui extends ConfigMainGui {
                 .statelessComponent(container -> container.setItem(1,
                         ConfigMainGui.booleanItem(
                                 plugin.config.crossBan.allowJoinOnFailure,
-                                Component.text("Allow join on failure"),
+                                "Allow join on failure",
                                 "Whether to allow players to join the\nserver when the cross-ban check fails",
                                 (player, context) -> {
                                     final boolean newStatus = !plugin.config.crossBan.allowJoinOnFailure;

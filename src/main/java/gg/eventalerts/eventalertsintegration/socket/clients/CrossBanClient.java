@@ -7,7 +7,6 @@ import gg.eventalerts.eventalertsintegration.socket.SocketClient;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -34,7 +33,7 @@ public class CrossBanClient extends SocketClient<CrossBan> {
         // Kick player
         final Player player = Bukkit.getPlayer(object.uuid);
         if (player != null) plugin.runOnMainThread(() -> player.kick(Component.text()
-                        .append(Component.text("EVENT ALERTS GATE\n\n", NamedTextColor.GOLD, TextDecoration.BOLD))
+                        .append(EventAlertsIntegration.GATE)
                         .append(Component.text("You have been cross-banned from all event servers!", NamedTextColor.RED))
                         .append(object.getReasonExpires())
                         .build(),

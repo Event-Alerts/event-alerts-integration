@@ -26,7 +26,7 @@ public class ConfigEventMessagesGui extends ConfigMainGui {
                 .statelessComponent(container -> container.setItem(0,
                         ConfigMainGui.booleanItem(
                                 plugin.config.eventMessages.enabled,
-                                Component.text("Enabled"),
+                                "Enabled",
                                 "Whether to enable event messages\nbeing broadcast in the server chat",
                                 (player, context) -> {
                                     final boolean newStatus = !plugin.config.eventMessages.enabled;
@@ -37,8 +37,7 @@ public class ConfigEventMessagesGui extends ConfigMainGui {
                 .statelessComponent(container -> container.setItem(1,
                         ConfigMainGui.booleanItem(
                                 plugin.config.eventMessages.detectIps,
-                                Component.text("Detect IPs")
-                                        .append(Component.text(" 1.20.5+", NamedTextColor.DARK_GRAY)),
+                                "Detect IPs <dark_gray>1.20.5+",
                                 "If an IP is detected in an event message,\nplayers will be able to click a button to join\nthe event's server using transfer packets",
                                 (player, context) -> {
                                     final boolean newStatus = !plugin.config.eventMessages.detectIps;

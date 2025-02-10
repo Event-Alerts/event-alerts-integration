@@ -28,6 +28,7 @@ import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.DurationFormatter;
 
 import java.util.*;
 
+import static gg.eventalerts.eventalertsintegration.EventAlertsIntegration.miniMessage;
 import static gg.eventalerts.eventalertsintegration.utility.EventMessageUtility.*;
 
 
@@ -98,29 +99,23 @@ public class EventPostedClient extends SocketClient<Event> {
         if (timeUntil != null) builder
                 .append(LINE)
                 .append(LINE)
-                .append(Component.text("\uD83D\uDD51 Starts in: ", NamedTextColor.YELLOW))
-                .append(Component.text(DurationFormatter.formatDuration(timeUntil, "H'h' m'm' s's'"), NamedTextColor.GOLD));
+                .append(miniMessage.deserialize("<yellow>\uD83D\uDD51 Starts in: <gold>" + DurationFormatter.formatDuration(timeUntil, "H'h' m'm' s's'")));
         // prize
         if (object.prize != null) builder
                 .append(LINE)
-                .append(Component.text("\uD83C\uDFC6 Prize: ", TextColor.fromCSSHexString("#87ffa9")))
-                .append(Component.text(object.prize, NamedTextColor.GREEN));
+                .append(miniMessage.deserialize("<#87ffa9>\uD83C\uDFC6 Prize: <green>" + object.prize));
         // IP
         if (object.ip != null) builder
                 .append(LINE)
                 .append(LINE)
-                .append(Component.text("» ", TextColor.fromCSSHexString("#88a7b5")))
-                .append(Component.text("IP: ", TextColor.fromCSSHexString("#bfebff")))
-                .append(Component.text(object.ip, NamedTextColor.AQUA));
+                .append(miniMessage.deserialize("<#88a7b5>» <#bfebff>IP: <aqua>" + object.ip));
         // platform & version
         final StringBuilder platformVersion = new StringBuilder();
         if (object.platform != null) platformVersion.append(object.platform).append(" ");
         if (object.version != null) platformVersion.append(object.version);
         if (!platformVersion.isEmpty()) builder
                 .append(LINE)
-                .append(Component.text("» ", TextColor.fromCSSHexString("#88a7b5")))
-                .append(Component.text("Version: ", TextColor.fromCSSHexString("#bfebff")))
-                .append(Component.text(platformVersion.toString(), NamedTextColor.AQUA));
+                .append(miniMessage.deserialize("<#88a7b5>» <#bfebff>Version: <aqua>" + platformVersion));
         // server
         if (object.server != null) {
             // Get name from API
@@ -140,9 +135,7 @@ public class EventPostedClient extends SocketClient<Event> {
             // Append to builder
             if (name != null) builder
                     .append(LINE)
-                    .append(Component.text("» ", TextColor.fromCSSHexString("#88a7b5")))
-                    .append(Component.text("Server: ", TextColor.fromCSSHexString("#bfebff")))
-                    .append(Component.text(name, NamedTextColor.AQUA));
+                    .append(miniMessage.deserialize("<#88a7b5>» <#bfebff>Server: <aqua>" + name));
         }
 
         // Join button

@@ -8,7 +8,7 @@ plugins {
     id("com.gradleup.shadow") version "8.3.6"
 }
 
-paper("1.16.5")
+paper("1.18.2")
 setupAnnoyingAPI("7d41870d27", "gg.eventalerts", "1.0.0", "A plugin to integrate your Minecraft server with the Event Alerts ecosystem", JavaVersion.VERSION_21)
 
 repository("https://repo.triumphteam.dev/snapshots/")

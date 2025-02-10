@@ -22,6 +22,8 @@ import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
 
 import java.util.logging.Level;
 
+import static gg.eventalerts.eventalertsintegration.EventAlertsIntegration.miniMessage;
+
 
 public class JoinListener extends AnnoyingListener {
     @NotNull private final EventAlertsIntegration plugin;
@@ -86,8 +88,7 @@ public class JoinListener extends AnnoyingListener {
         AnnoyingPlugin.log(Level.SEVERE, "Failed to check linking status for " + event.getPlayer().getName() + ": " + reason);
         if (!plugin.config.linking.allowJoinOnFailure) event.disallow(PlayerLoginEvent.Result.KICK_OTHER, Component.text()
                 .append(EventAlertsIntegration.GATE)
-                .append(Component.text("Failed to check linking status, try again later!\n\n", NamedTextColor.RED))
-                .append(Component.text("If this issue persists, contact support", NamedTextColor.GRAY))
+                .append(miniMessage.deserialize("<red>Failed to check linking status, try again later!\n\n<gray>If this issue persists, contact support"))
                 .build());
     }
 
@@ -141,8 +142,7 @@ public class JoinListener extends AnnoyingListener {
         AnnoyingPlugin.log(Level.SEVERE, "Failed to check cross-ban status for " + event.getPlayer().getName() + ": " + reason);
         if (!plugin.config.crossBan.allowJoinOnFailure) event.disallow(PlayerLoginEvent.Result.KICK_OTHER, Component.text()
                 .append(EventAlertsIntegration.GATE)
-                .append(Component.text("Failed to check cross-ban status, try again later!\n\n", NamedTextColor.RED))
-                .append(Component.text("If this issue persists, contact support", NamedTextColor.GRAY))
+                .append(miniMessage.deserialize("<red>Failed to check cross-ban status, try again later!\n\n<gray>If this issue persists, contact support"))
                 .build());
     }
 }

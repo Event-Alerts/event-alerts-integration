@@ -23,6 +23,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import static gg.eventalerts.eventalertsintegration.EventAlertsIntegration.miniMessage;
+
 
 public class ConfigMainGui extends EAGUI {
     @NotNull public static final String RED_BACK_ARROW = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjg0ZjU5NzEzMWJiZTI1ZGMwNThhZjg4OGNiMjk4MzFmNzk1OTliYzY3Yzk1YzgwMjkyNWNlNGFmYmEzMzJmYyJ9fX0=";
@@ -80,7 +82,7 @@ public class ConfigMainGui extends EAGUI {
     }
 
     @NotNull
-    public static GuiItem<Player, ItemStack> booleanItem(boolean value, @NotNull Component title, @NotNull String description, @NotNull RunnableGuiClickAction<Player> action) {
+    public static GuiItem<Player, ItemStack> booleanItem(boolean value, @NotNull String title, @NotNull String description, @NotNull RunnableGuiClickAction<Player> action) {
         // Get lore
         final List<Component> lore = new ArrayList<>();
         for (final String line : description.split("\n")) lore.add(Component.text(line)
@@ -95,7 +97,7 @@ public class ConfigMainGui extends EAGUI {
 
         // Return item
         return ItemBuilder.from(value ? Material.LIME_CONCRETE : Material.RED_CONCRETE)
-                .name(title
+                .name(miniMessage.deserialize(title)
                         .decoration(TextDecoration.ITALIC, false)
                         .color(NamedTextColor.GOLD))
                 .lore(lore)

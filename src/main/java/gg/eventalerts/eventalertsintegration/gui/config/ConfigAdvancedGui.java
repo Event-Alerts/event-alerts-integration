@@ -26,7 +26,7 @@ public class ConfigAdvancedGui extends ConfigMainGui {
                 .statelessComponent(container -> container.setItem(0,
                         ConfigMainGui.booleanItem(
                                 plugin.config.advanced.useTestingApi,
-                                Component.text("Use Testing API"),
+                                "Use Testing API",
                                 "Whether to enable using the testing API hosts\nOnly the developer really needs to enable this",
                                 (player, context) -> {
                                     final boolean newStatus = !plugin.config.advanced.useTestingApi;
@@ -37,7 +37,7 @@ public class ConfigAdvancedGui extends ConfigMainGui {
                 .statelessComponent(container -> container.setItem(1,
                         ConfigMainGui.booleanItem(
                                 plugin.config.advanced.websockets.logs,
-                                Component.text("WebSockets: Logs"),
+                                "WebSockets: Logs",
                                 "Whether to log websocket\nconnection messages",
                                 (player, context) -> {
                                     final boolean newStatus = !plugin.config.advanced.websockets.logs;
