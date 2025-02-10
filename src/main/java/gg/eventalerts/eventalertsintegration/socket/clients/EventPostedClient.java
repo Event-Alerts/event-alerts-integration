@@ -139,9 +139,9 @@ public class EventPostedClient extends SocketClient<Event> {
         if (plugin.config.eventMessages.detectIps) {
             EAStringUtility.IpPort ipPort = null;
             // Get from dedicated IP field
-            if (object.ip != null) ipPort = EAStringUtility.extractIpPort(object.ip);
+            if (object.ip != null) ipPort = EAStringUtility.extractIpPort(object.ip, null);
             // Find in description
-            if (ipPort == null && hasDescription) ipPort = EAStringUtility.extractIpPort(description);
+            if (ipPort == null && hasDescription) ipPort = EAStringUtility.extractIpPort(description, null);
             // Append to builder
             if (ipPort != null) builder.append(getJoinButton(ipPort));
         }

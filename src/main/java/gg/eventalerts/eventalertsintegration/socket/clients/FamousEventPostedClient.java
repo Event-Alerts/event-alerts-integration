@@ -88,7 +88,7 @@ public class FamousEventPostedClient extends SocketClient<FamousEvent> {
 
         // Join button
         if (plugin.config.eventMessages.detectIps) {
-            final EAStringUtility.IpPort ipPort = EAStringUtility.extractIpPort(message);
+            final EAStringUtility.IpPort ipPort = EAStringUtility.extractIpPort(message, "invadedlands.net");
             if (ipPort != null) builder.append(getJoinButton(ipPort));
         }
 

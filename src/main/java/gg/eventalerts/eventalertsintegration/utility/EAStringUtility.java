@@ -40,8 +40,8 @@ public class EAStringUtility {
     }
 
     @Nullable
-    public static IpPort extractIpPort(@NotNull String string) {
-        String ip = null;
+    public static IpPort extractIpPort(@NotNull String string, @Nullable String defaultIp) {
+        String ip = defaultIp;
         int port = 25565;
         final Matcher matcher = IP_PATTERN.matcher(string);
         if (matcher.find()) {
