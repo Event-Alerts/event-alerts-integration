@@ -101,7 +101,7 @@ public class ConfigYml extends AnnoyingResource {
         public boolean detectIps = getBoolean(PATH_DETECT_IPS);
         @Nullable public final PlayableSound sound;
         @NotNull public final Set<EventType> ignoredTypes = getEnumSet(EventType.class, PATH_IGNORED_TYPES);
-        @NotNull public final Set<PartnerPingRole> ignoredPartnerRoles = getEnumSet(PartnerPingRole.class, PATH_IGNORED_PARTNER_ROLES);
+        @NotNull public final Set<PingRole> ignoredPartnerRoles = getEnumSet(PingRole.class, PATH_IGNORED_PARTNER_ROLES);
         @NotNull public final Set<EventFormat> ignoredFormats = getEnumSet(EventFormat.class, PATH_IGNORED_FORMATS);
         @NotNull public final Set<String> hostFilterServers = new HashSet<>();
         @NotNull public final Set<String> hostFilterUsers = new HashSet<>();

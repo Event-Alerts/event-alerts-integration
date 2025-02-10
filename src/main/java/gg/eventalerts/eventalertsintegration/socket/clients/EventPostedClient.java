@@ -7,7 +7,7 @@ import gg.eventalerts.eventalertsintegration.utility.EAStringUtility;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.config.EventFormat;
 import gg.eventalerts.eventalertsintegration.config.EventType;
-import gg.eventalerts.eventalertsintegration.config.PartnerPingRole;
+import gg.eventalerts.eventalertsintegration.config.PingRole;
 import gg.eventalerts.eventalertsintegration.objects.EAObject;
 import gg.eventalerts.eventalertsintegration.objects.Event;
 import gg.eventalerts.eventalertsintegration.objects.Server;
@@ -17,7 +17,6 @@ import gg.eventalerts.eventalertsintegration.socket.SocketClient;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 
 import org.jetbrains.annotations.NotNull;
@@ -59,13 +58,10 @@ public class EventPostedClient extends SocketClient<Event> {
         if (!plugin.config.eventMessages.hostFilterUsers.isEmpty() && !plugin.config.eventMessages.hostFilterUsers.contains(object.host)) return;
 
         // Check Partner ping roles
-        final List<PartnerPingRole> partnerRoles = object.roles == null ? List.of() : object.roles.stream()
-                .map(PartnerPingRole::fromId)
-                .filter(Objects::nonNull)
-                .toList();
-        final Set<PartnerPingRole> ignoredPartnerRoles = plugin.config.eventMessages.ignoredPartnerRoles;
-        if (!partnerRoles.isEmpty() && partnerRoles.stream().anyMatch(ignoredPartnerRoles::contains)) return;
-        final int roleCount = partnerRoles.size();
+        final Set<PingRole> pingRoles = object.getPingRoles();
+        final boolean hasRoles = !pingRoles.isEmpty();
+        final Set<PingRole> ignoredPartnerRoles = plugin.config.eventMessages.ignoredPartnerRoles;
+        if (hasRoles && pingRoles.stream().anyMatch(ignoredPartnerRoles::contains)) return;
 
         // Replace emojis in description
         String description = object.description;
@@ -86,9 +82,10 @@ public class EventPostedClient extends SocketClient<Event> {
         }
         builder.append(Component.text(title.toUpperCase(), NamedTextColor.GOLD, TextDecoration.BOLD));
         // roles
-        if (roleCount > 0) {
-            final String role2 = roleCount > 1 ? partnerRoles.get(1).name : null;
-            builder.append(Component.text(" | @" + partnerRoles.get(0).name + (role2 != null ? " @" + role2 : ""), NamedTextColor.YELLOW));
+        if (hasRoles) {
+            final TextComponent.Builder rolesComponent = Component.text().color(NamedTextColor.YELLOW);
+            for (final PingRole role : pingRoles) rolesComponent.append(Component.text(" @" + role.name));
+            builder.append(rolesComponent);
         }
         // description
         if (hasDescription) for (final String descriptionLine : description.split("\n")) builder

@@ -1,6 +1,10 @@
 package gg.eventalerts.eventalertsintegration.objects;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
+import gg.eventalerts.eventalertsintegration.config.PingRole;
 
 import org.bson.types.ObjectId;
 
@@ -8,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -17,7 +22,6 @@ public class Event extends EAObject {
     @Nullable public final ObjectId server;
     @Nullable public final String title;
     @Nullable public final String description;
-    @Nullable public final Set<Long> roles;
     // BUILDER
     @Nullable public final String ip;
     @Nullable public final String platform;
@@ -27,6 +31,8 @@ public class Event extends EAObject {
      * The time the event starts
      */
     @Nullable public final Date time;
+    // WEBSOCKET
+    @NotNull public final Set<String> rolesNamed;
 
     public Event(@NotNull JsonObject json) {
         super(json);
@@ -35,16 +41,29 @@ public class Event extends EAObject {
         host = json.get("host").getAsString();
         title = json.has("title") ? json.get("title").getAsString() : null;
         description = json.has("description") ? json.get("description").getAsString() : null;
-        roles = json.has("roles") ? toLongSet(json.getAsJsonArray("roles")) : null;
         ip = json.has("ip") ? json.get("ip").getAsString() : null;
         platform = json.has("platform") ? json.get("platform").getAsString() : null;
         version = json.has("version") ? json.get("version").getAsString() : null;
         prize = json.has("prize") ? json.get("prize").getAsString() : null;
         time = json.has("time") ? new Date(json.get("time").getAsLong()) : null;
+
+        // roles
+        rolesNamed = new HashSet<>();
+        if (json.has("rolesNamed")) for (final JsonElement element : json.getAsJsonArray("rolesNamed")) rolesNamed.add(element.getAsString());
     }
 
     @Nullable
     public Long getTimeUntil() {
         return time == null ? null : time.getTime() - System.currentTimeMillis();
+    }
+
+    @NotNull
+    public Set<PingRole> getPingRoles() {
+        final Set<PingRole> pingRoles = new HashSet<>();
+        for (final String role : rolesNamed) {
+            final PingRole pingRole = EventAlertsIntegration.getEnum(PingRole.class, role);
+            if (pingRole != null) pingRoles.add(pingRole);
+        }
+        return pingRoles;
     }
 }
