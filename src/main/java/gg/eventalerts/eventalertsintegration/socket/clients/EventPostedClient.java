@@ -76,11 +76,11 @@ public class EventPostedClient extends SocketClient<Event> {
         // Title
         String title = "New event!";
         if (object.title != null) {
-            title = object.title;
+            title = object.title.replaceAll("\\s+", " ");
         } else if (hasDescription) {
-            title = StringUtility.shorten(description, 25);
+            title = description.split("\n")[0];
         }
-        builder.append(Component.text(title.toUpperCase(), NamedTextColor.GOLD, TextDecoration.BOLD));
+        builder.append(Component.text(StringUtility.shorten(title.toUpperCase(), 30), NamedTextColor.GOLD, TextDecoration.BOLD));
         // roles
         if (hasRoles) {
             final TextComponent.Builder rolesComponent = Component.text().color(NamedTextColor.YELLOW);
