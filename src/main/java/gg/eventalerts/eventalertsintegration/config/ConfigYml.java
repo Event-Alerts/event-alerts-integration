@@ -99,7 +99,8 @@ public class ConfigYml extends AnnoyingResource {
 
         public boolean enabled = getBoolean(PATH_ENABLED, true);
         public boolean detectIps = getBoolean(PATH_DETECT_IPS);
-        @Nullable public final PlayableSound sound;
+        public boolean soundEnabled = getBoolean(PATH_SOUND_ENABLED, true);
+        @Nullable public final PlayableSound sound = getPlayableSound(PATH_SOUND).orElse(null);
         @NotNull public final Set<EventType> ignoredTypes = getEnumSet(EventType.class, PATH_IGNORED_TYPES);
         @NotNull public final Set<PingRole> ignoredPartnerRoles = getEnumSet(PingRole.class, PATH_IGNORED_PARTNER_ROLES);
         @NotNull public final Set<EventFormat> ignoredFormats = getEnumSet(EventFormat.class, PATH_IGNORED_FORMATS);
@@ -107,8 +108,6 @@ public class ConfigYml extends AnnoyingResource {
         @NotNull public final Set<String> hostFilterUsers = new HashSet<>();
 
         public EventMessages() {
-            sound = getBoolean(PATH_SOUND_ENABLED, true) ? getPlayableSound(PATH_SOUND).orElse(null) : null;
-
             // Get host filter
             final List<String> hostFilter = getStringList(PATH_HOST_FILTER);
             for (final String filter : hostFilter) {

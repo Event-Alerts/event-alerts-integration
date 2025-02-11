@@ -46,6 +46,18 @@ public class ConfigEventMessagesGui extends ConfigMainGui {
                                     playDingSound(newStatus);
                                     open(false);
                                 })))
+                .statelessComponent(container -> container.setItem(2,
+                        ConfigMainGui.booleanItem(
+                                plugin.config.eventMessages.soundEnabled,
+                                "Sound",
+                                "Whether to play a sound when\nan event message is broadcasted",
+                                (player, context) -> {
+                                    final boolean newStatus = !plugin.config.eventMessages.soundEnabled;
+                                    plugin.config.eventMessages.soundEnabled = newStatus;
+                                    plugin.config.setSave(ConfigYml.EventMessages.PATH_SOUND_ENABLED, newStatus);
+                                    playDingSound(newStatus);
+                                    open(false);
+                                })))
                 .statelessComponent(container -> container.setItem(4, backButton()));
     }
 }

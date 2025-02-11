@@ -51,7 +51,7 @@ public class EventMessageUtility {
 
     public static void broadcast(@NotNull EventAlertsIntegration plugin, @NotNull TextComponent message) {
         final PlayableSound sound = plugin.config.eventMessages.sound;
-        final boolean playSound = sound != null;
+        final boolean playSound = plugin.config.eventMessages.soundEnabled && sound != null;
         for (final Player player : Bukkit.getOnlinePlayers()) {
             // Message
             player.sendMessage(message);
