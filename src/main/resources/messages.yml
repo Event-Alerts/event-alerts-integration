@@ -49,3 +49,7 @@ command:
     check:
       disabled: "%prefix%%pe%Cross-ban checking is disabled!@@%pe%%command%@@%command%"
       result: "%prefix%Successfully kicked %s%%banned%%p% banned players!@@%p%%command%@@%command%" # %banned%
+
+  transfer:
+    transferring: "%prefix%Transferring you to %s%%server%%p%...@@%p%%command%@@%command%" # %server%
+    disabled: "%prefix%%pe%Server transferring is only available on 1.20.5 or higher!@@%pe%%command%@@%command%"

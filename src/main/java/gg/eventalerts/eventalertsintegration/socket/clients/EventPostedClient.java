@@ -3,6 +3,7 @@ package gg.eventalerts.eventalertsintegration.socket.clients;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import gg.eventalerts.eventalertsintegration.reflection.org.bukkit.entity.RefPlayer;
 import gg.eventalerts.eventalertsintegration.utility.EAStringUtility;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.config.EventFormat;
@@ -136,7 +137,7 @@ public class EventPostedClient extends SocketClient<Event> {
         }
 
         // Join button
-        if (plugin.config.eventMessages.detectIps) {
+        if (plugin.config.eventMessages.detectIps && RefPlayer.TRANSFER != null) {
             EAStringUtility.IpPort ipPort = null;
             // Get from dedicated IP field
             if (object.ip != null) ipPort = EAStringUtility.extractIpPort(object.ip, null);

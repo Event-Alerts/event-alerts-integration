@@ -7,6 +7,7 @@ import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.gui.config.ConfigMainGui;
 import gg.eventalerts.eventalertsintegration.objects.CrossBan;
 import gg.eventalerts.eventalertsintegration.objects.EAObject;
+import gg.eventalerts.eventalertsintegration.reflection.org.bukkit.entity.RefPlayer;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -22,8 +23,10 @@ import xyz.srnyx.annoyingapi.command.AnnoyingCommand;
 import xyz.srnyx.annoyingapi.command.AnnoyingSender;
 import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
 import xyz.srnyx.annoyingapi.libs.javautilities.MiscUtility;
+import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.Mapper;
 import xyz.srnyx.annoyingapi.message.AnnoyingMessage;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -145,6 +148,32 @@ public class EventAlertsCmd extends AnnoyingCommand {
                                 .replace("%banned%", banned)
                                 .send(sender);
                     });
+            return;
+        }
+
+        // transfer <host> [port]
+        if (sender.args.length >= 2 && sender.argEquals(0, "transfer")) {
+            if (RefPlayer.TRANSFER == null) {
+                new AnnoyingMessage(plugin, "command.transfer.disabled").send(sender);
+                return;
+            }
+            if (!sender.checkPlayer()) return;
+
+            // Get host and port
+            final String host = sender.getArgument(1);
+            final int port = sender.getArgumentOptional(2)
+                    .flatMap(Mapper::toInt)
+                    .orElse(25565);
+
+            // Transfer
+            try {
+                new AnnoyingMessage(plugin, "command.transfer.transferring")
+                        .replace("%server%", host + ":" + port)
+                        .send(sender);
+                RefPlayer.TRANSFER.invoke(sender.getPlayer(), host, port);
+            } catch (final IllegalAccessException | InvocationTargetException e) {
+                new AnnoyingMessage(plugin, "command.transfer.disabled").send(sender);
+            }
             return;
         }
 

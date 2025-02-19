@@ -1,6 +1,7 @@
 package gg.eventalerts.eventalertsintegration.socket.clients;
 
 import gg.eventalerts.eventalertsintegration.config.EventType;
+import gg.eventalerts.eventalertsintegration.reflection.org.bukkit.entity.RefPlayer;
 import gg.eventalerts.eventalertsintegration.utility.EAStringUtility;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.objects.FamousEvent;
@@ -87,7 +88,7 @@ public class FamousEventPostedClient extends SocketClient<FamousEvent> {
         }
 
         // Join button
-        if (plugin.config.eventMessages.detectIps) {
+        if (plugin.config.eventMessages.detectIps && RefPlayer.TRANSFER != null) {
             final EAStringUtility.IpPort ipPort = EAStringUtility.extractIpPort(message, "invadedlands.net");
             if (ipPort != null) builder.append(getJoinButton(ipPort));
         }

@@ -45,7 +45,7 @@ public class EventMessageUtility {
     @NotNull
     private static TextComponent getButtonComponent(@NotNull String content, @NotNull EAStringUtility.IpPort ipPort) {
         return Component.text(content, NamedTextColor.GREEN)
-                .clickEvent(ClickEvent.runCommand("/transfer " + ipPort.ip + " " + ipPort.port))
+                .clickEvent(ClickEvent.runCommand("/eventalertsintegration:eventalerts transfer " + ipPort.ip + " " + ipPort.port))
                 .hoverEvent(miniMessage.deserialize("<green>Click to join this event server!\n<gray>" + ipPort.ip + (ipPort.port != 25565 ? ":" + ipPort.port : "")));
     }
 
