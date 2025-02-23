@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static gg.eventalerts.eventalertsintegration.EventAlertsIntegration.miniMessage;
+import static gg.eventalerts.eventalertsintegration.EventAlertsIntegration.MINI_MESSAGE;
 
 
 public class ConfigMainGui extends EAGUI {
@@ -97,7 +97,7 @@ public class ConfigMainGui extends EAGUI {
 
         // Return item
         return ItemBuilder.from(value ? Material.LIME_CONCRETE : Material.RED_CONCRETE)
-                .name(miniMessage.deserialize(title)
+                .name(MINI_MESSAGE.deserialize(title)
                         .decoration(TextDecoration.ITALIC, false)
                         .color(NamedTextColor.GOLD))
                 .lore(lore)

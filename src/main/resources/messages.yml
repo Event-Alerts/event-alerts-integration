@@ -45,6 +45,14 @@ command:
       linking-not-required: "%prefix%%pe%Linking is not required!@@%pe%%command%@@%command%"
       result: "%prefix%Successfully kicked %s%%unlinked%%p% unlinked players of the %s%%total%%p% online!@@%p%%command%@@%command%" # %unlinked%
 
+    discord: # %input%
+      not-linked: "%prefix%%se%%input%%pe% is not linked to a Discord account!@@%pe%%command%@@%command%"
+      linked: "%prefix%%s%%input%%p% is linked to %s%%username%%p%&o (%id%)@@%p%%command%@@%command%" # %username%, %id%
+
+    minecraft: # %input%
+      not-linked: "%prefix%%se%%input%%pe% is not linked to a Minecraft account!@@%pe%%command%@@%command%"
+      linked: "%prefix%%s%%input%%p% is linked to %s%%username%%p%&o (%uuid%)@@%p%%command%@@%command%" # %username%, %uuid%
+
   crossban:
     check:
       disabled: "%prefix%%pe%Cross-ban checking is disabled!@@%pe%%command%@@%command%"

@@ -24,6 +24,12 @@ permissions:
   eventalerts.linking.bypass:
     description: Allows the player to bypass the linking requirement
     default: false
+  eventalerts.linking.discord:
+    description: Allows the player to use /eventalerts linking discord
+    default: true
+  eventalerts.linking.minecraft:
+    description: Allows the player to use /eventalerts linking minecraft
+    default: true
   eventalerts.crossban.check:
     description: Allows the player to use /eventalerts crossban check
   eventalerts.crossban.bypass:

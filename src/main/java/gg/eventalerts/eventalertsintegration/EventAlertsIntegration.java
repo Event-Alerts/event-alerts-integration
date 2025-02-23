@@ -22,7 +22,7 @@ import java.util.logging.Level;
 
 
 public class EventAlertsIntegration extends AnnoyingPlugin {
-    @NotNull public static final MiniMessage miniMessage = MiniMessage.miniMessage();
+    @NotNull public static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
     @NotNull public static final TextComponent GATE = Component.text("EVENT ALERTS GATE\n\n", NamedTextColor.GOLD, TextDecoration.BOLD);
     @NotNull public static final TextComponent LINKING_INSTRUCTIONS = Component.text()
             .append(Component.text("Join the ", NamedTextColor.GRAY))
