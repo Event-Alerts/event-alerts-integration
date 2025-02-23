@@ -81,7 +81,7 @@ advanced:
     # Minutes until a websocket attempts to reconnect after being disconnected (min: 3, -1 to disable retries)
     retry-delay: 5
     # Whether to log websocket connection messages
-    logs: true
+    logs: false
   # Known names for Discord user IDs, role IDs, channel IDs, etc...
   id-mappings:
     314853603695394817: "Skeppy"
