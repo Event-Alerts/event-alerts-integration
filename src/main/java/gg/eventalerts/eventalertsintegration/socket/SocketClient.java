@@ -6,6 +6,8 @@ import com.google.gson.JsonObject;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.objects.EAObject;
 
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.java_websocket.client.WebSocketClient;
 
 import org.java_websocket.enums.ReadyState;
@@ -16,18 +18,16 @@ import org.jetbrains.annotations.Nullable;
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 
 import java.net.URI;
-import java.util.concurrent.*;
 import java.util.logging.Level;
 
 
 public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
     @NotNull private static final Gson GSON = new Gson();
-    @NotNull private static final ScheduledExecutorService SCHEDULER = Executors.newScheduledThreadPool(2);
 
     @NotNull protected final EventAlertsIntegration plugin;
     @NotNull public final SocketEndpoint endpoint;
     @NotNull private final Class<T> objectClass;
-    @Nullable private ScheduledFuture<?> retryTask;
+    @Nullable private BukkitTask retryTask;
     @Nullable public Runnable toRunOnStop;
 
     public SocketClient(@NotNull EventAlertsIntegration plugin, @NotNull SocketEndpoint endpoint, @NotNull Class<T> objectClass) {
@@ -64,11 +64,14 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
 
         // Schedule retry
         if (plugin.config.advanced.websockets.logs) AnnoyingPlugin.log(Level.INFO, "We will try to reconnect to " + endpoint + " in " + finalRetryDelay + " minutes");
-        retryTask = SCHEDULER.schedule(() -> {
-            if (plugin.config.advanced.websockets.logs) AnnoyingPlugin.log(Level.INFO, "Retrying websocket connection for " + endpoint + " with reason: " + reason);
-            retryTask = null;
-            connect();
-        }, finalRetryDelay, TimeUnit.MINUTES);
+        retryTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (plugin.config.advanced.websockets.logs) AnnoyingPlugin.log(Level.INFO, "Retrying websocket connection for " + endpoint + " with reason: " + reason);
+                retryTask = null;
+                connect();
+            }
+        }.runTaskLaterAsynchronously(plugin, finalRetryDelay * 1200);
     }
 
     @Override
@@ -98,7 +101,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
     @Override
     public void onClose(int code, String reason, boolean remote) {
         if (retryTask != null) {
-            retryTask.cancel(true);
+            retryTask.cancel();
             retryTask = null;
         }
 
