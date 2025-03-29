@@ -69,7 +69,7 @@ public class EventAlertsCmd extends AnnoyingCommand {
         // linking
         if (sender.argEquals(0, "linking")) {
             // linking check
-            if (sender.argEquals(0, "check")) {
+            if (sender.argEquals(1, "check")) {
                 if (!sender.checkPermission("eventalerts.linking.check")) return;
 
                 // Get online players + UUIDs
@@ -208,8 +208,8 @@ public class EventAlertsCmd extends AnnoyingCommand {
                                         }
 
                                         // Get UUID and username
-                                        final String uuid = MiscUtility.handleException(() -> minecraft.get("uuid").getAsString()).orElse("&cUnknown");
-                                        final String username = MiscUtility.handleException(() -> minecraft.get("username").getAsString()).orElse("&cUnknown");
+                                        final String uuid = MiscUtility.handleException(() -> minecraft.get("uuid").getAsString()).orElse("&cUUID Unknown");
+                                        final String username = MiscUtility.handleException(() -> minecraft.get("username").getAsString()).orElse("&cUsername Unknown");
 
                                         // Send message
                                         new AnnoyingMessage(plugin, "command.linking.minecraft.linked")
@@ -238,8 +238,8 @@ public class EventAlertsCmd extends AnnoyingCommand {
                                             .flatMap(json -> MiscUtility.handleException(() -> json.getAsJsonObject("minecraft")))
                                             .ifPresent(player -> {
                                                 // Get UUID and username
-                                                final String uuid = MiscUtility.handleException(() -> player.get("uuid").getAsString()).orElse("<red>Unknown</red>");
-                                                final String username = MiscUtility.handleException(() -> player.get("username").getAsString()).orElse("<red>Unknown</red>");
+                                                final String uuid = MiscUtility.handleException(() -> player.get("uuid").getAsString()).orElse("<red>UUID Unknown</red>");
+                                                final String username = MiscUtility.handleException(() -> player.get("username").getAsString()).orElse("<red>Username Unknown</red>");
 
                                                 // Append to message
                                                 builder.append("<gold>- <yellow>").append(username).append(" <i>(").append(uuid).append(")</i>\n");
