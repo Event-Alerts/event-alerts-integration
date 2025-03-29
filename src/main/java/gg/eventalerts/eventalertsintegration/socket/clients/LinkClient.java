@@ -21,7 +21,7 @@ public class LinkClient extends SocketClient<EAPlayer> {
 
     @Override
     public boolean shouldConnect() {
-        return plugin.config.linking.requireLink;
+        return plugin.config.linking.requireLink || plugin.accountLinkManager != null;
     }
 
     @Override
@@ -29,7 +29,11 @@ public class LinkClient extends SocketClient<EAPlayer> {
         if (eaPlayer.minecraft == null) return;
 
         // Linked
-        if (eaPlayer.linkStatus == EAPlayer.LinkStatus.ADDED && eaPlayer.discord != null) return;
+        if (eaPlayer.linkStatus == EAPlayer.LinkStatus.ADDED && eaPlayer.discord != null && plugin.accountLinkManager != null) {
+            // Link with DiscordSRV
+            plugin.accountLinkManager.link(String.valueOf(eaPlayer.discord.id), eaPlayer.minecraft.uuid);
+            return;
+        }
 
         // Unlinked
         if (eaPlayer.linkStatus == EAPlayer.LinkStatus.REMOVED && plugin.config.linking.requireLink) {

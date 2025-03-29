@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.objects.CrossBan;
 import gg.eventalerts.eventalertsintegration.objects.EAObject;
+import gg.eventalerts.eventalertsintegration.objects.EAPlayer;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import xyz.srnyx.annoyingapi.AnnoyingListener;
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
+import xyz.srnyx.annoyingapi.libs.javautilities.MiscUtility;
 
 import java.util.UUID;
 import java.util.logging.Level;
@@ -76,8 +78,19 @@ public class JoinListener extends AnnoyingListener {
             return false;
         }
 
+        // Player is linked
+        if (!playerElement.isJsonNull()) {
+            if (plugin.accountLinkManager != null) MiscUtility.handleException(() -> EAObject.newObject(plugin, EAPlayer.class, playerElement.getAsJsonObject()))
+                    .filter(ea -> ea.discord != null)
+                    .map(ea -> String.valueOf(ea.discord.id))
+                    .ifPresent(discordId -> {
+                        if (!discordId.equals(plugin.accountLinkManager.getDiscordId(uuid))) plugin.accountLinkManager.link(discordId, uuid);
+                    });
+            return true;
+        }
+
         // Disallow if not linked
-        if (!playerElement.isJsonNull()) return true;
+        if (plugin.accountLinkManager != null) plugin.accountLinkManager.unlink(uuid);
         event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, Component.text()
                 .append(EventAlertsIntegration.GATE)
                 .append(Component.text("You must link your Minecraft account with Event Alerts to join this server!\n\n", NamedTextColor.RED))

@@ -3,6 +3,9 @@ package gg.eventalerts.eventalertsintegration;
 import gg.eventalerts.eventalertsintegration.config.ConfigYml;
 import gg.eventalerts.eventalertsintegration.socket.WebSockets;
 
+import github.scarsz.discordsrv.DiscordSRV;
+import github.scarsz.discordsrv.objects.managers.AccountLinkManager;
+
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -34,9 +37,9 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
             .append(Component.text(" for more information", NamedTextColor.GRAY))
             .build();
 
-
     @NotNull public ConfigYml config;
     public WebSockets webSockets;
+    @Nullable public AccountLinkManager accountLinkManager;
 
     public EventAlertsIntegration() {
         options
@@ -58,6 +61,8 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
         // Reconnect websockets
         if (webSockets == null) webSockets = new WebSockets(this);
         webSockets.reconnectAll("Plugin reload");
+        // DiscordSRV
+        if (config.linking.discordSRV && Bukkit.getPluginManager().isPluginEnabled("DiscordSRV")) accountLinkManager = DiscordSRV.getPlugin().getAccountLinkManager();
     }
 
     @Override

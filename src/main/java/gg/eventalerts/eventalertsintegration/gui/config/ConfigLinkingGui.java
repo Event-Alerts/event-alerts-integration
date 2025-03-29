@@ -57,6 +57,18 @@ public class ConfigLinkingGui extends ConfigMainGui {
                                     playDingSound(newStatus);
                                     open(false);
                                 })))
+                .statelessComponent(container -> container.setItem(3,
+                        ConfigMainGui.booleanItem(
+                                plugin.config.linking.discordSRV,
+                                "DiscordSRV integration",
+                                "Whether to also link players with\nDiscordSRV when they link with Event Alerts",
+                                (player, context) -> {
+                                    final boolean newStatus = !plugin.config.linking.discordSRV;
+                                    plugin.config.linking.setDiscordSRV(newStatus);
+                                    playDingSound(newStatus);
+                                    open(false);
+                                }
+                        )))
                 .statelessComponent(container -> container.setItem(4, backButton()));
     }
 }

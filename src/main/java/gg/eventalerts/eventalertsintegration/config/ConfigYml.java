@@ -4,10 +4,13 @@ import gg.eventalerts.eventalertsintegration.EALibrary;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
 
+import github.scarsz.discordsrv.DiscordSRV;
 import org.bson.types.ObjectId;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,10 +52,12 @@ public class ConfigYml extends AnnoyingResource {
         @NotNull public static final String PATH_REQUIRE_LINK = PATH_LINKING + ".require-link";
         @NotNull public static final String PATH_CHECK_ON_JOIN = PATH_LINKING + ".check-on-join";
         @NotNull public static final String PATH_ALLOW_JOIN_ON_FAILURE = PATH_LINKING + ".allow-join-on-failure";
+        @NotNull public static final String PATH_DISCORDSRV = PATH_LINKING + ".discordsrv";
 
         public boolean requireLink = getBoolean(PATH_REQUIRE_LINK);
         public boolean checkOnJoin = getBoolean(PATH_CHECK_ON_JOIN, true);
         public boolean allowJoinOnFailure = getBoolean(PATH_ALLOW_JOIN_ON_FAILURE);
+        public boolean discordSRV = getBoolean(PATH_DISCORDSRV, true);
 
         public void setRequireLink(boolean newStatus) {
             if (requireLink == newStatus) return;
@@ -63,6 +68,18 @@ public class ConfigYml extends AnnoyingResource {
 
             // Reconnect websocket
             eaPlugin.webSockets.reconnect("Config updated", SocketEndpoint.LINK);
+        }
+
+        public void setDiscordSRV(boolean newStatus) {
+            if (discordSRV == newStatus) return;
+
+            // Update config
+            discordSRV = newStatus;
+            setSave(PATH_DISCORDSRV, newStatus);
+
+            // Update accountLinkManager
+            final Plugin discordSRVPlugin = discordSRV ? Bukkit.getPluginManager().getPlugin("DiscordSRV") : null;
+            eaPlugin.accountLinkManager = discordSRVPlugin != null ? ((DiscordSRV) discordSRVPlugin).getAccountLinkManager() : null;
         }
     }
 

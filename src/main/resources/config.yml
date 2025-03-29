@@ -17,6 +17,10 @@ linking:
   # Whether to allow players to join the server when the linking check fails
   allow-join-on-failure: false
 
+  # Whether the plugin should link/unlink players with DiscordSRV automatically
+  # None of the other linking settings need to be enabled for this to work
+  discordsrv: true
+
 
 
 # Settings related to Event Alerts' cross-banning feature
