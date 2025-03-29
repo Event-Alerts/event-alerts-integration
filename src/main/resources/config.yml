@@ -82,17 +82,3 @@ advanced:
     retry-delay: 5
     # Whether to log websocket connection messages
     logs: false
-  # Known names for Discord user IDs, role IDs, channel IDs, etc...
-  id-mappings:
-    314853603695394817: "Skeppy"
-    365630764244664320: "Oiiink"
-    242385234992037888: "srnyx"
-    604377897662414854: "hailey"
-    267734235224211467: "bacca"
-    381890968971902976: "Rame"
-    468890330763231270: "hayech"
-    1111741660892762142: "Server Events"
-    1006349851241480242: "Famous Events"
-    1216096556713906288: "Potential Skeppy Events"
-    1280002787446493256: "Skeppy Sighting"
-    1096205843113967669: "Random Pings"

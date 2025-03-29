@@ -6,15 +6,12 @@ import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
 
 import org.bson.types.ObjectId;
 
-import org.bukkit.configuration.ConfigurationSection;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.file.AnnoyingResource;
 import xyz.srnyx.annoyingapi.file.PlayableSound;
-import xyz.srnyx.annoyingapi.libs.javautilities.MapGenerator;
 import xyz.srnyx.annoyingapi.libs.javautilities.MiscUtility;
 import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.Mapper;
 
@@ -155,20 +152,9 @@ public class ConfigYml extends AnnoyingResource {
     public class Advanced {
         @NotNull public static final String PATH_USE_TESTING_API = PATH_ADVANCED + ".use-testing-api";
         @NotNull public static final String PATH_WEBSOCKETS = PATH_ADVANCED + ".websockets";
-        @NotNull public static final String PATH_ID_MAPPINGS = PATH_ADVANCED + ".id-mappings";
 
         public boolean useTestingApi = getBoolean(PATH_USE_TESTING_API, false);
         @NotNull public final Websockets websockets = new Websockets();
-        @NotNull public final Map<Long, String> idMappings = MapGenerator.HASH_MAP.mapOf(
-                List.of(314853603695394817L, 365630764244664320L, 242385234992037888L, 604377897662414854L, 267734235224211467L, 381890968971902976L, 468890330763231270L, 1111741660892762142L, 1006349851241480242L, 1216096556713906288L, 1280002787446493256L, 1096205843113967669L),
-                List.of("Skeppy", "Oiiink", "srnyx", "hailey", "bacca", "Rame", "hayech", "Server Events", "Famous Events", "Potential Skeppy Events", "Skeppy Sighting", "Random Pings"));
-
-        public Advanced() {
-            final ConfigurationSection section = getConfigurationSection(PATH_ID_MAPPINGS);
-            if (section != null) for (final Map.Entry<String, Object> entry : section.getValues(false).entrySet()) {
-                Mapper.toLong(entry.getKey()).ifPresent(id -> idMappings.put(id, entry.getValue().toString()));
-            }
-        }
 
         public void setUseTestingApi(boolean newStatus) {
             if (useTestingApi == newStatus) return;
