@@ -15,7 +15,7 @@ repository("https://repo.triumphteam.dev/snapshots/")
 dependencies {
     implementationRelocate(project, "dev.triumphteam:triumph-gui-paper:4.0.0-SNAPSHOT", "dev.triumphteam")
     compileOnly("org.java-websocket", "Java-WebSocket", "1.6.0")
-    compileOnly("org.mongodb", "bson", "5.3.0")
+    compileOnly("org.mongodb", "bson", "5.4.0")
     compileOnly("net.fellbaum", "jemoji", "1.7.1")
 }
 
@@ -32,3 +32,4 @@ relocate("com.google.common", "$projectPackage.libs.google.common")
 relocate("com.google.errorprone", "$projectPackage.libs.google.errorprone")
 relocate("com.google.thirdparty", "$projectPackage.libs.google.thirdparty")
 relocate("javax.annotation")
+relocate("com.google.j2objc.annotations")
