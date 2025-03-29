@@ -119,7 +119,7 @@ public class EventPostedClient extends SocketClient<Event> {
             // Get name from API
             String name = null;
             final JsonObject json = HttpUtility
-                    .getJson(plugin.getUserAgent(), plugin.getApiHost() + "servers/id/" + object.server)
+                    .getJson(plugin.getUserAgent(), plugin.getApiHost() + "servers/id/" + object.server, null)
                     .map(JsonElement::getAsJsonObject)
                     .orElse(null);
             if (json != null && json.has("server")) {

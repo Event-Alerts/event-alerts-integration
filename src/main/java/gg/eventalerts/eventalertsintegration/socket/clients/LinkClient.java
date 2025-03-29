@@ -25,15 +25,20 @@ public class LinkClient extends SocketClient<EAPlayer> {
     }
 
     @Override
-    public void handle(@NotNull EAPlayer object) {
-        // Check status
-        if (object.linkStatus != EAPlayer.LinkStatus.REMOVED || object.uuid == null) return;
+    public void handle(@NotNull EAPlayer eaPlayer) {
+        if (eaPlayer.minecraft == null) return;
 
-        // Kick player
-        final Player player = Bukkit.getPlayer(object.uuid);
-        if (player != null) plugin.runOnMainThread(() -> player.kick(Component.text()
-                .append(EventAlertsIntegration.GATE)
-                .append(Component.text("You're no longer linked to a Discord account!", NamedTextColor.RED))
-                .build()));
+        // Linked
+        if (eaPlayer.linkStatus == EAPlayer.LinkStatus.ADDED && eaPlayer.discord != null) return;
+
+        // Unlinked
+        if (eaPlayer.linkStatus == EAPlayer.LinkStatus.REMOVED && plugin.config.linking.requireLink) {
+            // Kick player
+            final Player player = Bukkit.getPlayer(eaPlayer.minecraft.uuid);
+            if (player != null) plugin.runOnMainThread(() -> player.kick(Component.text()
+                    .append(EventAlertsIntegration.GATE)
+                    .append(Component.text("You're no longer linked to a Discord account!", NamedTextColor.RED))
+                    .build()));
+        }
     }
 }

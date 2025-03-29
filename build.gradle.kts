@@ -9,7 +9,7 @@ plugins {
 }
 
 paper("1.18.2")
-setupAnnoyingAPI("7d41870d27", "gg.eventalerts", "1.0.0", "A plugin to integrate your Minecraft server with the Event Alerts ecosystem", JavaVersion.VERSION_21)
+setupAnnoyingAPI("0d3c33c14c", "gg.eventalerts", "1.0.0", "A plugin to integrate your Minecraft server with the Event Alerts ecosystem", JavaVersion.VERSION_21)
 
 repository("https://repo.triumphteam.dev/snapshots/")
 dependencies {

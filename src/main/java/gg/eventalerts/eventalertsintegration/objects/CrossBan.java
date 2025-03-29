@@ -11,6 +11,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import xyz.srnyx.annoyingapi.libs.javautilities.MiscUtility;
 import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.DurationFormatter;
 
 import java.util.Date;
@@ -18,8 +19,13 @@ import java.util.UUID;
 
 
 public class CrossBan extends EAObject {
+    @NotNull private static final String PROP_MINECRAFT_UUID = "minecraftUuid";
+    @NotNull private static final String PROP_REASON = "reason";
+    @NotNull private static final String PROP_EXPIRATION = "expiration";
+    @NotNull private static final String PROP_STATUS = "status";
+
     // Database + Websocket
-    @NotNull public final UUID uuid;
+    @NotNull public final UUID minecraftUuid;
     @NotNull public final String reason;
     @Nullable public final Date expiration;
     // Websocket
@@ -27,10 +33,10 @@ public class CrossBan extends EAObject {
 
     public CrossBan(@NotNull JsonObject json) {
         super(json);
-        uuid = UUID.fromString(json.get("uuid").getAsString());
-        reason = json.get("reason").getAsString();
-        expiration = json.has("expiration") ? new Date(json.get("expiration").getAsLong()) : null;
-        status = json.has("status") ? EventAlertsIntegration.getEnum(Status.class, json.get("status").getAsString()) : null;
+        minecraftUuid = UUID.fromString(json.get(PROP_MINECRAFT_UUID).getAsString());
+        reason = json.get(PROP_REASON).getAsString();
+        expiration = MiscUtility.handleException(() -> new Date(json.get(PROP_EXPIRATION).getAsLong())).orElse(null);
+        status = MiscUtility.handleException(() -> EventAlertsIntegration.getEnum(Status.class, json.get(PROP_STATUS).getAsString())).orElse(null);
     }
 
     @NotNull

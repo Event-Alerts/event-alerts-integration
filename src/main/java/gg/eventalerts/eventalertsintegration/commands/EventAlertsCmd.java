@@ -79,7 +79,7 @@ public class EventAlertsCmd extends AnnoyingCommand {
                         .collect(Collectors.joining(","));
 
                 // Make API request
-                HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "players?minecraft_uuid=" + onlineString)
+                HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "players?minecraft_uuid=" + onlineString, null)
                         .flatMap(json -> MiscUtility.handleException(json::getAsJsonObject))
                         .flatMap(json -> MiscUtility.handleException(() -> json.getAsJsonArray("players")))
                         .ifPresent(players -> {
@@ -144,7 +144,7 @@ public class EventAlertsCmd extends AnnoyingCommand {
                 }
 
                 // Make API request
-                HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "players/minecraft/uuid/" + uuid)
+                HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "players/minecraft/uuid/" + uuid, null)
                         .flatMap(json -> MiscUtility.handleException(json::getAsJsonObject))
                         .flatMap(json -> MiscUtility.handleException(() -> json.getAsJsonObject("player")))
                         .ifPresentOrElse(
@@ -192,7 +192,7 @@ public class EventAlertsCmd extends AnnoyingCommand {
                 final Long id = Mapper.toLong(argument).orElse(null);
                 if (id != null) {
                     // Make API request
-                    HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "players/discord/id/" + id)
+                    HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "players/discord/id/" + id, null)
                             .flatMap(json -> MiscUtility.handleException(json::getAsJsonObject))
                             .flatMap(json -> MiscUtility.handleException(() -> json.getAsJsonObject("player")))
                             .ifPresentOrElse(
@@ -226,7 +226,7 @@ public class EventAlertsCmd extends AnnoyingCommand {
                 }
 
                 // Get through username: Make API request
-                HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "players?discord_username=" + argument)
+                HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "players?discord_username=" + argument, null)
                         .flatMap(json -> MiscUtility.handleException(json::getAsJsonObject))
                         .flatMap(json -> MiscUtility.handleException(() -> json.getAsJsonArray("players")))
                         .ifPresentOrElse(
@@ -270,7 +270,7 @@ public class EventAlertsCmd extends AnnoyingCommand {
                     .collect(Collectors.joining(","));
 
             // Make API request
-            HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "cross_bans?uuid=" + onlineString)
+            HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "cross_bans?minecraft_uuid=" + onlineString, null)
                     .flatMap(json -> MiscUtility.handleException(json::getAsJsonObject))
                     .flatMap(json -> MiscUtility.handleException(() -> json.getAsJsonArray("cross_bans")))
                     .ifPresent(crossBans -> {
@@ -285,7 +285,7 @@ public class EventAlertsCmd extends AnnoyingCommand {
                             if (jsonObject == null) continue;
                             final CrossBan ban = EAObject.newObject(plugin, CrossBan.class, jsonObject);
                             if (ban == null) continue;
-                            final Player player = Bukkit.getPlayer(ban.uuid);
+                            final Player player = Bukkit.getPlayer(ban.minecraftUuid);
                             if (player == null) continue;
                             banned++;
                             player.kick(Component.text()

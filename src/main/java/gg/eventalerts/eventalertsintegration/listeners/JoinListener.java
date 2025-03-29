@@ -20,6 +20,7 @@ import xyz.srnyx.annoyingapi.AnnoyingListener;
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
 
+import java.util.UUID;
 import java.util.logging.Level;
 
 import static gg.eventalerts.eventalertsintegration.EventAlertsIntegration.MINI_MESSAGE;
@@ -48,11 +49,12 @@ public class JoinListener extends AnnoyingListener {
 
         // Check permission
         if (player.hasPermission("eventalerts.linking.bypass")) return true;
+        final UUID uuid = player.getUniqueId();
 
         // Make API request
         JsonElement json = null;
         try {
-            json = HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "players/minecraft/uuid/" + player.getUniqueId()).orElse(null);
+            json = HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "players/minecraft/uuid/" + uuid, null).orElse(null);
         } catch (final Exception ignored) {}
         if (json == null) {
             failLinking(event, "Failed to get JSON response");
@@ -102,7 +104,7 @@ public class JoinListener extends AnnoyingListener {
         // Make API request
         JsonElement json = null;
         try {
-            json = HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "cross_bans/uuid/" + player.getUniqueId()).orElse(null);
+            json = HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "cross_bans/minecraft_uuid/" + player.getUniqueId(), null).orElse(null);
         } catch (final Exception ignored) {}
         if (json == null) {
             failCrossBan(event, "Failed to get JSON response");
