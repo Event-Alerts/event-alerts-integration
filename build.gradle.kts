@@ -9,25 +9,25 @@ plugins {
 }
 
 paper("1.18.2")
-setupAnnoyingAPI("0d3c33c14c", "gg.eventalerts", "1.0.0", "A plugin to integrate your Minecraft server with the Event Alerts ecosystem", JavaVersion.VERSION_21)
+setupAnnoyingAPI("650caa300e", "gg.eventalerts", "1.0.0", "A plugin to integrate your Minecraft server with the Event Alerts ecosystem", JavaVersion.VERSION_21)
 
 repository("https://repo.triumphteam.dev/snapshots/")
 dependencies {
     implementationRelocate(project, "dev.triumphteam:triumph-gui-paper:4.0.0-SNAPSHOT", "dev.triumphteam")
-    compileOnly("org.java-websocket", "Java-WebSocket", "1.6.0")
-    compileOnly("org.mongodb", "bson", "5.4.0")
-    compileOnly("net.fellbaum", "jemoji", "1.7.1")
+    compileOnly("org.java-websocket", "Java-WebSocket", "1.6.0") {
+        relocate("org.java_websocket")
+    }
+    compileOnly("org.mongodb", "bson", "5.4.0") {
+        relocate("org.bson")
+        relocate("org.checkerframework")
+    }
+    compileOnly("net.fellbaum", "jemoji", "1.7.4") {
+        relocate("net.fellbaum")
+    }
 }
 
+// Unknown relocations
 val projectPackage = getPackage()
-// Java-WebSocket
-relocate("org.java_websocket")
-// BSON
-relocate("org.bson")
-relocate("org.checkerframework")
-// JEmoji
-relocate("net.fellbaum")
-// Unknown
 relocate("com.google.common", "$projectPackage.libs.google.common")
 relocate("com.google.errorprone", "$projectPackage.libs.google.errorprone")
 relocate("com.google.thirdparty", "$projectPackage.libs.google.thirdparty")

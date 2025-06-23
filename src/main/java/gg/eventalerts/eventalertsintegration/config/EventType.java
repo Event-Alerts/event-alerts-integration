@@ -15,11 +15,11 @@ public enum EventType {
     PARTNER,
     COMMUNITY;
 
-    @NotNull public static final Set<EventType> FAMOUS_TYPES = Arrays.stream(EventType.values())
-            .filter(eventType -> eventType.isFamous)
+    @NotNull public static final Set<EventType> FAMOUS_TYPES = Arrays.stream(values())
+            .filter(type -> type.isFamous)
             .collect(Collectors.toSet());
-    @NotNull public static final Set<EventType> REGULAR_TYPES = Arrays.stream(EventType.values())
-            .filter(eventType -> !eventType.isFamous)
+    @NotNull public static final Set<EventType> REGULAR_TYPES = Arrays.stream(values())
+            .filter(type -> !type.isFamous)
             .collect(Collectors.toSet());
 
     public final boolean isFamous;

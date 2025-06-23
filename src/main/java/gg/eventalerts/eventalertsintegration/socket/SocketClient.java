@@ -8,16 +8,18 @@ import gg.eventalerts.eventalertsintegration.objects.EAObject;
 
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import org.java_websocket.client.WebSocketClient;
 
+import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.enums.ReadyState;
 import org.java_websocket.handshake.ServerHandshake;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 
 import java.net.URI;
+import java.util.Map;
 import java.util.logging.Level;
 
 
@@ -31,7 +33,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
     @Nullable public Runnable toRunOnStop;
 
     public SocketClient(@NotNull EventAlertsIntegration plugin, @NotNull SocketEndpoint endpoint, @NotNull Class<T> objectClass) {
-        super(URI.create(plugin.getSocketHost() + endpoint.name().toLowerCase()));
+        super(URI.create(plugin.getSocketHost() + endpoint.name().toLowerCase()), Map.of("User-Agent", plugin.getUserAgent()));
         this.plugin = plugin;
         this.endpoint = endpoint;
         this.objectClass = objectClass;
@@ -49,7 +51,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
         close(code, reason);
     }
 
-    public void retryConnection(@NotNull String reason, @Nullable Long retryDelay) {
+    public void retryConnection(@NotNull String reason, @Nullable Integer retryDelay) {
         if (retryTask != null) return;
 
         // Get delay from config
@@ -57,7 +59,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
             retryDelay = plugin.config.advanced.websockets.retryDelay;
             if (retryDelay == null) return;
         }
-        final Long finalRetryDelay = retryDelay;
+        final Integer finalRetryDelay = retryDelay;
 
         // Close connection
         close(1001, "Retrying connection");
@@ -69,7 +71,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
             public void run() {
                 if (plugin.config.advanced.websockets.logs) AnnoyingPlugin.log(Level.INFO, "Retrying websocket connection for " + endpoint + " with reason: " + reason);
                 retryTask = null;
-                connect();
+                reconnect();
             }
         }.runTaskLaterAsynchronously(plugin, finalRetryDelay * 1200);
     }

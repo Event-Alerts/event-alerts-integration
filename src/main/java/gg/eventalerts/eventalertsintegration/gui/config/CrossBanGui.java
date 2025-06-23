@@ -2,9 +2,9 @@ package gg.eventalerts.eventalertsintegration.gui.config;
 
 import dev.triumphteam.gui.paper.Gui;
 import dev.triumphteam.gui.paper.builder.gui.PaperGuiBuilder;
+import dev.triumphteam.gui.paper.container.type.HopperContainerType;
 
 import gg.eventalerts.eventalertsintegration.config.ConfigYml;
-import gg.eventalerts.eventalertsintegration.gui.HopperContainerType;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -13,17 +13,17 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.jetbrains.annotations.NotNull;
 
 
-public class ConfigCrossBanGui extends ConfigMainGui {
-    public ConfigCrossBanGui(@NotNull ConfigMainGui parent) {
+public class CrossBanGui extends ConfigGui {
+    public CrossBanGui(@NotNull ConfigGui parent) {
         super(parent);
     }
 
     @Override @NotNull
-    public PaperGuiBuilder getGUI() {
+    public PaperGuiBuilder getGui() {
         return Gui.of(new HopperContainerType())
-                .title(Component.text("EVENT ALERTS - Cross-ban", NamedTextColor.DARK_GRAY, TextDecoration.BOLD))
+                .title(Component.text("Cross-ban"))
                 .statelessComponent(container -> container.setItem(0,
-                        ConfigMainGui.booleanItem(
+                        booleanItem(
                                 plugin.config.crossBan.enabled,
                                 "Enabled",
                                 "Whether to enable\ncross-ban checking",
@@ -34,7 +34,7 @@ public class ConfigCrossBanGui extends ConfigMainGui {
                                     open(false);
                                 })))
                 .statelessComponent(container -> container.setItem(1,
-                        ConfigMainGui.booleanItem(
+                        booleanItem(
                                 plugin.config.crossBan.checkOnJoin,
                                 "Check on join",
                                 "Whether to check cross-ban status\nwhen a player joins the server",
@@ -46,7 +46,7 @@ public class ConfigCrossBanGui extends ConfigMainGui {
                                     open(false);
                                 })))
                 .statelessComponent(container -> container.setItem(2,
-                        ConfigMainGui.booleanItem(
+                        booleanItem(
                                 plugin.config.crossBan.allowJoinOnFailure,
                                 "Allow join on failure",
                                 "Whether to allow players to join the\nserver when the cross-ban check fails",

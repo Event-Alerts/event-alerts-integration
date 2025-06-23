@@ -1,10 +1,7 @@
 package gg.eventalerts.eventalertsintegration.config;
 
-import gg.eventalerts.eventalertsintegration.EALibrary;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
-
-import org.bson.types.ObjectId;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,8 +9,6 @@ import org.jetbrains.annotations.Nullable;
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.file.AnnoyingResource;
 import xyz.srnyx.annoyingapi.file.PlayableSound;
-import xyz.srnyx.annoyingapi.libs.javautilities.MiscUtility;
-import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.Mapper;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -39,7 +34,24 @@ public class ConfigYml extends AnnoyingResource {
         linking = new Linking();
         crossBan = new CrossBan();
         eventMessages = new EventMessages();
+        eventMessages.loadHostFilter();
         advanced = new Advanced();
+    }
+
+    private <T> boolean toggleSetItem(@NotNull String path, @NotNull Set<T> set, @NotNull T item) {
+        final boolean newStatus;
+        if (set.contains(item)) {
+            set.remove(item);
+            newStatus = false;
+        } else {
+            set.add(item);
+            newStatus = true;
+        }
+        // Save the updated set to the config
+        setSave(path, set.stream()
+                .map(Object::toString)
+                .toList());
+        return newStatus;
     }
 
     public class Linking {
@@ -97,35 +109,28 @@ public class ConfigYml extends AnnoyingResource {
         public boolean enabled = getBoolean(PATH_ENABLED, true);
         public boolean detectIps = getBoolean(PATH_DETECT_IPS);
         public boolean soundEnabled = getBoolean(PATH_SOUND_ENABLED, true);
-        @Nullable public final PlayableSound sound = getPlayableSound(PATH_SOUND).orElse(null);
+        @Nullable public PlayableSound sound = getPlayableSound(PATH_SOUND).orElse(null);
         @NotNull public final Set<EventType> ignoredTypes = getEnumSet(EventType.class, PATH_IGNORED_TYPES);
         @NotNull public final Set<PingRole> ignoredPartnerRoles = getEnumSet(PingRole.class, PATH_IGNORED_PARTNER_ROLES);
         @NotNull public final Set<EventFormat> ignoredFormats = getEnumSet(EventFormat.class, PATH_IGNORED_FORMATS);
         @NotNull public final Set<String> hostFilterServers = new HashSet<>();
         @NotNull public final Set<String> hostFilterUsers = new HashSet<>();
 
-        public EventMessages() {
+        private void loadHostFilter() {
             // Get host filter
             final List<String> hostFilter = getStringList(PATH_HOST_FILTER);
             for (final String filter : hostFilter) {
-                // User
-                final Optional<Long> userId = Mapper.toLong(filter);
-                if (userId.isPresent()) {
-                    hostFilterUsers.add(userId.get().toString());
-                    continue;
-                }
-
-                // Install BSON
-                if (!plugin.libraryManager.isLoaded(EALibrary.BSON)) plugin.libraryManager.loadLibrary(EALibrary.BSON);
-
-                // Server
-                if (MiscUtility.handleException(() -> new ObjectId(filter)).isPresent()) {
-                    hostFilterServers.add(filter);
-                    continue;
+                boolean valid = false;
+                for (final HostFilter hostFilterEnum : HostFilter.values()) {
+                    if (hostFilterEnum.idValidator.apply(eaPlugin, filter)) {
+                        valid = true;
+                        hostFilterEnum.setGetter.apply(ConfigYml.this).add(filter);
+                        break;
+                    }
                 }
 
                 // Invalid
-                AnnoyingPlugin.log(Level.WARNING, "Invalid host filter entry: " + filter);
+                if (!valid) AnnoyingPlugin.log(Level.WARNING, "Invalid host filter entry: " + filter);
             }
         }
 
@@ -146,6 +151,14 @@ public class ConfigYml extends AnnoyingResource {
 
             // Reconnect websocket
             eaPlugin.webSockets.reconnect("Config updated", SocketEndpoint.EVENT_POSTED, SocketEndpoint.FAMOUS_EVENT_POSTED);
+        }
+
+        public boolean toggleIgnoredType(@NotNull EventType type) {
+            return toggleSetItem(PATH_IGNORED_TYPES, ignoredTypes, type);
+        }
+
+        public boolean toggleIgnoredPartnerRole(@NotNull PingRole role) {
+            return toggleSetItem(PATH_IGNORED_PARTNER_ROLES, ignoredPartnerRoles, role);
         }
     }
 
@@ -174,16 +187,12 @@ public class ConfigYml extends AnnoyingResource {
             /**
              * minutes
              */
-            @Nullable public Long retryDelay;
+            @Nullable public Integer retryDelay = null;
             public boolean logs = getBoolean(PATH_LOGS, false);
 
             public Websockets() {
                 final String retryDelayString = getString(PATH_RETRY_DELAY);
-                if (retryDelayString != null && retryDelayString.equals("-1")) {
-                    retryDelay = null;
-                    return;
-                }
-                retryDelay = Math.max(3, getLong(PATH_RETRY_DELAY, 5));
+                if (retryDelayString == null || !retryDelayString.equals("-1")) retryDelay = Math.max(3, getInt(PATH_RETRY_DELAY, 5));
             }
         }
     }

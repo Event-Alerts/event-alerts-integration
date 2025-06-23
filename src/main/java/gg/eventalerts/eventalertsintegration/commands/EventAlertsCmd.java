@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
-import gg.eventalerts.eventalertsintegration.gui.config.ConfigMainGui;
+import gg.eventalerts.eventalertsintegration.gui.config.ConfigGui;
 import gg.eventalerts.eventalertsintegration.objects.CrossBan;
 import gg.eventalerts.eventalertsintegration.objects.EAObject;
 import gg.eventalerts.eventalertsintegration.reflection.org.bukkit.entity.RefPlayer;
@@ -62,7 +62,7 @@ public class EventAlertsCmd extends AnnoyingCommand {
 
         // config
         if (sender.argEquals(0, "config")) {
-            if (sender.checkPlayer() && sender.checkPermission("eventalerts.config")) new ConfigMainGui(plugin, sender.getPlayer()).open(true);
+            if (sender.checkPlayer() && sender.checkPermission("eventalerts.config")) new ConfigGui(plugin, sender.getPlayer()).open(true);
             return;
         }
 

@@ -33,7 +33,7 @@ public enum EALibrary implements AnnoyingLibrary {
                     .repository(Repositories.MAVEN_CENTRAL)
                     .groupId("org{}mongodb")
                     .artifactId("bson")
-                    .version("5.3.0"),
+                    .version("5.4.0"),
             plugin -> Collections.singleton(plugin.getRelocation("org{}bson"))),
     /**
      * {@code net.fellbaum:jememoji}
@@ -43,7 +43,7 @@ public enum EALibrary implements AnnoyingLibrary {
                     .repository(Repositories.MAVEN_CENTRAL)
                     .groupId("net{}fellbaum")
                     .artifactId("jemoji")
-                    .version("1.6.0"),
+                    .version("1.7.4"),
             plugin -> Collections.singleton(plugin.getRelocation("net{}fellbaum")));
 
     @NotNull public final Supplier<Library.Builder> librarySupplier;

@@ -19,8 +19,10 @@ import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.PluginPlatform;
 import xyz.srnyx.annoyingapi.libs.javautilities.MapGenerator;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 
 
@@ -31,30 +33,35 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
             List.of("Skeppy", "Oiiink", "srnyx", "hailey", "bacca", "Rame", "hayech", "Server Events", "Famous Events", "Potential Skeppy Events", "Skeppy Sighting", "Random Pings", "Reece"));
     @NotNull public static final TextComponent GATE = Component.text("EVENT ALERTS GATE\n\n", NamedTextColor.GOLD, TextDecoration.BOLD);
     @NotNull public static final TextComponent LINKING_INSTRUCTIONS = Component.text()
-            .append(Component.text("Join the ", NamedTextColor.GRAY))
+            .color(NamedTextColor.GRAY)
+            .append(Component.text("Join the "))
             .append(Component.text("eventalerts.gg", NamedTextColor.YELLOW)
                     .clickEvent(ClickEvent.openUrl("https://eventalerts.gg")))
-            .append(Component.text(" Discord and run ", NamedTextColor.GRAY))
+            .append(Component.text(" Discord and run "))
             .append(Component.text("/linking help", NamedTextColor.YELLOW)
                     .clickEvent(ClickEvent.copyToClipboard("/linking help")))
-            .append(Component.text(" for more information", NamedTextColor.GRAY))
+            .append(Component.text(" for more information"))
             .build();
 
-
-    @NotNull public ConfigYml config;
+    public ConfigYml config;
     public WebSockets webSockets;
+    /**
+     * [player UUID, input key ID]
+     */
+    @NotNull public final Map<UUID, String> guiInput = new HashMap<>();
 
     public EventAlertsIntegration() {
         options
-                .pluginOptions(pluginOptions -> pluginOptions.updatePlatforms(new PluginPlatform.Multi(
-                        PluginPlatform.modrinth("DmjI2XpF"),
-                        PluginPlatform.hangar(this, "EventAlerts"))))
+                .pluginOptions(pluginOptions -> pluginOptions.updatePlatforms(PluginPlatform.modrinth("DmjI2XpF")))
                 .bStatsOptions(bStatsOptions -> bStatsOptions.id(24443))
                 .registrationOptions.automaticRegistration.packages(
                         "gg.eventalerts.eventalertsintegration.commands",
                         "gg.eventalerts.eventalertsintegration.listeners");
+    }
 
-        reload();
+    @Override
+    public void enable() {
+        reload(); // Websocket retry task requires plugin to be enabled
     }
 
     @Override
