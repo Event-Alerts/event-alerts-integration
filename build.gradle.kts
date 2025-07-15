@@ -5,7 +5,7 @@ import xyz.srnyx.gradlegalaxy.utility.*
 plugins {
     java
     id("xyz.srnyx.gradle-galaxy") version "1.3.3"
-    id("com.gradleup.shadow") version "8.3.6"
+    id("com.gradleup.shadow") version "8.3.8"
 }
 
 paper("1.18.2")
