@@ -38,7 +38,7 @@ cross-ban:
 event-messages:
 
   # Whether to enable event messages being broadcast in the server chat
-  enabled: true
+  enabled: false
 
   # 1.20.5+
   # If an IP is detected in an event message, players will be able to click a button to join the event's server using transfer packets
@@ -73,6 +73,8 @@ event-messages:
 
 # Advanced settings that you probably shouldn't touch...
 advanced:
+  # Whether to enable debug logging
+  debug: false
   # Whether to enable using the testing API hosts
   # Only the developer really needs to enable this
   use-testing-api: false

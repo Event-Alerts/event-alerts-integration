@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.file.AnnoyingResource;
 import xyz.srnyx.annoyingapi.file.PlayableSound;
+import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -163,11 +164,19 @@ public class ConfigYml extends AnnoyingResource {
     }
 
     public class Advanced {
+        @NotNull public static final String PATH_DEBUG = PATH_ADVANCED + ".debug";
         @NotNull public static final String PATH_USE_TESTING_API = PATH_ADVANCED + ".use-testing-api";
         @NotNull public static final String PATH_WEBSOCKETS = PATH_ADVANCED + ".websockets";
 
+        public boolean debug = getBoolean(PATH_DEBUG, false);
         public boolean useTestingApi = getBoolean(PATH_USE_TESTING_API, false);
         @NotNull public final Websockets websockets = new Websockets();
+
+        public Advanced() {
+            if (!debug) return;
+            AnnoyingPlugin.LOGGER.setLevel(Level.FINE);
+            HttpUtility.DEBUG = true;
+        }
 
         public void setUseTestingApi(boolean newStatus) {
             if (useTestingApi == newStatus) return;
