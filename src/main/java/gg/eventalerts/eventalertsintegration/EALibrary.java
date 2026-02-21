@@ -10,6 +10,7 @@ import xyz.srnyx.annoyingapi.libs.libby.relocation.Relocation;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -33,8 +34,10 @@ public enum EALibrary implements AnnoyingLibrary {
                     .repository(Repositories.MAVEN_CENTRAL)
                     .groupId("org{}mongodb")
                     .artifactId("bson")
-                    .version("5.4.0"),
-            plugin -> Collections.singleton(plugin.getRelocation("org{}bson"))),
+                    .version("5.6.3"),
+            plugin -> List.of(
+                    plugin.getRelocation("org{}bson"),
+                    plugin.getRelocation("org{}checkerframework"))), //TODO not sure if should include checkerframework here
     /**
      * {@code net.fellbaum:jememoji}
      */
@@ -43,7 +46,7 @@ public enum EALibrary implements AnnoyingLibrary {
                     .repository(Repositories.MAVEN_CENTRAL)
                     .groupId("net{}fellbaum")
                     .artifactId("jemoji")
-                    .version("1.7.4"),
+                    .version("1.7.5"),
             plugin -> Collections.singleton(plugin.getRelocation("net{}fellbaum")));
 
     @NotNull public final Supplier<Library.Builder> librarySupplier;

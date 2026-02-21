@@ -1,27 +1,35 @@
+import xyz.srnyx.gradlegalaxy.data.config.DependencyConfig
+import xyz.srnyx.gradlegalaxy.data.config.JavaSetupConfig
 import xyz.srnyx.gradlegalaxy.enums.repository
 import xyz.srnyx.gradlegalaxy.utility.*
 
 
 plugins {
     java
-    id("xyz.srnyx.gradle-galaxy") version "1.3.3"
-    id("com.gradleup.shadow") version "8.3.8"
+    id("xyz.srnyx.gradle-galaxy") version "2.0.2"
+    id("com.gradleup.shadow") version "8.3.9"
 }
 
-paper("1.18.2")
-setupAnnoyingAPI("650caa300e", "gg.eventalerts", "1.1.0", "A plugin to integrate your Minecraft server with the Event Alerts ecosystem", JavaVersion.VERSION_21)
+paper(DependencyConfig(version = "1.18.2"))
+setupAnnoyingAPI(
+    javaSetupConfig = JavaSetupConfig(
+        group = "gg.eventalerts",
+        version = "1.1.0",
+        description = "A plugin to integrate your Minecraft server with the Event Alerts ecosystem",
+        javaVersion = JavaVersion.VERSION_21),
+    annoyingAPIConfig = DependencyConfig(version = "650caa300e"))
 
 repository("https://repo.triumphteam.dev/snapshots/")
 dependencies {
-    implementationRelocate(project, "dev.triumphteam:triumph-gui-paper:4.0.0-SNAPSHOT", "dev.triumphteam")
-    compileOnly("org.java-websocket", "Java-WebSocket", "1.6.0") {
+    implementationRelocate("dev.triumphteam:triumph-gui-paper:4.0.0-SNAPSHOT", "dev.triumphteam")
+    compileOnly("org.java-websocket", "Java-WebSocket", "1.6.0") { // Downloaded on runtime
         relocate("org.java_websocket")
     }
-    compileOnly("org.mongodb", "bson", "5.4.0") {
+    compileOnly("org.mongodb", "bson", "5.6.3") { // Downloaded on runtime
         relocate("org.bson")
         relocate("org.checkerframework")
     }
-    compileOnly("net.fellbaum", "jemoji", "1.7.4") {
+    compileOnly("net.fellbaum", "jemoji", "1.7.5") { // Downloaded on runtime
         relocate("net.fellbaum")
     }
 }
