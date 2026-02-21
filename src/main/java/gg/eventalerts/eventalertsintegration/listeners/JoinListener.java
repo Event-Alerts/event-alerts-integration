@@ -15,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import xyz.srnyx.annoyingapi.AnnoyingListener;
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
@@ -52,27 +53,31 @@ public class JoinListener extends AnnoyingListener {
         final UUID uuid = player.getUniqueId();
 
         // Make API request
-        JsonElement json = null;
+        final JsonObject json;
         try {
-            json = HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "players/minecraft/uuid/" + uuid, null).orElse(null);
-        } catch (final Exception ignored) {}
-        if (json == null) {
-            failLinking(event, "Failed to get JSON response");
+            json = HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "players/minecraft/uuid/" + uuid, null)
+                    .map(JsonElement::getAsJsonObject)
+                    .orElse(null);
+        } catch (final Exception e) {
+            failLinking(event, "Exception", e);
             return false;
         }
-        final JsonObject root = json.getAsJsonObject();
+        if (json == null) {
+            failLinking(event, "Failed to get JSON response", null);
+            return false;
+        }
 
         // Check code
-        final int code = root.get("code").getAsInt();
+        final int code = json.get("code").getAsInt();
         if (code != 200) {
-            failLinking(event, "Invalid code: " + code);
+            failLinking(event, "Invalid code: " + code, null);
             return false;
         }
 
         // Get player
-        final JsonElement playerElement = root.get("player");
+        final JsonElement playerElement = json.get("player");
         if (playerElement == null) {
-            failLinking(event, "Failed to get player");
+            failLinking(event, "Failed to get player", null);
             return false;
         }
 
@@ -86,8 +91,8 @@ public class JoinListener extends AnnoyingListener {
         return false;
     }
 
-    private void failLinking(@NotNull PlayerLoginEvent event, @NotNull String reason) {
-        AnnoyingPlugin.log(Level.SEVERE, "Failed to check linking status for " + event.getPlayer().getName() + ": " + reason);
+    private void failLinking(@NotNull PlayerLoginEvent event, @NotNull String reason, @Nullable Exception exception) {
+        AnnoyingPlugin.log(Level.SEVERE, "Failed to check linking status for " + event.getPlayer().getName() + ": " + reason, exception);
         if (!plugin.config.linking.allowJoinOnFailure) event.disallow(PlayerLoginEvent.Result.KICK_OTHER, Component.text()
                 .append(EventAlertsIntegration.GATE)
                 .append(MINI_MESSAGE.deserialize("<red>Failed to check linking status, try again later!\n\n<gray>If this issue persists, contact support"))
@@ -102,29 +107,33 @@ public class JoinListener extends AnnoyingListener {
         if (player.hasPermission("eventalerts.crossban.bypass")) return true;
 
         // Make API request
-        JsonElement json = null;
+        final JsonObject json;
         try {
-            json = HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "cross_bans/minecraft_uuid/" + player.getUniqueId(), null).orElse(null);
-        } catch (final Exception ignored) {}
-        if (json == null) {
-            failCrossBan(event, "Failed to get JSON response");
+            json = HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "cross_bans/minecraft_uuid/" + player.getUniqueId(), null)
+                    .map(JsonElement::getAsJsonObject)
+                    .orElse(null);
+        } catch (final Exception e) {
+            failCrossBan(event, "Exception", e);
             return false;
         }
-        final JsonObject root = json.getAsJsonObject();
+        if (json == null) {
+            failCrossBan(event, "Failed to get JSON response", null);
+            return false;
+        }
 
         // Check code
-        final int code = root.get("code").getAsInt();
+        final int code = json.get("code").getAsInt();
         if (code != 200) {
-            failCrossBan(event, "Invalid code: " + code);
+            failCrossBan(event, "Invalid code: " + code, null);
             return false;
         }
 
         // Get ban
-        final JsonElement ban = root.get("cross_ban");
+        final JsonElement ban = json.get("cross_ban");
         if (ban == null || ban.isJsonNull()) return true;
         final CrossBan crossBan = EAObject.newObject(plugin, CrossBan.class, ban.getAsJsonObject());
         if (crossBan == null) {
-            failCrossBan(event, "Failed to parse CrossBan");
+            failCrossBan(event, "Failed to parse CrossBan", null);
             return false;
         }
 
@@ -140,8 +149,8 @@ public class JoinListener extends AnnoyingListener {
         return false;
     }
 
-    private void failCrossBan(@NotNull PlayerLoginEvent event, @NotNull String reason) {
-        AnnoyingPlugin.log(Level.SEVERE, "Failed to check cross-ban status for " + event.getPlayer().getName() + ": " + reason);
+    private void failCrossBan(@NotNull PlayerLoginEvent event, @NotNull String reason, @Nullable Exception exception) {
+        AnnoyingPlugin.log(Level.SEVERE, "Failed to check cross-ban status for " + event.getPlayer().getName() + ": " + reason, exception);
         if (!plugin.config.crossBan.allowJoinOnFailure) event.disallow(PlayerLoginEvent.Result.KICK_OTHER, Component.text()
                 .append(EventAlertsIntegration.GATE)
                 .append(MINI_MESSAGE.deserialize("<red>Failed to check cross-ban status, try again later!\n\n<gray>If this issue persists, contact support"))
