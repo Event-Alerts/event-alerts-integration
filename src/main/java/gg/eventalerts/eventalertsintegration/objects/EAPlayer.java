@@ -30,25 +30,21 @@ public class EAPlayer extends EAObject {
         this.linkStatus = MiscUtility.handleException(() -> EventAlertsIntegration.getEnum(LinkStatus.class, json.get(PROP_LINK_STATUS).getAsString())).orElse(null);
     }
 
-    public static class Discord {
-        @NotNull private static final String PROP_ID = "id";
+    public record Discord(long id) {
+            @NotNull private static final String PROP_ID = "id";
 
-        public final long id;
-
-        public Discord(@NotNull JsonObject json) {
-            this.id = json.get(PROP_ID).getAsLong();
+            public Discord(@NotNull JsonObject id) {
+                this(id.get(PROP_ID).getAsLong());
+            }
         }
-    }
 
-    public static class Minecraft {
-        @NotNull private static final String PROP_UUID = "uuid";
+    public record Minecraft(@NotNull UUID uuid) {
+            @NotNull private static final String PROP_UUID = "uuid";
 
-        @NotNull public final UUID uuid;
-
-        public Minecraft(@NotNull JsonObject json) {
-            this.uuid = UUID.fromString(json.get(PROP_UUID).getAsString());
+            public Minecraft(@NotNull JsonObject uuid) {
+                this(UUID.fromString(uuid.get(PROP_UUID).getAsString()));
+            }
         }
-    }
 
     public enum LinkStatus {
         ADDED,

@@ -34,7 +34,7 @@ public class LinkClient extends SocketClient<EAPlayer> {
         // Unlinked
         if (eaPlayer.linkStatus == EAPlayer.LinkStatus.REMOVED && plugin.config.linking.requireLink) {
             // Kick player
-            final Player player = Bukkit.getPlayer(eaPlayer.minecraft.uuid);
+            final Player player = Bukkit.getPlayer(eaPlayer.minecraft.uuid());
             if (player != null) plugin.runOnMainThread(() -> player.kick(Component.text()
                     .append(EventAlertsIntegration.GATE)
                     .append(Component.text("You're no longer linked to a Discord account!", NamedTextColor.RED))

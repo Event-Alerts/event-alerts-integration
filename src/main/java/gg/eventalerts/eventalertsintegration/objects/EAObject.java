@@ -21,7 +21,7 @@ public abstract class EAObject {
     }
 
     @Nullable
-    public static <T> T newObject(@NotNull EventAlertsIntegration plugin, @NotNull Class<T> clazz, @NotNull JsonObject json) {
+    public static <T extends EAObject> T newObject(@NotNull EventAlertsIntegration plugin, @NotNull Class<T> clazz, @NotNull JsonObject json) {
         // Install BSON if needed
         if (clazz == Event.class && !plugin.libraryManager.isLoaded(EALibrary.BSON)) plugin.libraryManager.loadLibrary(EALibrary.BSON);
 
