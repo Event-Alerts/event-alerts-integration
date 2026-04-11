@@ -9,6 +9,8 @@ plugins {
     java
     id("xyz.srnyx.gradle-galaxy") version "2.1.0"
     id("com.gradleup.shadow") version "8.3.9"
+    id("net.kyori.blossom") version "2.2.0"
+    id("org.jetbrains.gradle.plugin.idea-ext") version "1.3"
 }
 
 paper(DependencyConfig(version = "1.18.2"))
@@ -20,19 +22,31 @@ setupAnnoyingAPI(
         javaVersion = JavaVersion.VERSION_21),
     annoyingAPIConfig = DependencyConfig(version = "5.2.0"))
 
-repository(Repository.TRIUMPH_SNAPSHOTS)
+// Runtime dependency versions
+val javaWebSocketVersion: String = "1.6.0"
+val bsonVersion: String = "5.6.3"
+val jEmojiVersion: String = "1.7.5"
 
+// Blossom (see java-templates module)
+sourceSets.main { blossom.javaSources {
+    property("java_websocket_version", javaWebSocketVersion)
+    property("bson_version", bsonVersion)
+    property("jemoji_version", jEmojiVersion)
+} }
+
+// Dependencies
+repository(Repository.TRIUMPH_SNAPSHOTS)
 dependencies {
     implementationRelocate("dev.triumphteam:triumph-gui-paper:4.0.0-SNAPSHOT", "dev.triumphteam")
 
-    compileOnly("org.java-websocket:Java-WebSocket:1.6.0") { // Downloaded on runtime
+    compileOnly("org.java-websocket:Java-WebSocket:$javaWebSocketVersion") { // Downloaded on runtime
         relocate("org.java_websocket")
     }
-    compileOnly("org.mongodb:bson:5.6.3") { // Downloaded on runtime
+    compileOnly("org.mongodb:bson:$bsonVersion") { // Downloaded on runtime
         relocate("org.bson")
         relocate("org.checkerframework")
     }
-    compileOnly("net.fellbaum:jemoji:1.7.5") { // Downloaded on runtime
+    compileOnly("net.fellbaum:jemoji:$jEmojiVersion") { // Downloaded on runtime
         relocate("net.fellbaum")
     }
 }

@@ -1,0 +1,32 @@
+package gg.eventalerts.eventalertsintegration;
+
+import org.jetbrains.annotations.NotNull;
+
+
+/**
+ * This class is used to store properties defined in the build.gradle.kts file
+ * <br>Uses <a href="https://github.com/KyoriPowered/blossom">Blossom</a>
+ */
+public class BuildProperties {
+    /**
+     * The version of Java WebSocket that the plugin is built with
+     */
+    @NotNull public static final String JAVA_WEBSOCKET_VERSION = "{{ java_websocket_version }}";
+
+    /**
+     * The version of BSON that the plugin is built with
+     */
+    @NotNull public static final String BSON_VERSION = "{{ bson_version }}";
+
+    /**
+     * The version of JEmoji that the plugin is built with
+     */
+    @NotNull public static final String JEMOJI_VERSION = "{{ jemoji_version }}";
+
+    /**
+     * This class cannot be instantiated
+     */
+    public BuildProperties() {
+        throw new UnsupportedOperationException("This class cannot be instantiated");
+    }
+}

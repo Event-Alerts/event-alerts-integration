@@ -24,7 +24,7 @@ public enum EALibrary implements AnnoyingLibrary {
                     .repository(Repositories.MAVEN_CENTRAL)
                     .groupId("org{}java-websocket")
                     .artifactId("Java-WebSocket")
-                    .version("1.6.0"),
+                    .version(BuildProperties.JAVA_WEBSOCKET_VERSION),
             plugin -> Collections.singleton(plugin.getRelocation("org{}java_websocket"))),
     /**
      * {@code org.mongodb:bson}
@@ -34,7 +34,7 @@ public enum EALibrary implements AnnoyingLibrary {
                     .repository(Repositories.MAVEN_CENTRAL)
                     .groupId("org{}mongodb")
                     .artifactId("bson")
-                    .version("5.6.3"),
+                    .version(BuildProperties.BSON_VERSION),
             plugin -> List.of(
                     plugin.getRelocation("org{}bson"),
                     plugin.getRelocation("org{}checkerframework"))), //TODO not sure if should include checkerframework here
@@ -46,7 +46,7 @@ public enum EALibrary implements AnnoyingLibrary {
                     .repository(Repositories.MAVEN_CENTRAL)
                     .groupId("net{}fellbaum")
                     .artifactId("jemoji")
-                    .version("1.7.5"),
+                    .version(BuildProperties.JEMOJI_VERSION),
             plugin -> Collections.singleton(plugin.getRelocation("net{}fellbaum")));
 
     @NotNull public final Supplier<Library.Builder> librarySupplier;
