@@ -70,8 +70,8 @@ public class ConfigYml extends AnnoyingResource {
         @Nullable public String serverApiKey = getString(PATH_SERVER_API_KEY);
 
         public ApiKeys() {
-            if (!playerApiKey.startsWith("EA.Player.1.")) playerApiKey = null;
-            if (!serverApiKey.startsWith("EA.PartnerServer.1.")) serverApiKey = null;
+            if (playerApiKey != null && !playerApiKey.startsWith("EA.Player.1.")) playerApiKey = null;
+            if (serverApiKey != null && !serverApiKey.startsWith("EA.PartnerServer.1.")) serverApiKey = null;
         }
     }
 
@@ -82,7 +82,7 @@ public class ConfigYml extends AnnoyingResource {
 
         public boolean enabled = getBoolean(PATH_ENABLED, true);
         public boolean discordSRVIntegration = getBoolean(DISCORDSRV_INTEGRATION, true);
-        @NotNull public String format = getString(PATH_FORMAT, "<aqua>[{channelName}] [{authorName}] {contentDisplay}");
+        @NotNull public String format = getString(PATH_FORMAT, "<dark_aqua>\uD83C\uDF89 [<event_title>] <aqua>[<author_name>] <content_stripped>");
     }
 
     public class Linking {
