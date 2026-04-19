@@ -56,7 +56,7 @@ public class EventPostedClient extends SocketClient<Event> {
         if (object.server != null && !plugin.config.eventMessages.hostFilterServers.isEmpty() && !plugin.config.eventMessages.hostFilterServers.contains(object.server.toString())) return;
 
         // Check host
-        if (!plugin.config.eventMessages.hostFilterUsers.isEmpty() && !plugin.config.eventMessages.hostFilterUsers.contains(object.host)) return;
+        if (!plugin.config.eventMessages.hostFilterUsers.isEmpty() && !plugin.config.eventMessages.hostFilterUsers.contains(String.valueOf(object.host))) return;
 
         // Check Partner ping roles
         final Set<PingRole> pingRoles = object.getPingRoles();

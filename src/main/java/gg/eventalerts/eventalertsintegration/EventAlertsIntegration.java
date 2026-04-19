@@ -93,6 +93,15 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
         return getName() + "/" + getDescription().getVersion() + " (MC/" + AnnoyingPlugin.MINECRAFT_VERSION + ")";
     }
 
+    @NotNull
+    public Map<String, String> getSocketHeaders() {
+        final Map<String, String> headers = new HashMap<>();
+        headers.put("User-Agent", getUserAgent());
+        if (config.apiKeys.playerApiKey != null) headers.put("X-Player-Key", config.apiKeys.playerApiKey);
+        if (config.apiKeys.serverApiKey != null) headers.put("X-Server-Key", config.apiKeys.serverApiKey);
+        return headers;
+    }
+
     public void runOnMainThread(@NotNull Runnable runnable) {
         Bukkit.getScheduler().runTask(this, runnable);
     }

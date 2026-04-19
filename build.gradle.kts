@@ -35,7 +35,7 @@ sourceSets.main { blossom.javaSources {
 } }
 
 // Dependencies
-repository(Repository.TRIUMPH_SNAPSHOTS)
+repository(Repository.TRIUMPH_SNAPSHOTS, Repository.PLACEHOLDER_API)
 dependencies {
     implementationRelocate("dev.triumphteam:triumph-gui-paper:4.0.0-SNAPSHOT", "dev.triumphteam")
 
@@ -49,6 +49,8 @@ dependencies {
     compileOnly("net.fellbaum:jemoji:$jEmojiVersion") { // Downloaded on runtime
         relocate("net.fellbaum")
     }
+
+    compileOnly("me.clip:placeholderapi:2.12.2")
 }
 
 // Unknown relocations

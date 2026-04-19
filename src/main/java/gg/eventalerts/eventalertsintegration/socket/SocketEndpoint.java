@@ -1,10 +1,7 @@
 package gg.eventalerts.eventalertsintegration.socket;
 
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
-import gg.eventalerts.eventalertsintegration.socket.clients.CrossBanClient;
-import gg.eventalerts.eventalertsintegration.socket.clients.EventPostedClient;
-import gg.eventalerts.eventalertsintegration.socket.clients.FamousEventPostedClient;
-import gg.eventalerts.eventalertsintegration.socket.clients.LinkClient;
+import gg.eventalerts.eventalertsintegration.socket.clients.*;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +16,8 @@ public enum SocketEndpoint {
     EVENT_POSTED(EventPostedClient.class),
     FAMOUS_EVENT_POSTED(FamousEventPostedClient.class),
     CROSS_BAN(CrossBanClient.class),
-    LINK(LinkClient.class);
+    LINK(LinkClient.class),
+    EVENT_CHAT(EventChatClient.class);
 
     @Nullable public final Constructor<? extends SocketClient<?>> clientConstructor;
 

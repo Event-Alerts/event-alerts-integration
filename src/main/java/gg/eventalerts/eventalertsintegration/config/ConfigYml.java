@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 
 
 public class ConfigYml extends AnnoyingResource {
+    @NotNull public static final String PATH_API_KEYS  = "api-keys";
+    @NotNull public static final String PATH_DISCORD_MESSAGE_SYNCING = "discord-message-syncing";
     @NotNull public static final String PATH_LINKING = "linking";
     @NotNull public static final String PATH_CROSS_BAN = "cross-ban";
     @NotNull public static final String PATH_EVENT_MESSAGES = "event-messages";
@@ -24,6 +26,8 @@ public class ConfigYml extends AnnoyingResource {
 
     @NotNull private final EventAlertsIntegration eaPlugin;
 
+    @NotNull public final ApiKeys apiKeys;
+    @NotNull public final DiscordMessageSyncing discordMessageSyncing;
     @NotNull public final Linking linking;
     @NotNull public final CrossBan crossBan;
     @NotNull public final EventMessages eventMessages;
@@ -32,6 +36,9 @@ public class ConfigYml extends AnnoyingResource {
     public ConfigYml(@NotNull EventAlertsIntegration plugin) {
         super(plugin, "config.yml");
         eaPlugin = plugin;
+
+        apiKeys = new ApiKeys();
+        discordMessageSyncing = new DiscordMessageSyncing();
         linking = new Linking();
         crossBan = new CrossBan();
         eventMessages = new EventMessages();
@@ -53,6 +60,29 @@ public class ConfigYml extends AnnoyingResource {
                 .map(Object::toString)
                 .toList());
         return newStatus;
+    }
+
+    public class ApiKeys {
+        @NotNull public static final String PATH_PLAYER_API_KEY = PATH_API_KEYS + ".player";
+        @NotNull public static final String PATH_SERVER_API_KEY = PATH_API_KEYS + ".server";
+
+        @Nullable public String playerApiKey = getString(PATH_PLAYER_API_KEY);
+        @Nullable public String serverApiKey = getString(PATH_SERVER_API_KEY);
+
+        public ApiKeys() {
+            if (playerApiKey != null && !playerApiKey.startsWith("EA.Player.1.")) playerApiKey = null;
+            if (serverApiKey != null && !serverApiKey.startsWith("EA.PartnerServer.1.")) serverApiKey = null;
+        }
+    }
+
+    public class DiscordMessageSyncing {
+        @NotNull public static final String PATH_ENABLED = PATH_DISCORD_MESSAGE_SYNCING + ".enabled";
+        @NotNull public static final String DISCORDSRV_INTEGRATION = PATH_DISCORD_MESSAGE_SYNCING + ".discordsrv-integration";
+        @NotNull public static final String PATH_FORMAT = PATH_DISCORD_MESSAGE_SYNCING + ".format";
+
+        public boolean enabled = getBoolean(PATH_ENABLED, true);
+        public boolean discordSRVIntegration = getBoolean(DISCORDSRV_INTEGRATION, true);
+        @NotNull public String format = getString(PATH_FORMAT, "<dark_aqua>\uD83C\uDF89 [<event_title>] <aqua>[<author_name>] <content_stripped>");
     }
 
     public class Linking {

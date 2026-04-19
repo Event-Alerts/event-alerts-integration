@@ -19,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 
 import java.net.URI;
-import java.util.Map;
 import java.util.logging.Level;
 
 
@@ -33,7 +32,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
     @Nullable public Runnable toRunOnStop;
 
     public SocketClient(@NotNull EventAlertsIntegration plugin, @NotNull SocketEndpoint endpoint, @NotNull Class<T> objectClass) {
-        super(URI.create(plugin.getSocketHost() + endpoint.name().toLowerCase()), Map.of("User-Agent", plugin.getUserAgent()));
+        super(URI.create(plugin.getSocketHost() + endpoint.name().toLowerCase()), plugin.getSocketHeaders());
         this.plugin = plugin;
         this.endpoint = endpoint;
         this.objectClass = objectClass;
@@ -65,7 +64,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
         close(1001, "Retrying connection");
 
         // Schedule retry
-        if (plugin.config.advanced.websockets.logs) AnnoyingPlugin.log(Level.INFO, "We will try to reconnect to " + endpoint + " in " + finalRetryDelay + " minutes");
+        if (plugin.config.advanced.websockets.logs) AnnoyingPlugin.log(Level.INFO, "We will try to reconnect to " + endpoint + " in " + finalRetryDelay + " minutes due to: " + reason);
         retryTask = new BukkitRunnable() {
             @Override
             public void run() {
@@ -73,7 +72,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
                 retryTask = null;
                 reconnect();
             }
-        }.runTaskLaterAsynchronously(plugin, finalRetryDelay * 1200);
+        }.runTaskLaterAsynchronously(plugin, finalRetryDelay * 1200L);
     }
 
     @Override

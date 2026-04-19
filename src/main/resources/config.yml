@@ -1,6 +1,44 @@
-# WIKIS
+# --- WIKIS ---
 # 1: https://wiki.eventalerts.gg/EventAlertsIntegration/configuration
 # 2: https://github.com/srnyx/annoying-api/wiki/File-objects
+
+
+
+# API keys for Event Alerts' APIs
+# You can set one OR both!
+#
+# WARNING: Do not, under ANY circumstances, share these API keys with ANYONE, no matter WHAT they say!
+# Event Alerts staff will NEVER ask for your API keys.
+# We recommend keeping your server files private if you choose to put your API keys here.
+# If you think your key was leaked, regenerate it IMMEDIATELY using the appropriate command in Event Alerts' Discord server!
+api-keys:
+
+  # This will "connect" your Minecraft server to your Player account, effectively marking this Minecraft server as "your Minecraft server"
+  # Run the `/playerapikey` command in Event Alerts' Discord server to get your API key
+  player: "PLAYER_API_KEY_HERE"
+
+  # This will "connect" your Minecraft server to your Partner Server, effectively marking this Minecraft as "your Partner Server's Minecraft server"
+  # Run the `/server apikey` command in Event Alerts' Discord server to get your server's API key
+  server: "SERVER_API_KEY_HERE"
+
+
+
+# Settings related to syncing messages from Event Alerts' Discord server to the Minecraft in-game chat
+# Requires API key(s) to be set up (see above)
+discord-message-syncing:
+
+  # Whether to send messages sent in Event Alerts threads to the Minecraft in-game chat
+  enabled: true
+
+  # The format of Discord messages in the Minecraft in-game chat
+  # Available placeholders:
+  #   - event: <event_id>, <event_type>, <event_channel>, <event_message>, <event_control_panel>, <event_custom>, <event_created>, <event_title>, <event_host>, <event_description>, <event_roles>, <event_roles_named>, <event_server>, <event_media_name>, <event_ip>, <event_platform>, <event_version>, <event_prize>, <event_max_players>, <event_time>, <event_subscribers>
+  #  - channel: <channel_id>, <channel_name>
+  #  - author: <author_id>, <author_name>, <author_effectivename>
+  #  - content: <content_raw>, <content_display>, <content_stripped>
+  #  - other: <messageid>, <player_name>
+  #  - Any PlaceholderAPI placeholder (%placeholder%)
+  format: "<dark_aqua>🎉 [<event_title>] <aqua>[<author_name>] <content_stripped>"
 
 
 
