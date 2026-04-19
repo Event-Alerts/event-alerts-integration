@@ -64,7 +64,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
         close(1001, "Retrying connection");
 
         // Schedule retry
-        if (plugin.config.advanced.websockets.logs) AnnoyingPlugin.log(Level.INFO, "We will try to reconnect to " + endpoint + " in " + finalRetryDelay + " minutes");
+        if (plugin.config.advanced.websockets.logs) AnnoyingPlugin.log(Level.INFO, "We will try to reconnect to " + endpoint + " in " + finalRetryDelay + " minutes due to: " + reason);
         retryTask = new BukkitRunnable() {
             @Override
             public void run() {
@@ -72,7 +72,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
                 retryTask = null;
                 reconnect();
             }
-        }.runTaskLaterAsynchronously(plugin, finalRetryDelay * 1200);
+        }.runTaskLaterAsynchronously(plugin, finalRetryDelay * 1200L);
     }
 
     @Override

@@ -35,7 +35,7 @@ sourceSets.main { blossom.javaSources {
 } }
 
 // Dependencies
-repository(Repository.TRIUMPH_SNAPSHOTS, Repository.PLACEHOLDER_API, Repository.SCARSZ)
+repository(Repository.TRIUMPH_SNAPSHOTS, Repository.PLACEHOLDER_API)
 dependencies {
     implementationRelocate("dev.triumphteam:triumph-gui-paper:4.0.0-SNAPSHOT", "dev.triumphteam")
 
@@ -51,7 +51,6 @@ dependencies {
     }
 
     compileOnly("me.clip:placeholderapi:2.12.2")
-    compileOnly("com.discordsrv:discordsrv:1.28.0")
 }
 
 // Unknown relocations

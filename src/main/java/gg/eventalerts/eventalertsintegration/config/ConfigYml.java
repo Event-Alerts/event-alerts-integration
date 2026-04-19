@@ -70,8 +70,8 @@ public class ConfigYml extends AnnoyingResource {
         @Nullable public String serverApiKey = getString(PATH_SERVER_API_KEY);
 
         public ApiKeys() {
-            if ("PLAYER_API_KEY_HERE".equals(playerApiKey)) playerApiKey = null;
-            if ("SERVER_API_KEY_HERE".equals(serverApiKey)) serverApiKey = null;
+            if (!playerApiKey.startsWith("EA.Player.1.")) playerApiKey = null;
+            if (!serverApiKey.startsWith("EA.PartnerServer.1.")) serverApiKey = null;
         }
     }
 

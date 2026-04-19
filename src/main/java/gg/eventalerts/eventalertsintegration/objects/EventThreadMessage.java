@@ -10,13 +10,13 @@ import xyz.srnyx.annoyingapi.libs.javautilities.MiscUtility;
 
 public class EventThreadMessage extends EAObject {
     @NotNull private static final String PROP_MESSAGE_ID = "messageId";
-    @NotNull private static final String PROP_EVENT_ID = "eventId";
+    @NotNull private static final String PROP_EVENT = "event";
     @NotNull private static final String PROP_CHANNEL = "channel";
     @NotNull private static final String PROP_AUTHOR = "author";
     @NotNull private static final String PROP_CONTENT = "content";
 
     @NotNull public final String messageId;
-    @NotNull public final String eventId;
+    @NotNull public final Event event;
     @NotNull public final Channel channel;
     @NotNull public final Author author;
     @NotNull public final Content content;
@@ -24,7 +24,7 @@ public class EventThreadMessage extends EAObject {
     public EventThreadMessage(@NotNull JsonObject json) {
         super(json);
         this.messageId = json.get(PROP_MESSAGE_ID).getAsString();
-        this.eventId = json.get(PROP_EVENT_ID).getAsString();
+        this.event = new Event(json.getAsJsonObject(PROP_EVENT));
         this.channel = new Channel(json.getAsJsonObject(PROP_CHANNEL));
         this.author = new Author(json.getAsJsonObject(PROP_AUTHOR));
         this.content = new Content(json.getAsJsonObject(PROP_CONTENT));
