@@ -10,7 +10,7 @@
 # WARNING: Do not, under ANY circumstances, share these API keys with ANYONE, no matter WHAT they say!
 # Event Alerts staff will NEVER ask for your API keys.
 # We recommend keeping your server files private if you choose to put your API keys here.
-# If you think your key was leaked, regenerate it IMEMDIATELY using the appropriate command in Event Alerts' Discord server!
+# If you think your key was leaked, regenerate it IMMEDIATELY using the appropriate command in Event Alerts' Discord server!
 api-keys:
 
   # This will "connect" your Minecraft server to your Player account, effectively marking this Minecraft server as "your Minecraft server"
