@@ -10,6 +10,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.enums.ReadyState;
+import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ServerHandshake;
 
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +49,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
     public void retryConnection(@NotNull String reason, @Nullable Integer retryDelay) {
         if (retryTask != null) return;
 
-        // Get delay from config
+        // Get delay from config if not specified
         if (retryDelay == null) {
             retryDelay = plugin.config.advanced.websockets.retryDelay;
             if (retryDelay == null) return;
@@ -100,17 +101,25 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
+        // Protect against double-errors when initial connection fails
+        if (code == CloseFrame.NEVER_CONNECTED) return;
+
+        // Cancel retryTask
         if (retryTask != null) {
             retryTask.cancel();
             retryTask = null;
         }
 
-        if (code == -1 || code == 1006){
+        // Abnormal closure
+        if (code == CloseFrame.ABNORMAL_CLOSE) {
             retryConnection("Experienced abnormal closure", null);
             return;
         }
+
+        // Log closure
         if (plugin.config.advanced.websockets.logs) AnnoyingPlugin.log(Level.INFO, endpoint.name() + " socket closed with status code " + code + " and reason: " + reason);
 
+        // Run toRunOnStop
         if (toRunOnStop != null) {
             toRunOnStop.run();
             toRunOnStop = null;
@@ -119,8 +128,8 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
 
     @Override
     public void onError(@NotNull Exception exception) {
-        retryConnection("Experienced an error! See nearby for details...", null);
-        exception.printStackTrace();
+        retryConnection("Experienced an error! If logs are enabled, see nearby for details.", null);
+        if (plugin.config.advanced.websockets.logs) exception.printStackTrace();
     }
 
     public abstract boolean shouldConnect();
