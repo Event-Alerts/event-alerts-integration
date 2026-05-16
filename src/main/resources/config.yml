@@ -23,22 +23,34 @@ api-keys:
 
 
 
-# Settings related to syncing messages from Event Alerts' Discord server to the Minecraft in-game chat
+# Settings related to syncing between Event Alerts' Discord server and the Minecraft server
 # Requires API key(s) to be set up (see above)
-discord-message-syncing:
+syncing:
 
-  # Whether to send messages sent in Event Alerts threads to the Minecraft in-game chat
-  enabled: true
+  # Settings for Discord -> Minecraft syncing
+  discord-to-minecraft:
 
-  # The format of Discord messages in the Minecraft in-game chat
-  # Available placeholders:
-  #   - event: <event_id>, <event_type>, <event_channel>, <event_message>, <event_control_panel>, <event_custom>, <event_created>, <event_title>, <event_host>, <event_description>, <event_roles>, <event_roles_named>, <event_server>, <event_media_name>, <event_ip>, <event_platform>, <event_version>, <event_prize>, <event_max_players>, <event_time>, <event_subscribers>
-  #  - channel: <channel_id>, <channel_name>
-  #  - author: <author_id>, <author_name>, <author_effectivename>
-  #  - content: <content_raw>, <content_display>, <content_stripped>
-  #  - other: <messageid>, <player_name>
-  #  - Any PlaceholderAPI placeholder (%placeholder%)
-  format: "<dark_aqua>🎉 [<event_title>] <aqua>[<author_name>] <content_stripped>"
+    # Settings for syncing Discord messages to Minecraft in-game chat
+    messages:
+
+      # Whether to send messages to the Minecraft in-game chat from the event's Event Alerts thread
+      enabled: true
+
+      # The format of Discord messages in the Minecraft in-game chat
+      # Available placeholders:
+      #   - event: <event_id>, <event_type>, <event_channel>, <event_message>, <event_control_panel>, <event_custom>, <event_created>, <event_title>, <event_host>, <event_description>, <event_roles>, <event_roles_named>, <event_server>, <event_media_name>, <event_ip>, <event_platform>, <event_version>, <event_prize>, <event_max_players>, <event_time>, <event_subscribers>
+      #  - channel: <channel_id>, <channel_name>
+      #  - author: <author_id>, <author_name>, <author_effectivename>
+      #  - content: <content_raw>, <content_display>, <content_stripped>
+      #  - other: <messageid>, <player_name>
+      #  - Any PlaceholderAPI placeholder (%placeholder%)
+      format: "<dark_aqua>🎉 [<event_title>] <aqua>[<author_name>] <content_stripped>"
+
+  # Settings for Minecraft -> Discord syncing
+  minecraft-to-discord:
+
+    # Whether to send join/quit messages in the event's Event Alerts thread in Discord
+    connections: true
 
 
 

@@ -5,12 +5,12 @@ import dev.triumphteam.gui.element.GuiItem;
 import dev.triumphteam.gui.paper.Gui;
 import dev.triumphteam.gui.paper.builder.gui.PaperGuiBuilder;
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder;
-import dev.triumphteam.gui.paper.container.type.HopperContainerType;
 
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.gui.EAGui;
 import gg.eventalerts.eventalertsintegration.gui.config.advanced.AdvancedGui;
 import gg.eventalerts.eventalertsintegration.gui.config.eventmessages.EventMessagesGui;
+import gg.eventalerts.eventalertsintegration.gui.config.syncing.SyncingGui;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -46,22 +46,26 @@ public class ConfigGui extends EAGui {
 
     @Override @NotNull
     public PaperGuiBuilder getGui() {
-        return Gui.of(new HopperContainerType())
+        return Gui.of(1)
                 .title(Component.text("EVENT ALERTS INTEGRATION"))
                 .statelessComponent(container -> container.setItem(0, ItemBuilder.from(Material.REPEATER)
-                        .name(uninitialize(Component.text("LINKING", NamedTextColor.GOLD, TextDecoration.BOLD)))
+                        .name(unitalicize(Component.text("LINKING", NamedTextColor.GOLD, TextDecoration.BOLD)))
                         .lore(lore("Settings related to Event Alerts'\nMinecraft-Discord linking system"))
                         .asGuiItem((player, context) -> new LinkingGui(this).open(true))))
                 .statelessComponent(container -> container.setItem(1, ItemBuilder.from(Material.GOLDEN_SWORD)
-                        .name(uninitialize(Component.text("CROSS-BAN", NamedTextColor.GOLD, TextDecoration.BOLD)))
+                        .name(unitalicize(Component.text("CROSS-BAN", NamedTextColor.GOLD, TextDecoration.BOLD)))
                         .lore(lore("Settings related to Event Alerts'\ncross-banning feature"))
                         .asGuiItem((player, context) -> new CrossBanGui(this).open(true))))
                 .statelessComponent(container -> container.setItem(2, ItemBuilder.from(Material.BELL)
-                        .name(uninitialize(Component.text("EVENT MESSAGES", NamedTextColor.GOLD, TextDecoration.BOLD)))
+                        .name(unitalicize(Component.text("EVENT MESSAGES", NamedTextColor.GOLD, TextDecoration.BOLD)))
                         .lore(lore("Settings related to Event Alerts'\nevent messages being broadcast in-game"))
                         .asGuiItem((player, context) -> new EventMessagesGui(this).open(true))))
-                .statelessComponent(container -> container.setItem(4, ItemBuilder.from(Material.REDSTONE_TORCH)
-                        .name(uninitialize(Component.text("ADVANCED", NamedTextColor.DARK_RED, TextDecoration.BOLD)))
+                .statelessComponent(container -> container.setItem(3, ItemBuilder.from(Material.ENDER_PEARL)
+                        .name(unitalicize(Component.text("SYNCING", NamedTextColor.GOLD, TextDecoration.BOLD)))
+                        .lore(lore("Settings related to syncing\nbetween Discord and Minecraft"))
+                        .asGuiItem((player, context) -> new SyncingGui(this).open(true))))
+                .statelessComponent(container -> container.setItem(8, ItemBuilder.from(Material.REDSTONE_TORCH)
+                        .name(unitalicize(Component.text("ADVANCED", NamedTextColor.DARK_RED, TextDecoration.BOLD)))
                         .lore(lore("<red>Advanced settings that you\n<red>probably shouldn't touch"))
                         .asGuiItem((player, context) -> new AdvancedGui(this).open(true))));
     }
@@ -71,14 +75,14 @@ public class ConfigGui extends EAGui {
         // Get lore
         final List<Component> lore = lore(description);
         lore.add(Component.empty());
-        lore.add(uninitialize(Component.text()
+        lore.add(unitalicize(Component.text()
                 .append(Component.text("Current status: ", NamedTextColor.GRAY))
                 .append(value ? ENABLED : DISABLED)
                 .build()));
 
         // Return item
         return ItemBuilder.from(value ? Material.LIME_CONCRETE : Material.RED_CONCRETE)
-                .name(uninitialize(EventAlertsIntegration.MINI_MESSAGE.deserialize(title).color(NamedTextColor.GOLD)))
+                .name(unitalicize(EventAlertsIntegration.MINI_MESSAGE.deserialize(title).color(NamedTextColor.GOLD)))
                 .lore(lore)
                 .asGuiItem(action);
     }

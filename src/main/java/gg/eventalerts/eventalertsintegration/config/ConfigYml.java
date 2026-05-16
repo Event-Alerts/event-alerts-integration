@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class ConfigYml extends AnnoyingResource {
     @NotNull public static final String PATH_API_KEYS  = "api-keys";
-    @NotNull public static final String PATH_DISCORD_MESSAGE_SYNCING = "discord-message-syncing";
+    @NotNull public static final String PATH_SYNCING = "syncing";
     @NotNull public static final String PATH_LINKING = "linking";
     @NotNull public static final String PATH_CROSS_BAN = "cross-ban";
     @NotNull public static final String PATH_EVENT_MESSAGES = "event-messages";
@@ -27,7 +27,7 @@ public class ConfigYml extends AnnoyingResource {
     @NotNull private final EventAlertsIntegration eaPlugin;
 
     @NotNull public final ApiKeys apiKeys;
-    @NotNull public final DiscordMessageSyncing discordMessageSyncing;
+    @NotNull public final ConfigYml.Syncing syncing;
     @NotNull public final Linking linking;
     @NotNull public final CrossBan crossBan;
     @NotNull public final EventMessages eventMessages;
@@ -38,7 +38,7 @@ public class ConfigYml extends AnnoyingResource {
         eaPlugin = plugin;
 
         apiKeys = new ApiKeys();
-        discordMessageSyncing = new DiscordMessageSyncing();
+        syncing = new Syncing();
         linking = new Linking();
         crossBan = new CrossBan();
         eventMessages = new EventMessages();
@@ -75,14 +75,60 @@ public class ConfigYml extends AnnoyingResource {
         }
     }
 
-    public class DiscordMessageSyncing {
-        @NotNull public static final String PATH_ENABLED = PATH_DISCORD_MESSAGE_SYNCING + ".enabled";
-        @NotNull public static final String DISCORDSRV_INTEGRATION = PATH_DISCORD_MESSAGE_SYNCING + ".discordsrv-integration";
-        @NotNull public static final String PATH_FORMAT = PATH_DISCORD_MESSAGE_SYNCING + ".format";
+    public class Syncing {
+        @NotNull public static final String PATH_DISCORD_TO_MINECRAFT = PATH_SYNCING + ".discord-to-minecraft";
+        @NotNull public static final String PATH_MINECRAFT_TO_DISCORD = PATH_SYNCING + ".minecraft-to-discord";
 
-        public boolean enabled = getBoolean(PATH_ENABLED, true);
-        public boolean discordSRVIntegration = getBoolean(DISCORDSRV_INTEGRATION, true);
-        @NotNull public String format = getString(PATH_FORMAT, "<dark_aqua>\uD83C\uDF89 [<event_title>] <aqua>[<author_name>] <content_stripped>");
+        @NotNull public final DiscordToMinecraft discordToMinecraft = new DiscordToMinecraft();
+        @NotNull public final MinecraftToDiscord minecraftToDiscord = new MinecraftToDiscord();
+
+        public class DiscordToMinecraft {
+            @NotNull public static final String PATH_MESSAGES = PATH_DISCORD_TO_MINECRAFT + ".messages";
+
+            @NotNull public final Messages messages = new Messages();
+
+            public class Messages {
+                @NotNull public static final String PATH_ENABLED = PATH_MESSAGES + ".enabled";
+                @NotNull public static final String PATH_FORMAT = PATH_MESSAGES + ".format";
+
+                public boolean enabled = getBoolean(PATH_ENABLED, true);
+                @NotNull public String format = getString(PATH_FORMAT, "<dark_aqua>\uD83C\uDF89 [<event_title>] <aqua>[<author_name>] <content_stripped>");
+
+                public void setEnabled(boolean newStatus) {
+                    if (enabled == newStatus) return;
+
+                    // Update config
+                    enabled = newStatus;
+                    setSave(PATH_ENABLED, newStatus);
+
+                    // Reconnect websocket
+                    eaPlugin.webSockets.reconnect("Config updated", SocketEndpoint.EVENT_CHAT);
+                }
+
+                public void setFormat(@NotNull String newFormat) {
+                    if (format.equals(newFormat)) return;
+                    format = newFormat;
+                    setSave(PATH_FORMAT, newFormat);
+                }
+            }
+        }
+
+        public class MinecraftToDiscord {
+            @NotNull public static final String PATH_CONNECTIONS = PATH_MINECRAFT_TO_DISCORD + ".connections";
+
+            public boolean connections = getBoolean(PATH_CONNECTIONS, true);
+
+            public void setConnections(boolean newStatus) {
+                if (connections == newStatus) return;
+
+                // Update config
+                connections = newStatus;
+                setSave(PATH_CONNECTIONS, newStatus);
+
+                // Reconnect websocket
+                eaPlugin.webSockets.reconnect("Config updated", SocketEndpoint.PLAYER_CONNECTION);
+            }
+        }
     }
 
     public class Linking {

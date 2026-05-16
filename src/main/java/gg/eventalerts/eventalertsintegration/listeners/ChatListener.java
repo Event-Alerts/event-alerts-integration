@@ -9,6 +9,8 @@ import gg.eventalerts.eventalertsintegration.gui.config.advanced.WebsocketsGui;
 import gg.eventalerts.eventalertsintegration.gui.config.eventmessages.EventMessagesGui;
 import gg.eventalerts.eventalertsintegration.gui.config.eventmessages.HostFilterGui;
 import gg.eventalerts.eventalertsintegration.gui.config.eventmessages.sound.SoundGui;
+import gg.eventalerts.eventalertsintegration.gui.config.syncing.SyncingGui;
+import gg.eventalerts.eventalertsintegration.gui.config.syncing.discordtominecraft.MessagesGui;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 
@@ -16,8 +18,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-
 import net.kyori.adventure.text.format.TextDecoration;
+
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -161,8 +163,32 @@ public class ChatListener extends AnnoyingListener {
             }
         }
 
+        // Discord -> Minecraft Messages format
+        if (inputKey.equals(ConfigYml.Syncing.DiscordToMinecraft.Messages.PATH_FORMAT)) {
+            // Cancel
+            if (message.equalsIgnoreCase("cancel")) {
+                player.sendMessage(Component.text("\nCancelled format change\n", NamedTextColor.GREEN));
+                new MessagesGui(new SyncingGui(new ConfigGui(plugin, player))).open(true);
+                return;
+            }
+
+            // Set format
+            plugin.config.syncing.discordToMinecraft.messages.format = message;
+            plugin.config.setSave(inputKey, message);
+
+            // Send message and reopen GUI
+            player.sendMessage(Component.text()
+                    .color(NamedTextColor.GREEN)
+                    .append(Component.text("\nFormat set to "))
+                    .append(Component.text(message, NamedTextColor.DARK_GREEN))
+                    .append(Component.text("!\n")));
+            new MessagesGui(new SyncingGui(new ConfigGui(plugin, player))).open(true);
+            return;
+        }
+
         // Websockets retry delay
         if (inputKey.equals(ConfigYml.Advanced.Websockets.PATH_RETRY_DELAY)) {
+            // Cancel
             if (message.equalsIgnoreCase("cancel")) {
                 player.sendMessage(Component.text("\nCancelled websockets retry delay change\n", NamedTextColor.GREEN));
                 reopenWebsocketsRetryDelayGui(player);

@@ -26,19 +26,18 @@ public class AdvancedGui extends ConfigGui {
     public PaperGuiBuilder getGui() {
         return Gui.of(new HopperContainerType())
                 .title(Component.text("Advanced", NamedTextColor.DARK_RED))
-                .statelessComponent(container -> container.setItem(0,
-                        booleanItem(
-                                plugin.config.advanced.useTestingApi,
-                                "Use Testing API",
-                                "Whether to enable using the testing API hosts\nOnly the developer really needs to enable this",
-                                (player, context) -> {
-                                    final boolean newStatus = !plugin.config.advanced.useTestingApi;
-                                    plugin.config.advanced.setUseTestingApi(newStatus);
-                                    playDingSound(newStatus);
-                                    open(false);
-                                })))
+                .statelessComponent(container -> container.setItem(0, booleanItem(
+                        plugin.config.advanced.useTestingApi,
+                        "Use Testing API",
+                        "Whether to enable using the testing API hosts\nOnly the developer really needs to enable this",
+                        (player, context) -> {
+                            final boolean newStatus = !plugin.config.advanced.useTestingApi;
+                            plugin.config.advanced.setUseTestingApi(newStatus);
+                            playDingSound(newStatus);
+                            open(false);
+                        })))
                 .statelessComponent(container -> container.setItem(2, ItemBuilder.from(Material.REDSTONE)
-                        .name(uninitialize(Component.text("WEBSOCKETS", NamedTextColor.GOLD, TextDecoration.BOLD)))
+                        .name(unitalicize(Component.text("WEBSOCKETS", NamedTextColor.GOLD, TextDecoration.BOLD)))
                         .lore(lore("Settings for websocket connections"))
                         .asGuiItem((player, context) -> new WebsocketsGui(this).open(true))))
                 .statelessComponent(container -> container.setItem(4, backButton()));

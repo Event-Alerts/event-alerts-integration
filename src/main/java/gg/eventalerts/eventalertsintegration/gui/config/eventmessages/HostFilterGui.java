@@ -8,6 +8,7 @@ import dev.triumphteam.gui.paper.container.type.HopperContainerType;
 
 import gg.eventalerts.eventalertsintegration.config.ConfigYml;
 import gg.eventalerts.eventalertsintegration.config.HostFilter;
+import gg.eventalerts.eventalertsintegration.gui.Heads;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -24,8 +25,6 @@ import java.util.Set;
 
 
 public class HostFilterGui extends EventMessagesGui {
-    @NotNull public static final String GREEN_PLUS = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWZmMzE0MzFkNjQ1ODdmZjZlZjk4YzA2NzU4MTA2ODFmOGMxM2JmOTZmNTFkOWNiMDdlZDc4NTJiMmZmZDEifX19";
-
     public HostFilterGui(@NotNull EventMessagesGui parent) {
         super(parent);
     }
@@ -42,7 +41,7 @@ public class HostFilterGui extends EventMessagesGui {
     @NotNull
     private GuiItem<Player, ItemStack> guiItem(@NotNull HostFilter hostFilter) {
         return ItemBuilder.from(hostFilter.material)
-                .name(uninitialize(Component.text(hostFilter + "S", NamedTextColor.GOLD, TextDecoration.BOLD)))
+                .name(unitalicize(Component.text(hostFilter + "S", NamedTextColor.GOLD, TextDecoration.BOLD)))
                 .lore(lore("Only broadcast events\nhosted by these " + hostFilter.lower + "s"))
                 .asGuiItem((player, context) -> openHostFilterGui(hostFilter));
     }
@@ -59,7 +58,7 @@ public class HostFilterGui extends EventMessagesGui {
                 for (final String id : set) {
                     final int finalI = i;
                     builder.statelessComponent(container1 -> container1.setItem(finalI, ItemBuilder.from(hostFilter.material)
-                            .name(uninitialize(Component.text(id, NamedTextColor.GOLD)))
+                            .name(unitalicize(Component.text(id, NamedTextColor.GOLD)))
                             .lore(lore("Click to remove this " + hostFilter.lower + "\nfrom the host filter"))
                             .asGuiItem((player1, context1) -> {
                                 set.remove(id);
@@ -79,8 +78,8 @@ public class HostFilterGui extends EventMessagesGui {
                                 .append(Component.text(hostFilter.capitalized + "s"))
                                 .build())
                         .statelessComponent(container -> container.setItem(52, ItemBuilder.skull()
-                                .texture(GREEN_PLUS)
-                                .name(uninitialize(Component.text("+ Add " + hostFilter.capitalized, NamedTextColor.DARK_GREEN)))
+                                .texture(Heads.GREEN_PLUS)
+                                .name(unitalicize(Component.text("+ Add " + hostFilter.capitalized, NamedTextColor.DARK_GREEN)))
                                 .lore(lore("<green>Click to add a " + hostFilter.lower + "\n<green>to the host filter"))
                                 .asGuiItem((player1, context1) -> { //TODO switch to anvil GUI when Triumph GUI updates
                                     // Send chat messages

@@ -28,7 +28,7 @@ public class WebsocketsGui extends AdvancedGui {
         return Gui.of(new HopperContainerType())
                 .title(Component.text("Websockets", NamedTextColor.DARK_RED))
                 .statelessComponent(container -> container.setItem(0, ItemBuilder.from(Material.CLOCK)
-                        .name(uninitialize(Component.text("Retry Delay", NamedTextColor.GOLD)))
+                        .name(unitalicize(Component.text("Retry Delay", NamedTextColor.GOLD)))
                         .lore(lore("Minutes until a websocket attempts to\nreconnect after being disconnected\n\n<gray>Current value: " + retryDelayValue))
                         .asGuiItem((player, context) -> { //TODO switch to anvil GUI when Triumph GUI updates
                             // Send chat messages
@@ -41,18 +41,17 @@ public class WebsocketsGui extends AdvancedGui {
                             playDingSound(true);
                             context.guiView().close();
                         })))
-                .statelessComponent(container -> container.setItem(1,
-                        booleanItem(
-                                plugin.config.advanced.websockets.logs,
-                                "Logs",
-                                "Whether to log websocket\nconnection messages",
-                                (player, context) -> {
-                                    final boolean newStatus = !plugin.config.advanced.websockets.logs;
-                                    plugin.config.advanced.websockets.logs = newStatus;
-                                    plugin.config.setSave(ConfigYml.Advanced.Websockets.PATH_LOGS, newStatus);
-                                    playDingSound(newStatus);
-                                    open(false);
-                                })))
+                .statelessComponent(container -> container.setItem(1, booleanItem(
+                        plugin.config.advanced.websockets.logs,
+                        "Logs",
+                        "Whether to log websocket\nconnection messages",
+                        (player, context) -> {
+                            final boolean newStatus = !plugin.config.advanced.websockets.logs;
+                            plugin.config.advanced.websockets.logs = newStatus;
+                            plugin.config.setSave(ConfigYml.Advanced.Websockets.PATH_LOGS, newStatus);
+                            playDingSound(newStatus);
+                            open(false);
+                        })))
                 .statelessComponent(container -> container.setItem(4, backButton()));
     }
 }

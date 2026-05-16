@@ -23,7 +23,7 @@ public class EventChatClient extends SocketClient<EventThreadMessage> {
 
     @Override
     public boolean shouldConnect() {
-        return plugin.config.discordMessageSyncing.enabled && (plugin.config.apiKeys.playerApiKey != null || plugin.config.apiKeys.serverApiKey != null);
+        return plugin.config.syncing.discordToMinecraft.messages.enabled && (plugin.config.apiKeys.playerApiKey != null || plugin.config.apiKeys.serverApiKey != null);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class EventChatClient extends SocketClient<EventThreadMessage> {
                 .replace("\r", " ");
 
         // Get format and plugin placeholders
-        Component message = EventAlertsIntegration.MINI_MESSAGE.deserialize(plugin.config.discordMessageSyncing.format,
+        Component message = EventAlertsIntegration.MINI_MESSAGE.deserialize(plugin.config.syncing.discordToMinecraft.messages.format,
                 Placeholder.unparsed("event_id", object.event.id.toHexString()),
                 Placeholder.unparsed("event_type", object.event.type),
                 Placeholder.unparsed("event_channel", String.valueOf(object.event.channel)),
