@@ -24,8 +24,8 @@ setupAnnoyingAPI(
 
 // Runtime dependency versions
 val javaWebSocketVersion: String = "1.6.0"
-val bsonVersion: String = "5.6.3"
-val jEmojiVersion: String = "1.7.5"
+val bsonVersion: String = "5.7.0"
+val jEmojiVersion: String = "1.7.6"
 
 // Blossom (see java-templates module)
 sourceSets.main { blossom.javaSources {
