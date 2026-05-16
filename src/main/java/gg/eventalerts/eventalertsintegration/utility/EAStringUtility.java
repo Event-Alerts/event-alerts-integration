@@ -26,15 +26,13 @@ public class EAStringUtility {
         emojiMatcher.reset();
 
         // Load JEmoji library for EmojiManager
-        if (!plugin.libraryManager.isLoaded(EALibrary.JEMOJI)) plugin.libraryManager.loadLibrary(EALibrary.JEMOJI);
+        if (!plugin.libraryManager.isLoaded(EALibrary.JEMOJI) && !plugin.libraryManager.loadLibrary(EALibrary.JEMOJI)) return string;
 
         // Replace emojis
         final StringBuilder description = new StringBuilder();
-        while (emojiMatcher.find()) {
-            emojiMatcher.appendReplacement(description, EmojiManager.getByDiscordAlias(emojiMatcher.group(1))
-                    .map(Emoji::getEmoji)
-                    .orElse(emojiMatcher.group()));
-        }
+        while (emojiMatcher.find()) emojiMatcher.appendReplacement(description, EmojiManager.getByDiscordAlias(emojiMatcher.group(1))
+                .map(Emoji::getEmoji)
+                .orElse(emojiMatcher.group()));
         emojiMatcher.appendTail(description);
         return description.toString();
     }
@@ -52,13 +50,5 @@ public class EAStringUtility {
         return ip != null ? new IpPort(ip, port) : null;
     }
 
-    public static class IpPort {
-        @NotNull public final String ip;
-        public final int port;
-
-        public IpPort(@NotNull String ip, int port) {
-            this.ip = ip;
-            this.port = port;
-        }
-    }
+    public record IpPort(@NotNull String ip, int port) {}
 }

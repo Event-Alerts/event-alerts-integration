@@ -20,7 +20,7 @@ setupAnnoyingAPI(
         version = "1.1.0",
         description = "A plugin to integrate your Minecraft server with the Event Alerts ecosystem",
         javaVersion = JavaVersion.VERSION_21),
-    annoyingAPIConfig = DependencyConfig(version = "5.2.0"))
+    annoyingAPIConfig = DependencyConfig(version = "1e25aec"))
 
 // Runtime dependency versions
 val javaWebSocketVersion: String = "1.6.0"
