@@ -24,7 +24,6 @@ public class EAPlayer extends EAObject {
     @Nullable public final LinkStatus linkStatus;
 
     public EAPlayer(@NotNull JsonObject json) {
-        super(json);
         this.discord = MiscUtility.handleException(() -> new Discord(json.getAsJsonObject(PROP_DISCORD))).orElse(null);
         this.minecraft = MiscUtility.handleException(() -> new Minecraft(json.getAsJsonObject(PROP_MINECRAFT))).orElse(null);
         this.linkStatus = MiscUtility.handleException(() -> EventAlertsIntegration.getEnum(LinkStatus.class, json.get(PROP_LINK_STATUS).getAsString())).orElse(null);

@@ -26,7 +26,7 @@ public class CrossBanClient extends SocketClient<CrossBan> {
     }
 
     @Override
-    public void handle(@NotNull CrossBan object) {
+    public void onMessage(@NotNull CrossBan object) {
         // Check status
         if (object.status != CrossBan.Status.ADDED) return;
 

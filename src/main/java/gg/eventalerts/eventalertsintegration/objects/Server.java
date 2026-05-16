@@ -10,7 +10,6 @@ public class Server extends EAObject {
     @Nullable public String name;
 
     public Server(@NotNull JsonObject json) {
-        super(json);
         name = json.has("name") ? json.get("name").getAsString() : null;
     }
 }

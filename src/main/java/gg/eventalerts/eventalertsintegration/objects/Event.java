@@ -45,7 +45,6 @@ public class Event extends EAObject {
     @Nullable public final Set<Long> subscribers;
 
     public Event(@NotNull JsonObject json) {
-        super(json);
         id = new ObjectId(json.get("id").getAsString());
         type = json.get("type").getAsString();
         channel = json.get("channel").getAsLong();

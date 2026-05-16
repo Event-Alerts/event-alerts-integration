@@ -1,6 +1,5 @@
 package gg.eventalerts.eventalertsintegration.socket;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
@@ -23,8 +22,6 @@ import java.util.logging.Level;
 
 
 public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
-    @NotNull private static final Gson GSON = new Gson();
-
     @NotNull protected final EventAlertsIntegration plugin;
     @NotNull public final SocketEndpoint endpoint;
     @NotNull private final Class<T> objectClass;
@@ -37,8 +34,6 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
         this.endpoint = endpoint;
         this.objectClass = objectClass;
     }
-
-    public abstract boolean shouldConnect();
 
     public void close(int code, @NotNull String reason, @Nullable Runnable toRunOnStop) {
         final ReadyState readyState = getReadyState();
@@ -75,6 +70,10 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
         }.runTaskLaterAsynchronously(plugin, finalRetryDelay * 1200L);
     }
 
+    public void send(@NotNull T object) {
+        send(object.toJson().toString());
+    }
+
     @Override
     public void onOpen(@NotNull ServerHandshake handshake) {
         if (plugin.config.advanced.websockets.logs) AnnoyingPlugin.log(Level.INFO, endpoint.name() + " socket opened");
@@ -85,7 +84,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
         // Parse JSON
         final JsonObject json;
         try {
-            json = GSON.fromJson(message, JsonObject.class);
+            json = EventAlertsIntegration.GSON.fromJson(message, JsonObject.class);
         } catch (final Exception e) {
             AnnoyingPlugin.log(Level.WARNING, "Failed to parse JSON: " + message);
             return;
@@ -96,7 +95,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
         if (object == null) return;
 
         // Handle
-        handle(object);
+        onMessage(object);
     }
 
     @Override
@@ -124,5 +123,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
         exception.printStackTrace();
     }
 
-    public abstract void handle(@NotNull T object);
+    public abstract boolean shouldConnect();
+
+    public void onMessage(@NotNull T object) {}
 }

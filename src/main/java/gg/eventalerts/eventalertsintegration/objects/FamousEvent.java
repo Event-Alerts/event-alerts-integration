@@ -14,7 +14,6 @@ public class FamousEvent extends EAObject {
     @NotNull public final String message;
 
     public FamousEvent(@NotNull JsonObject json) {
-        super(json);
         type = EventAlertsIntegration.getEnum(EventType.class, json.get("type").getAsString());
         message = json.get("message").getAsString();
     }

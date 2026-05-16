@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class WebSockets {
     @NotNull private final EventAlertsIntegration plugin;
-    @NotNull private final Map<SocketEndpoint, SocketClient<?>> clients = new HashMap<>();
+    @NotNull public final Map<SocketEndpoint, SocketClient<?>> clients = new HashMap<>();
 
     public WebSockets(@NotNull EventAlertsIntegration plugin) {
         this.plugin = plugin;

@@ -41,7 +41,7 @@ public class FamousEventPostedClient extends SocketClient<FamousEvent> {
     }
 
     @Override
-    public void handle(@NotNull FamousEvent object) {
+    public void onMessage(@NotNull FamousEvent object) {
         if (object.type == null) {
             AnnoyingPlugin.log(Level.WARNING, "Invalid FamousEvent: " + object);
             return;

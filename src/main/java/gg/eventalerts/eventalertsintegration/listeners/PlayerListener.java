@@ -6,13 +6,19 @@ import com.google.gson.JsonObject;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.objects.CrossBan;
 import gg.eventalerts.eventalertsintegration.objects.EAObject;
+import gg.eventalerts.eventalertsintegration.objects.PlayerConnection;
+import gg.eventalerts.eventalertsintegration.socket.SocketClient;
+import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
+import gg.eventalerts.eventalertsintegration.socket.clients.PlayerConnectionClient;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,10 +33,10 @@ import java.util.logging.Level;
 import static gg.eventalerts.eventalertsintegration.EventAlertsIntegration.MINI_MESSAGE;
 
 
-public class JoinListener extends AnnoyingListener {
+public class PlayerListener extends AnnoyingListener {
     @NotNull private final EventAlertsIntegration plugin;
 
-    public JoinListener(@NotNull EventAlertsIntegration plugin) {
+    public PlayerListener(@NotNull EventAlertsIntegration plugin) {
         this.plugin = plugin;
     }
 
@@ -39,11 +45,48 @@ public class JoinListener extends AnnoyingListener {
         return plugin;
     }
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerJoin(@NotNull PlayerLoginEvent event) {
+        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED || plugin.config.apiKeys.serverApiKey == null) return;
+
+        // Get PlayerConnectionClient
+        final SocketClient<?> client = plugin.webSockets.clients.get(SocketEndpoint.PLAYER_CONNECTION);
+        if (client == null || !client.isOpen() || !(client instanceof PlayerConnectionClient connectionClient)) return;
+
+        // Send JOIN message
+        final Player player = event.getPlayer();
+        connectionClient.send(new PlayerConnection(
+                player.getUniqueId(),
+                player.getName(),
+                System.currentTimeMillis(),
+                PlayerConnection.Type.JOIN));
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
+        if (plugin.config.apiKeys.serverApiKey == null) return;
+
+        // Get PlayerConnectionClient
+        final SocketClient<?> client = plugin.webSockets.clients.get(SocketEndpoint.PLAYER_CONNECTION);
+        if (client == null || !client.isOpen() || !(client instanceof PlayerConnectionClient connectionClient)) return;
+
+        // Send QUIT message
+        final Player player = event.getPlayer();
+        connectionClient.send(new PlayerConnection(
+                player.getUniqueId(),
+                player.getName(),
+                System.currentTimeMillis(),
+                PlayerConnection.Type.QUIT));
+    }
+
     @EventHandler
     public void onPlayerLogin(@NotNull PlayerLoginEvent event) {
         if (checkLinking(event)) checkCrossBan(event);
     }
 
+    /**
+     * @return  true if the player is allowed to join, false if they should be kicked (or if the check failed and they should be kicked or allowed based on config)
+     */
     private boolean checkLinking(@NotNull PlayerLoginEvent event) {
         if (!plugin.config.linking.requireLink || !plugin.config.linking.checkOnJoin) return true;
         final Player player = event.getPlayer();
@@ -99,6 +142,9 @@ public class JoinListener extends AnnoyingListener {
                 .build());
     }
 
+    /**
+     * @return  true if the player is allowed to join, false if they should be kicked (or if the check failed and they should be kicked or allowed based on config)
+     */
     private boolean checkCrossBan(@NotNull PlayerLoginEvent event) {
         if (!plugin.config.crossBan.enabled || !plugin.config.crossBan.checkOnJoin) return true;
         final Player player = event.getPlayer();

@@ -25,7 +25,7 @@ public class LinkClient extends SocketClient<EAPlayer> {
     }
 
     @Override
-    public void handle(@NotNull EAPlayer eaPlayer) {
+    public void onMessage(@NotNull EAPlayer eaPlayer) {
         if (eaPlayer.minecraft == null) return;
 
         // Linked

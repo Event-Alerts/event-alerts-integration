@@ -22,7 +22,6 @@ public class EventThreadMessage extends EAObject {
     @NotNull public final Content content;
 
     public EventThreadMessage(@NotNull JsonObject json) {
-        super(json);
         this.messageId = json.get(PROP_MESSAGE_ID).getAsString();
         this.event = new Event(json.getAsJsonObject(PROP_EVENT));
         this.channel = new Channel(json.getAsJsonObject(PROP_CHANNEL));

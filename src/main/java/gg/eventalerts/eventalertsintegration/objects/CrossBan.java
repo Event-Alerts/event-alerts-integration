@@ -32,7 +32,6 @@ public class CrossBan extends EAObject {
     @Nullable public final Status status;
 
     public CrossBan(@NotNull JsonObject json) {
-        super(json);
         minecraftUuid = UUID.fromString(json.get(PROP_MINECRAFT_UUID).getAsString());
         reason = json.get(PROP_REASON).getAsString();
         expiration = MiscUtility.handleException(() -> new Date(json.get(PROP_EXPIRATION).getAsLong())).orElse(null);

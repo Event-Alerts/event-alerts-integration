@@ -17,7 +17,8 @@ public enum SocketEndpoint {
     FAMOUS_EVENT_POSTED(FamousEventPostedClient.class),
     CROSS_BAN(CrossBanClient.class),
     LINK(LinkClient.class),
-    EVENT_CHAT(EventChatClient.class);
+    EVENT_CHAT(EventChatClient.class),
+    PLAYER_CONNECTION(PlayerConnectionClient.class);
 
     @Nullable public final Constructor<? extends SocketClient<?>> clientConstructor;
 

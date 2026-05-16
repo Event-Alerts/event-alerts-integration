@@ -27,9 +27,9 @@ public class EventChatClient extends SocketClient<EventThreadMessage> {
     }
 
     @Override
-    public void handle(@NotNull EventThreadMessage object) {
+    public void onMessage(@NotNull EventThreadMessage object) {
         if (!Bukkit.isPrimaryThread()) {
-            plugin.scheduler.runSync(() -> handle(object));
+            plugin.scheduler.runSync(() -> onMessage(object));
             return;
         }
         

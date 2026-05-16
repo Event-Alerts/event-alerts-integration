@@ -43,7 +43,7 @@ public class EventPostedClient extends SocketClient<Event> {
     }
 
     @Override
-    public void handle(@NotNull Event object) {
+    public void onMessage(@NotNull Event object) {
         // Get/check type
         final EventType type = object.server != null ? EventType.PARTNER : EventType.COMMUNITY;
         if (plugin.config.eventMessages.ignoredTypes.contains(type)) return;
