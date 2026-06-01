@@ -1,28 +1,21 @@
 package gg.eventalerts.eventalertsintegration;
 
 import com.google.gson.Gson;
-
 import gg.eventalerts.eventalertsintegration.config.ConfigYml;
 import gg.eventalerts.eventalertsintegration.socket.WebSockets;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-
 import org.bukkit.Bukkit;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.PluginPlatform;
-import xyz.srnyx.annoyingapi.libs.javautilities.MapGenerator;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -31,9 +24,6 @@ import java.util.logging.Level;
 public class EventAlertsIntegration extends AnnoyingPlugin {
     @NotNull public static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
     @NotNull public static final Gson GSON = new Gson();
-    @NotNull public static final Map<Long, String> ID_MAPPINGS = MapGenerator.HASH_MAP.mapOf(
-            List.of(314853603695394817L, 365630764244664320L, 242385234992037888L, 604377897662414854L, 267734235224211467L, 381890968971902976L, 468890330763231270L, 1111741660892762142L, 1006349851241480242L, 1216096556713906288L, 1280002787446493256L, 1096205843113967669L, 533985117589471233L),
-            List.of("Skeppy", "Oiiink", "srnyx", "hailey", "bacca", "Rame", "hayech", "Server Events", "Famous Events", "Potential Skeppy Events", "Skeppy Sighting", "Random Pings", "Reece"));
     @NotNull public static final TextComponent GATE = Component.text("EVENT ALERTS GATE\n\n", NamedTextColor.GOLD, TextDecoration.BOLD);
     @NotNull public static final TextComponent LINKING_INSTRUCTIONS = Component.text()
             .color(NamedTextColor.GRAY)

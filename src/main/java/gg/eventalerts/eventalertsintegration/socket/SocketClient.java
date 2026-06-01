@@ -1,21 +1,16 @@
 package gg.eventalerts.eventalertsintegration.socket;
 
 import com.google.gson.JsonObject;
-
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.objects.EAObject;
-
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.enums.ReadyState;
 import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ServerHandshake;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 
 import java.net.URI;

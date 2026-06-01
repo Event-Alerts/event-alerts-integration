@@ -2,7 +2,6 @@ package gg.eventalerts.eventalertsintegration.socket;
 
 import gg.eventalerts.eventalertsintegration.EALibrary;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
