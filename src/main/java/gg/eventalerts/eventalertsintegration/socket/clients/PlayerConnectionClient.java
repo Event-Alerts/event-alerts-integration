@@ -4,7 +4,6 @@ import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.objects.PlayerConnection;
 import gg.eventalerts.eventalertsintegration.socket.SocketClient;
 import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
-
 import org.jetbrains.annotations.NotNull;
 
 

@@ -2,10 +2,8 @@ package gg.eventalerts.eventalertsintegration.socket;
 
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.socket.clients.*;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 
 import java.lang.reflect.Constructor;

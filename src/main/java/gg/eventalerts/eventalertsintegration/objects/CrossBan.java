@@ -1,16 +1,12 @@
 package gg.eventalerts.eventalertsintegration.objects;
 
 import com.google.gson.JsonObject;
-
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import xyz.srnyx.annoyingapi.libs.javautilities.MiscUtility;
 import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.DurationFormatter;
 

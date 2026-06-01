@@ -1,17 +1,13 @@
 package gg.eventalerts.eventalertsintegration.utility;
 
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
 import org.jetbrains.annotations.NotNull;
-
 import xyz.srnyx.annoyingapi.file.PlayableSound;
 
 import static gg.eventalerts.eventalertsintegration.EventAlertsIntegration.MINI_MESSAGE;

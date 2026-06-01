@@ -3,17 +3,13 @@ package gg.eventalerts.eventalertsintegration.gui.config.eventmessages.sound;
 import dev.triumphteam.gui.paper.Gui;
 import dev.triumphteam.gui.paper.builder.gui.PaperGuiBuilder;
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder;
-
 import gg.eventalerts.eventalertsintegration.config.ConfigYml;
 import gg.eventalerts.eventalertsintegration.gui.config.eventmessages.EventMessagesGui;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-
 import org.bukkit.Material;
-
 import org.jetbrains.annotations.NotNull;
 
 

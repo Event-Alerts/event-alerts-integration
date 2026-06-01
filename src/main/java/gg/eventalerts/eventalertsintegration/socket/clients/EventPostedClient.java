@@ -2,7 +2,6 @@ package gg.eventalerts.eventalertsintegration.socket.clients;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import gg.eventalerts.eventalertsintegration.reflection.org.bukkit.entity.RefPlayer;
 import gg.eventalerts.eventalertsintegration.utility.EAStringUtility;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
@@ -14,19 +13,16 @@ import gg.eventalerts.eventalertsintegration.objects.Event;
 import gg.eventalerts.eventalertsintegration.objects.Server;
 import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
 import gg.eventalerts.eventalertsintegration.socket.SocketClient;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-
 import org.jetbrains.annotations.NotNull;
-
 import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
 import xyz.srnyx.annoyingapi.libs.javautilities.StringUtility;
 import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.DurationFormatter;
 
-import java.util.*;
+import java.util.Set;
 
 import static gg.eventalerts.eventalertsintegration.EventAlertsIntegration.MINI_MESSAGE;
 import static gg.eventalerts.eventalertsintegration.utility.EventMessageUtility.*;

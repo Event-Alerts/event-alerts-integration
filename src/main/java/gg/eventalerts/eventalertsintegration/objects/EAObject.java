@@ -1,13 +1,10 @@
 package gg.eventalerts.eventalertsintegration.objects;
 
 import com.google.gson.JsonObject;
-
 import gg.eventalerts.eventalertsintegration.EALibrary;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 
 import java.lang.reflect.Field;

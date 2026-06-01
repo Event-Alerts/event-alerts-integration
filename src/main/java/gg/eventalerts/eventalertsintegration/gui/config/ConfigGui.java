@@ -5,22 +5,18 @@ import dev.triumphteam.gui.element.GuiItem;
 import dev.triumphteam.gui.paper.Gui;
 import dev.triumphteam.gui.paper.builder.gui.PaperGuiBuilder;
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder;
-
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.gui.EAGui;
 import gg.eventalerts.eventalertsintegration.gui.config.advanced.AdvancedGui;
 import gg.eventalerts.eventalertsintegration.gui.config.eventmessages.EventMessagesGui;
 import gg.eventalerts.eventalertsintegration.gui.config.syncing.SyncingGui;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

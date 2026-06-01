@@ -3,16 +3,12 @@ package gg.eventalerts.eventalertsintegration.gui;
 import dev.triumphteam.gui.element.GuiItem;
 import dev.triumphteam.gui.paper.builder.gui.PaperGuiBuilder;
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder;
-
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

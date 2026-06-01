@@ -5,18 +5,14 @@ import dev.triumphteam.gui.paper.Gui;
 import dev.triumphteam.gui.paper.builder.gui.PaperGuiBuilder;
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder;
 import dev.triumphteam.gui.paper.container.type.HopperContainerType;
-
 import gg.eventalerts.eventalertsintegration.config.ConfigYml;
 import gg.eventalerts.eventalertsintegration.config.HostFilter;
 import gg.eventalerts.eventalertsintegration.gui.Heads;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

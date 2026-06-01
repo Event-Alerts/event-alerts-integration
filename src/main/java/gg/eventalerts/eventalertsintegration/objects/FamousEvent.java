@@ -1,10 +1,8 @@
 package gg.eventalerts.eventalertsintegration.objects;
 
 import com.google.gson.JsonObject;
-
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.config.EventType;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

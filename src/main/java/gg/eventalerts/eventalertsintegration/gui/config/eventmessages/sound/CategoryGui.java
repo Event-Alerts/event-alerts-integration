@@ -3,13 +3,9 @@ package gg.eventalerts.eventalertsintegration.gui.config.eventmessages.sound;
 import dev.triumphteam.gui.container.type.GuiContainerType;
 import dev.triumphteam.gui.paper.Gui;
 import dev.triumphteam.gui.paper.builder.gui.PaperGuiBuilder;
-
 import gg.eventalerts.eventalertsintegration.config.ConfigYml;
-
 import net.kyori.adventure.text.Component;
-
 import org.bukkit.SoundCategory;
-
 import org.jetbrains.annotations.NotNull;
 
 

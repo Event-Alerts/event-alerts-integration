@@ -12,21 +12,16 @@ import gg.eventalerts.eventalertsintegration.gui.config.eventmessages.HostFilter
 import gg.eventalerts.eventalertsintegration.gui.config.eventmessages.sound.SoundGui;
 import gg.eventalerts.eventalertsintegration.gui.config.syncing.SyncingGui;
 import gg.eventalerts.eventalertsintegration.gui.config.syncing.discordtominecraft.MessagesGui;
-
 import io.papermc.paper.event.player.AsyncChatEvent;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-
 import org.jetbrains.annotations.NotNull;
-
 import xyz.srnyx.annoyingapi.AnnoyingListener;
 import xyz.srnyx.annoyingapi.libs.javautilities.MiscUtility;
 

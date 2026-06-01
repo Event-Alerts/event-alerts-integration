@@ -1,7 +1,6 @@
 package gg.eventalerts.eventalertsintegration.config;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;

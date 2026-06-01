@@ -3,13 +3,8 @@ package gg.eventalerts.eventalertsintegration.gui.config.eventmessages;
 import dev.triumphteam.gui.container.type.GuiContainerType;
 import dev.triumphteam.gui.paper.Gui;
 import dev.triumphteam.gui.paper.builder.gui.PaperGuiBuilder;
-
 import gg.eventalerts.eventalertsintegration.config.PingRole;
-
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
-
 import org.jetbrains.annotations.NotNull;
 
 

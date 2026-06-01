@@ -2,13 +2,10 @@ package gg.eventalerts.eventalertsintegration.utility;
 
 import gg.eventalerts.eventalertsintegration.EALibrary;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
-
 import net.fellbaum.jemoji.Emoji;
 import net.fellbaum.jemoji.EmojiManager;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.Mapper;
 
 import java.util.regex.Matcher;

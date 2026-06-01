@@ -2,24 +2,19 @@ package gg.eventalerts.eventalertsintegration.commands;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.gui.config.ConfigGui;
 import gg.eventalerts.eventalertsintegration.objects.CrossBan;
 import gg.eventalerts.eventalertsintegration.objects.EAObject;
 import gg.eventalerts.eventalertsintegration.reflection.org.bukkit.entity.RefPlayer;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
 import org.jetbrains.annotations.NotNull;
-
 import xyz.srnyx.annoyingapi.command.AnnoyingCommand;
 import xyz.srnyx.annoyingapi.command.AnnoyingSender;
 import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
@@ -29,7 +24,11 @@ import xyz.srnyx.annoyingapi.message.AnnoyingMessage;
 import xyz.srnyx.annoyingapi.utility.BukkitUtility;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 

@@ -2,12 +2,9 @@ package gg.eventalerts.eventalertsintegration.objects;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.config.PingRole;
-
 import org.bson.types.ObjectId;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

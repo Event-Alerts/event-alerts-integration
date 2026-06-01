@@ -2,7 +2,6 @@ package gg.eventalerts.eventalertsintegration.listeners;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.objects.CrossBan;
 import gg.eventalerts.eventalertsintegration.objects.EAObject;
@@ -10,19 +9,15 @@ import gg.eventalerts.eventalertsintegration.objects.PlayerConnection;
 import gg.eventalerts.eventalertsintegration.socket.SocketClient;
 import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
 import gg.eventalerts.eventalertsintegration.socket.clients.PlayerConnectionClient;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import xyz.srnyx.annoyingapi.AnnoyingListener;
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;

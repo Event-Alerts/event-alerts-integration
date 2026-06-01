@@ -2,16 +2,16 @@ package gg.eventalerts.eventalertsintegration.config;
 
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.file.AnnoyingResource;
 import xyz.srnyx.annoyingapi.file.PlayableSound;
 import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
