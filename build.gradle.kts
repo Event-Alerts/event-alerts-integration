@@ -10,7 +10,7 @@ plugins {
     id("xyz.srnyx.gradle-galaxy") version "2.1.0"
     id("com.gradleup.shadow") version "8.3.9"
     id("net.kyori.blossom") version "2.2.0"
-    id("org.jetbrains.gradle.plugin.idea-ext") version "1.3"
+    id("org.jetbrains.gradle.plugin.idea-ext") version "1.4.1"
 }
 
 paper(DependencyConfig(version = "1.18.2"))
@@ -20,12 +20,12 @@ setupAnnoyingAPI(
         version = "1.1.0",
         description = "A plugin to integrate your Minecraft server with the Event Alerts ecosystem",
         javaVersion = JavaVersion.VERSION_21),
-    annoyingAPIConfig = DependencyConfig(version = "e35bfdb"))
+    annoyingAPIConfig = DependencyConfig(version = "db46b2b"))
 
 // Runtime dependency versions
 val javaWebSocketVersion: String = "1.6.0"
 val bsonVersion: String = "5.7.0"
-val jEmojiVersion: String = "1.7.6"
+val jEmojiVersion: String = "2.0.0"
 
 // Blossom (see java-templates module)
 sourceSets.main { blossom.javaSources {
