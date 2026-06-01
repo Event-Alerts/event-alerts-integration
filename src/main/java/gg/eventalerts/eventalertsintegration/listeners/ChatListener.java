@@ -3,6 +3,7 @@ package gg.eventalerts.eventalertsintegration.listeners;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.config.ConfigYml;
 import gg.eventalerts.eventalertsintegration.config.HostFilter;
+import gg.eventalerts.eventalertsintegration.gui.EAGui;
 import gg.eventalerts.eventalertsintegration.gui.config.ConfigGui;
 import gg.eventalerts.eventalertsintegration.gui.config.advanced.AdvancedGui;
 import gg.eventalerts.eventalertsintegration.gui.config.advanced.WebsocketsGui;
@@ -168,7 +169,7 @@ public class ChatListener extends AnnoyingListener {
             // Cancel
             if (message.equalsIgnoreCase("cancel")) {
                 player.sendMessage(Component.text("\nCancelled format change\n", NamedTextColor.GREEN));
-                new MessagesGui(new SyncingGui(new ConfigGui(plugin, player))).open(true);
+                reopenMessagesSyncingGui(player);
                 return;
             }
 
@@ -182,7 +183,7 @@ public class ChatListener extends AnnoyingListener {
                     .append(Component.text("\nFormat set to "))
                     .append(Component.text(message, NamedTextColor.DARK_GREEN))
                     .append(Component.text("!\n")));
-            new MessagesGui(new SyncingGui(new ConfigGui(plugin, player))).open(true);
+            reopenMessagesSyncingGui(player);
             return;
         }
 
@@ -282,18 +283,24 @@ public class ChatListener extends AnnoyingListener {
         reopenHostFilterGui(player, hostFilter);
     }
 
-    private void reopenSoundGui(@NotNull Player player) {
+    private void reopenGui(@NotNull Player player, @NotNull EAGui gui) {
         plugin.guiInput.remove(player.getUniqueId());
-        new SoundGui(new EventMessagesGui(new ConfigGui(plugin, player))).open(true);
+        gui.open(true);
+    }
+
+    private void reopenSoundGui(@NotNull Player player) {
+        reopenGui(player, new SoundGui(new EventMessagesGui(new ConfigGui(plugin, player))));
+    }
+
+    private void reopenMessagesSyncingGui(@NotNull Player player) {
+        reopenGui(player, new MessagesGui(new SyncingGui(new ConfigGui(plugin, player))));
     }
 
     private void reopenWebsocketsRetryDelayGui(@NotNull Player player) {
-        plugin.guiInput.remove(player.getUniqueId());
-        new WebsocketsGui(new AdvancedGui(new ConfigGui(plugin, player))).open(true);
+        reopenGui(player, new WebsocketsGui(new AdvancedGui(new ConfigGui(plugin, player))));
     }
 
     private void reopenHostFilterGui(@NotNull Player player, @NotNull HostFilter hostFilter) {
-        plugin.guiInput.remove(player.getUniqueId());
-        new HostFilterGui(new EventMessagesGui(new ConfigGui(plugin, player))).openHostFilterGui(hostFilter);
+        reopenGui(player, new HostFilterGui(new EventMessagesGui(new ConfigGui(plugin, player))));
     }
 }
