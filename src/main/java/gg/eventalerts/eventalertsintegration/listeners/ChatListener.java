@@ -278,8 +278,12 @@ public class ChatListener extends AnnoyingListener {
         reopenHostFilterGui(player, hostFilter);
     }
 
-    private void reopenGui(@NotNull Player player, @NotNull EAGui gui) {
+    private void removeInput(@NotNull Player player) {
         plugin.guiInput.remove(player.getUniqueId());
+    }
+
+    private void reopenGui(@NotNull Player player, @NotNull EAGui gui) {
+        removeInput(player);
         gui.open(true);
     }
 
@@ -296,6 +300,7 @@ public class ChatListener extends AnnoyingListener {
     }
 
     private void reopenHostFilterGui(@NotNull Player player, @NotNull HostFilter hostFilter) {
-        reopenGui(player, new HostFilterGui(new EventMessagesGui(new ConfigGui(plugin, player))));
+        removeInput(player);
+        new HostFilterGui(new EventMessagesGui(new ConfigGui(plugin, player))).openHostFilterGui(hostFilter);
     }
 }
