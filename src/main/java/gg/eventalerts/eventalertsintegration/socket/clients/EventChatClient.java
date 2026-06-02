@@ -1,6 +1,7 @@
 package gg.eventalerts.eventalertsintegration.socket.clients;
 
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
+import gg.eventalerts.eventalertsintegration.objects.Event;
 import gg.eventalerts.eventalertsintegration.objects.EventThreadMessage;
 import gg.eventalerts.eventalertsintegration.socket.SocketClient;
 import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
@@ -55,27 +56,30 @@ public class EventChatClient extends SocketClient<EventThreadMessage> {
                 Placeholder.unparsed("event_title", object.event.title != null ? object.event.title : object.channel.name),
                 Placeholder.unparsed("event_host", String.valueOf(object.event.host)),
                 Placeholder.unparsed("event_description", object.event.description != null ? object.event.description : ""),
-                Placeholder.unparsed("event_roles", object.event.roles != null ? object.event.roles.stream()
-                                                                                 .map(String::valueOf)
-                                                                                 .reduce((a, b) -> a + ", " + b)
-                                                                                 .orElse("") : ""),
-                Placeholder.unparsed("event_roles_named", object.event.rolesNamed != null ? String.join(", ", object.event.rolesNamed) : ""),
+                Placeholder.unparsed("event_roles", object.event.roles == null ? "" : object.event.roles.stream()
+                        .map(String::valueOf)
+                        .reduce((a, b) -> a + ", " + b)
+                        .orElse("")),
+                Placeholder.unparsed("event_roles_named", object.event.rolesNamed == null ? "" : object.event.rolesNamed.stream()
+                        .map(role -> role.name)
+                        .reduce((a, b) -> a + ", " + b)
+                        .orElse("")),
                 Placeholder.unparsed("event_server", object.event.server != null ? object.event.server.toHexString() : ""),
                 Placeholder.unparsed("event_media_name", object.event.media != null ? object.event.media.name : ""),
                 Placeholder.unparsed("event_ip", object.event.ip != null ? object.event.ip : ""),
-                Placeholder.unparsed("event_platform", object.event.platform != null ? object.event.platform : ""),
+                Placeholder.unparsed("event_platform", Event.Platform.toString(object.event.platforms)),
                 Placeholder.unparsed("event_version", object.event.version != null ? object.event.version : ""),
                 Placeholder.unparsed("event_prize", object.event.prize != null ? object.event.prize : ""),
                 Placeholder.unparsed("event_max_players", object.event.maxPlayers != null ? String.valueOf(object.event.maxPlayers) : ""),
                 Placeholder.unparsed("event_time", object.event.time != null ? String.valueOf(object.event.time.getTime()) : ""),
                 Placeholder.unparsed("event_subscribers", object.event.subscribers != null ? object.event.subscribers.stream()
-                                                                                             .map(String::valueOf)
-                                                                                             .reduce((a, b) -> a + ", " + b)
-                                                                                             .orElse("") : ""),
+                        .map(String::valueOf)
+                        .reduce((a, b) -> a + ", " + b)
+                        .orElse("") : ""),
                 Placeholder.unparsed("messageid", object.messageId),
-                Placeholder.unparsed("channel_id", object.channel.id),
+                Placeholder.unparsed("channel_id", String.valueOf(object.channel.id)),
                 Placeholder.unparsed("channel_name", object.channel.name),
-                Placeholder.unparsed("author_id", object.author.id),
+                Placeholder.unparsed("author_id", String.valueOf(object.author.id)),
                 Placeholder.unparsed("author_name", object.author.name),
                 Placeholder.unparsed("author_effectivename", object.author.effectiveName),
                 Placeholder.unparsed("content_raw", contentRaw),

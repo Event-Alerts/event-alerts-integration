@@ -3,6 +3,7 @@ package gg.eventalerts.eventalertsintegration.objects;
 import com.google.gson.JsonObject;
 import gg.eventalerts.eventalertsintegration.EALibrary;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
+import gg.eventalerts.eventalertsintegration.json.GSONProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
@@ -37,7 +38,7 @@ public abstract class EAObject {
                 }
 
                 // Convert to JSON
-                json.add(name, EventAlertsIntegration.GSON.toJsonTree(value));
+                json.add(name, GSONProvider.GSON.toJsonTree(value));
             } catch (final IllegalAccessException e) {
                 e.printStackTrace();
             }

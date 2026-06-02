@@ -51,6 +51,12 @@ dependencies {
     }
 
     compileOnly("me.clip:placeholderapi:2.12.2")
+
+    testImplementation("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
+    testImplementation("org.mongodb:bson:$bsonVersion")
+    testImplementation(platform("org.junit:junit-bom:6.1.0"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 // Unknown relocations
@@ -60,3 +66,7 @@ relocate("com.google.errorprone", "$projectPackage.libs.google.errorprone")
 relocate("com.google.thirdparty", "$projectPackage.libs.google.thirdparty")
 relocate("javax.annotation")
 relocate("com.google.j2objc.annotations")
+
+tasks.test {
+    useJUnitPlatform()
+}

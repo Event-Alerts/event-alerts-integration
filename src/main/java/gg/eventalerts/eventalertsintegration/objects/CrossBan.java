@@ -1,7 +1,7 @@
 package gg.eventalerts.eventalertsintegration.objects;
 
 import com.google.gson.JsonObject;
-import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
+import gg.eventalerts.eventalertsintegration.json.GSONProvider;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -30,8 +30,8 @@ public class CrossBan extends EAObject {
     public CrossBan(@NotNull JsonObject json) {
         minecraftUuid = UUID.fromString(json.get(PROP_MINECRAFT_UUID).getAsString());
         reason = json.get(PROP_REASON).getAsString();
-        expiration = MiscUtility.handleException(() -> EventAlertsIntegration.GSON.fromJson(json.get(PROP_EXPIRATION), Date.class)).orElse(null);
-        status = MiscUtility.handleException(() -> EventAlertsIntegration.GSON.fromJson(json.get(PROP_STATUS), Status.class)).orElse(null);
+        expiration = MiscUtility.handleException(() -> GSONProvider.GSON.fromJson(json.get(PROP_EXPIRATION), Date.class)).orElse(null);
+        status = MiscUtility.handleException(() -> GSONProvider.GSON.fromJson(json.get(PROP_STATUS), Status.class)).orElse(null);
     }
 
     @NotNull

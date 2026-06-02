@@ -2,13 +2,14 @@ package gg.eventalerts.eventalertsintegration.objects;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.config.PingRole;
+import gg.eventalerts.eventalertsintegration.json.GSONProvider;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.Mapper;
+import xyz.srnyx.annoyingapi.libs.javautilities.MiscUtility;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,23 +17,23 @@ import java.util.Set;
 
 public class Event extends EAObject {
     // BUILDER/CUSTOM
-    @NotNull public final ObjectId id;
-    @NotNull public final String type;
-    public final long channel;
+    @Nullable public final ObjectId id;
+    @Nullable public final String type;
+    @Nullable public final Long channel;
     @Nullable public final Long message;
     @Nullable public final Long controlPanel;
     public final boolean custom;
-    @NotNull public final Date created;
+    @Nullable public final Date created;
     @Nullable public final String title;
     public final long host;
     @Nullable public final String description;
     @Nullable public final Set<Long> roles;
-    @Nullable public final Set<String> rolesNamed;
+    @Nullable public final Set<PingRole> rolesNamed;
     @Nullable public final ObjectId server;
     @Nullable public final CachedMedia media;
     // BUILDER
     @Nullable public final String ip;
-    @Nullable public final String platform;
+    @Nullable public final Set<Platform> platforms;
     @Nullable public final String version;
     @Nullable public final String prize;
     @Nullable public final Integer maxPlayers;
@@ -43,39 +44,60 @@ public class Event extends EAObject {
     @Nullable public final Set<Long> subscribers;
 
     public Event(@NotNull JsonObject json) {
-        id = new ObjectId(json.get("id").getAsString());
-        type = json.get("type").getAsString();
-        channel = json.get("channel").getAsLong();
-        message = json.has("message") ? json.get("message").getAsLong() : null;
-        controlPanel = json.has("controlPanel") ? json.get("controlPanel").getAsLong() : null;
+        id = MiscUtility.handleException(() -> GSONProvider.GSON.fromJson(json.get("id"), ObjectId.class)).orElse(null);
+        type = MiscUtility.handleException(() -> json.get("type").getAsString()).orElse(null);
+        channel = MiscUtility.handleException(() -> json.get("channel").getAsLong()).orElse(null);
+        message = json.has("message") ? MiscUtility.handleException(() -> json.get("message").getAsLong()).orElse(null) : null;
+        controlPanel = json.has("controlPanel") ? MiscUtility.handleException(() -> json.get("controlPanel").getAsLong()).orElse(null) : null;
         custom = json.get("custom").getAsBoolean();
-        created = new Date(json.get("created").getAsLong());
-        title = json.has("title") ? json.get("title").getAsString() : null;
+        created = MiscUtility.handleException(() -> GSONProvider.GSON.fromJson(json.get("created"), Date.class)).orElse(null);
+        title = json.has("title") ? MiscUtility.handleException(() -> json.get("title").getAsString()).orElse(null) : null;
         host = json.get("host").getAsLong();
-        description = json.has("description") ? json.get("description").getAsString() : null;
+        description = json.has("description") ? MiscUtility.handleException(() -> json.get("description").getAsString()).orElse(null) : null;
         if (json.has("roles")) {
             roles = new HashSet<>();
-            for (final JsonElement element : json.getAsJsonArray("roles")) roles.add(element.getAsLong());
+            try {
+                for (final JsonElement role : json.getAsJsonArray("roles")) roles.add(role.getAsLong());
+            } catch (final Exception ignored) {}
         } else {
             roles = null;
         }
         if (json.has("rolesNamed")) {
-            rolesNamed = new HashSet<>();
-            for (final JsonElement element : json.getAsJsonArray("rolesNamed")) rolesNamed.add(element.getAsString());
+            rolesNamed = MiscUtility.handleException(() -> {
+                final Set<PingRole> parsedRoles = new HashSet<>();
+                for (final JsonElement role : json.getAsJsonArray("rolesNamed")) {
+                    final PingRole parsedRole = GSONProvider.GSON.fromJson(role, PingRole.class);
+                    if (parsedRole != null) parsedRoles.add(parsedRole);
+                }
+                return parsedRoles;
+            }).orElse(null);
         } else {
             rolesNamed = null;
         }
-        server = json.has("server") ? new ObjectId(json.get("server").getAsString()) : null;
-        media = json.has("media") ? new CachedMedia(json.getAsJsonObject("media")) : null;
-        ip = json.has("ip") ? json.get("ip").getAsString() : null;
-        platform = json.has("platform") ? json.get("platform").getAsString() : null;
-        version = json.has("version") ? json.get("version").getAsString() : null;
-        prize = json.has("prize") ? json.get("prize").getAsString() : null;
-        maxPlayers = json.has("maxPlayers") ? json.get("maxPlayers").getAsInt() : null;
-        time = json.has("time") ? EventAlertsIntegration.GSON.fromJson(json.get("time"), Date.class) : null;
+        server = json.has("server") ? MiscUtility.handleException(() -> GSONProvider.GSON.fromJson(json.get("server"), ObjectId.class)).orElse(null) : null;
+        media = json.has("media") ? MiscUtility.handleException(() -> new CachedMedia(json.getAsJsonObject("media"))).orElse(null) : null;
+        ip = json.has("ip") ? MiscUtility.handleException(() -> json.get("ip").getAsString()).orElse(null) : null;
+        if (json.has("platforms")) {
+            platforms = MiscUtility.handleException(() -> {
+                final Set<Platform> parsedPlatforms = new HashSet<>();
+                for (final JsonElement element : json.getAsJsonArray("platforms")) {
+                    final Platform parsedPlatform = GSONProvider.GSON.fromJson(element, Platform.class);
+                    if (parsedPlatform != null) parsedPlatforms.add(parsedPlatform);
+                }
+                return parsedPlatforms;
+            }).orElse(null);
+        } else {
+            platforms = null;
+        }
+        version = json.has("version") ? MiscUtility.handleException(() -> json.get("version").getAsString()).orElse(null) : null;
+        prize = json.has("prize") ? MiscUtility.handleException(() -> json.get("prize").getAsString()).orElse(null) : null;
+        maxPlayers = json.has("maxPlayers") ? MiscUtility.handleException(() -> json.get("maxPlayers").getAsInt()).orElse(null) : null;
+        time = json.has("time") ? MiscUtility.handleException(() -> GSONProvider.GSON.fromJson(json.get("time"), Date.class)).orElse(null) : null;
         if (json.has("subscribers")) {
             subscribers = new HashSet<>();
-            for (final JsonElement element : json.getAsJsonArray("subscribers")) subscribers.add(element.getAsLong());
+            try {
+                for (final JsonElement element : json.getAsJsonArray("subscribers")) subscribers.add(element.getAsLong());
+            } catch (final Exception ignored) {}
         } else {
             subscribers = null;
         }
@@ -86,12 +108,25 @@ public class Event extends EAObject {
         return time == null ? null : time.getTime() - System.currentTimeMillis();
     }
 
-    @NotNull
-    public Set<PingRole> getPingRoles() {
-        if (rolesNamed == null) return Set.of();
-        final Set<PingRole> pingRoles = new HashSet<>();
-        for (final String role : rolesNamed) Mapper.toEnum(role, PingRole.class).ifPresent(pingRoles::add);
-        return pingRoles;
+    public enum Platform {
+        JAVA("Java"),
+        BEDROCK("Bedrock");
+
+        @NotNull private final String name;
+
+        Platform(@NotNull String name) {
+            this.name = name;
+        }
+
+        @NotNull
+        public static String toString(@Nullable Set<Platform> platforms) {
+            if (platforms == null) return "";
+            return platforms.stream()
+                    .sorted(Comparator.comparingInt(Enum::ordinal))
+                    .map(platform -> platform.name)
+                    .reduce((a, b) -> a + "/" + b)
+                    .orElse("");
+        }
     }
 
     public static class CachedMedia {

@@ -31,11 +31,11 @@ public class EventThreadMessage extends EAObject {
         @NotNull private static final String PROP_ID = "id";
         @NotNull private static final String PROP_NAME = "name";
 
-        @NotNull public final String id;
+        public final long id;
         @NotNull public final String name;
 
         public Channel(@NotNull JsonObject json) {
-            this.id = json.get(PROP_ID).getAsString();
+            this.id = json.get(PROP_ID).getAsLong();
             this.name = json.get(PROP_NAME).getAsString();
         }
     }
@@ -46,13 +46,13 @@ public class EventThreadMessage extends EAObject {
         @NotNull private static final String PROP_EFFECTIVE_NAME = "effectiveName";
         @NotNull private static final String PROP_PLAYER = "player";
 
-        @NotNull public final String id;
+        public final long id;
         @NotNull public final String name;
         @NotNull public final String effectiveName;
         @Nullable public final EAPlayer player;
 
         public Author(@NotNull JsonObject json) {
-            this.id = json.get(PROP_ID).getAsString();
+            this.id = json.get(PROP_ID).getAsLong();
             this.name = json.get(PROP_NAME).getAsString();
             this.effectiveName = json.get(PROP_EFFECTIVE_NAME).getAsString();
             this.player = MiscUtility.handleException(() -> new EAPlayer(json.getAsJsonObject(PROP_PLAYER))).orElse(null);

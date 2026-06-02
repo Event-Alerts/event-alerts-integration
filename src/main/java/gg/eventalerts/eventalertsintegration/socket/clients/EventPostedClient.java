@@ -55,10 +55,9 @@ public class EventPostedClient extends SocketClient<Event> {
         if (!plugin.config.eventMessages.hostFilterUsers.isEmpty() && !plugin.config.eventMessages.hostFilterUsers.contains(String.valueOf(object.host))) return;
 
         // Check Partner ping roles
-        final Set<PingRole> pingRoles = object.getPingRoles();
-        final boolean hasRoles = !pingRoles.isEmpty();
+        final boolean hasRoles = object.rolesNamed != null && !object.rolesNamed.isEmpty();
         final Set<PingRole> ignoredPartnerRoles = plugin.config.eventMessages.ignoredPartnerRoles;
-        if (hasRoles && pingRoles.stream().anyMatch(ignoredPartnerRoles::contains)) return;
+        if (hasRoles && object.rolesNamed.stream().anyMatch(ignoredPartnerRoles::contains)) return;
 
         // Replace emojis in description
         String description = object.description;
@@ -81,7 +80,7 @@ public class EventPostedClient extends SocketClient<Event> {
         // roles
         if (hasRoles) {
             final TextComponent.Builder rolesComponent = Component.text().color(NamedTextColor.YELLOW);
-            for (final PingRole role : pingRoles) rolesComponent.append(Component.text(" @" + role.name));
+            for (final PingRole role : object.rolesNamed) rolesComponent.append(Component.text(" @" + role.name));
             builder.append(rolesComponent);
         }
         // description
@@ -105,7 +104,7 @@ public class EventPostedClient extends SocketClient<Event> {
                 .append(MINI_MESSAGE.deserialize("<#88a7b5>» <#bfebff>IP: <aqua>" + object.ip));
         // platform & version
         final StringBuilder platformVersion = new StringBuilder();
-        if (object.platform != null) platformVersion.append(object.platform).append(" ");
+        if (object.platforms != null && !object.platforms.isEmpty()) platformVersion.append(Event.Platform.toString(object.platforms)).append(" ");
         if (object.version != null) platformVersion.append(object.version);
         if (!platformVersion.isEmpty()) builder
                 .append(LINE)

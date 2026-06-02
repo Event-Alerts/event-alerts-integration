@@ -2,6 +2,7 @@ package gg.eventalerts.eventalertsintegration.socket;
 
 import com.google.gson.JsonObject;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
+import gg.eventalerts.eventalertsintegration.json.GSONProvider;
 import gg.eventalerts.eventalertsintegration.objects.EAObject;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -80,7 +81,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
         // Parse JSON
         final JsonObject json;
         try {
-            json = EventAlertsIntegration.GSON.fromJson(message, JsonObject.class);
+            json = GSONProvider.GSON.fromJson(message, JsonObject.class);
         } catch (final Exception e) {
             AnnoyingPlugin.log(Level.WARNING, "Failed to parse JSON: " + message);
             return;

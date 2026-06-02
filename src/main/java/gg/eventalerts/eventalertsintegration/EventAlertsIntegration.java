@@ -1,9 +1,6 @@
 package gg.eventalerts.eventalertsintegration;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import gg.eventalerts.eventalertsintegration.config.ConfigYml;
-import gg.eventalerts.eventalertsintegration.json.DateAdapter;
 import gg.eventalerts.eventalertsintegration.socket.WebSockets;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -16,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.PluginPlatform;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -24,9 +20,6 @@ import java.util.UUID;
 
 public class EventAlertsIntegration extends AnnoyingPlugin {
     @NotNull public static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
-    @NotNull public static final Gson GSON = new GsonBuilder()
-            .registerTypeAdapter(Date.class, new DateAdapter())
-            .create();
     @NotNull public static final TextComponent GATE = Component.text("EVENT ALERTS GATE\n\n", NamedTextColor.GOLD, TextDecoration.BOLD);
     @NotNull public static final TextComponent LINKING_INSTRUCTIONS = Component.text()
             .color(NamedTextColor.GRAY)

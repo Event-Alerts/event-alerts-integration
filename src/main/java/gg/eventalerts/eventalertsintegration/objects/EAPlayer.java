@@ -1,7 +1,7 @@
 package gg.eventalerts.eventalertsintegration.objects;
 
 import com.google.gson.JsonObject;
-import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
+import gg.eventalerts.eventalertsintegration.json.GSONProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xyz.srnyx.annoyingapi.libs.javautilities.MiscUtility;
@@ -23,7 +23,7 @@ public class EAPlayer extends EAObject {
     public EAPlayer(@NotNull JsonObject json) {
         this.discord = MiscUtility.handleException(() -> new Discord(json.getAsJsonObject(PROP_DISCORD))).orElse(null);
         this.minecraft = MiscUtility.handleException(() -> new Minecraft(json.getAsJsonObject(PROP_MINECRAFT))).orElse(null);
-        this.linkStatus = MiscUtility.handleException(() -> EventAlertsIntegration.GSON.fromJson(json.get(PROP_LINK_STATUS), LinkStatus.class)).orElse(null);
+        this.linkStatus = MiscUtility.handleException(() -> GSONProvider.GSON.fromJson(json.get(PROP_LINK_STATUS), LinkStatus.class)).orElse(null);
     }
 
     public record Discord(long id) {
@@ -38,7 +38,7 @@ public class EAPlayer extends EAObject {
             @NotNull private static final String PROP_UUID = "uuid";
 
             public Minecraft(@NotNull JsonObject uuid) {
-                this(EventAlertsIntegration.GSON.fromJson(uuid.get(PROP_UUID), UUID.class));
+                this(GSONProvider.GSON.fromJson(uuid.get(PROP_UUID), UUID.class));
             }
         }
 
