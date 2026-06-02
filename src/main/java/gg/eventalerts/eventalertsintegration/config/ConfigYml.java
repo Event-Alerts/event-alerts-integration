@@ -8,9 +8,11 @@ import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.file.AnnoyingResource;
 import xyz.srnyx.annoyingapi.file.PlayableSound;
 import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
+import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.Mapper;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -214,8 +216,9 @@ public class ConfigYml extends AnnoyingResource {
         @NotNull
         private <T extends Enum<T>> Set<T> getEnumSet(@NotNull Class<T> enumClass, @NotNull String path) {
             return getStringList(path).stream()
-                    .map(string -> EventAlertsIntegration.getEnum(enumClass, string))
-                    .filter(java.util.Objects::nonNull)
+                    .map(string -> Mapper.toEnum(string, enumClass))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
                     .collect(Collectors.toSet());
         }
 

@@ -30,8 +30,8 @@ public class CrossBan extends EAObject {
     public CrossBan(@NotNull JsonObject json) {
         minecraftUuid = UUID.fromString(json.get(PROP_MINECRAFT_UUID).getAsString());
         reason = json.get(PROP_REASON).getAsString();
-        expiration = MiscUtility.handleException(() -> new Date(json.get(PROP_EXPIRATION).getAsLong())).orElse(null);
-        status = MiscUtility.handleException(() -> EventAlertsIntegration.getEnum(Status.class, json.get(PROP_STATUS).getAsString())).orElse(null);
+        expiration = MiscUtility.handleException(() -> EventAlertsIntegration.GSON.fromJson(json.get(PROP_EXPIRATION), Date.class)).orElse(null);
+        status = MiscUtility.handleException(() -> EventAlertsIntegration.GSON.fromJson(json.get(PROP_STATUS), Status.class)).orElse(null);
     }
 
     @NotNull

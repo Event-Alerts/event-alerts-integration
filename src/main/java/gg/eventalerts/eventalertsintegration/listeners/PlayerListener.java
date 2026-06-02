@@ -22,6 +22,7 @@ import xyz.srnyx.annoyingapi.AnnoyingListener;
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
 
+import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -53,7 +54,7 @@ public class PlayerListener extends AnnoyingListener {
         connectionClient.send(new PlayerConnection(
                 player.getUniqueId(),
                 player.getName(),
-                System.currentTimeMillis(),
+                new Date(),
                 PlayerConnection.Type.JOIN));
     }
 
@@ -70,7 +71,7 @@ public class PlayerListener extends AnnoyingListener {
         connectionClient.send(new PlayerConnection(
                 player.getUniqueId(),
                 player.getName(),
-                System.currentTimeMillis(),
+                new Date(),
                 PlayerConnection.Type.QUIT));
     }
 

@@ -7,6 +7,7 @@ import gg.eventalerts.eventalertsintegration.config.PingRole;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.Mapper;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -71,7 +72,7 @@ public class Event extends EAObject {
         version = json.has("version") ? json.get("version").getAsString() : null;
         prize = json.has("prize") ? json.get("prize").getAsString() : null;
         maxPlayers = json.has("maxPlayers") ? json.get("maxPlayers").getAsInt() : null;
-        time = json.has("time") ? new Date(json.get("time").getAsLong()) : null;
+        time = json.has("time") ? EventAlertsIntegration.GSON.fromJson(json.get("time"), Date.class) : null;
         if (json.has("subscribers")) {
             subscribers = new HashSet<>();
             for (final JsonElement element : json.getAsJsonArray("subscribers")) subscribers.add(element.getAsLong());
@@ -89,10 +90,7 @@ public class Event extends EAObject {
     public Set<PingRole> getPingRoles() {
         if (rolesNamed == null) return Set.of();
         final Set<PingRole> pingRoles = new HashSet<>();
-        for (final String role : rolesNamed) {
-            final PingRole pingRole = EventAlertsIntegration.getEnum(PingRole.class, role);
-            if (pingRole != null) pingRoles.add(pingRole);
-        }
+        for (final String role : rolesNamed) Mapper.toEnum(role, PingRole.class).ifPresent(pingRoles::add);
         return pingRoles;
     }
 

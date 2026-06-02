@@ -22,16 +22,21 @@ public abstract class EAObject {
 
             // Add field to JSON
             try {
+                // Make field accessible if needed and get value
                 boolean inaccessible = !field.canAccess(this);
                 if (inaccessible) field.setAccessible(true);
                 final Object value = field.get(this);
                 if (inaccessible) field.setAccessible(false);
                 if (value == null) continue;
                 final String name = field.getName();
+
+                // EAObject
                 if (value instanceof EAObject eaObject) {
                     json.add(name, eaObject.toJson());
                     continue;
                 }
+
+                // Convert to JSON
                 json.add(name, EventAlertsIntegration.GSON.toJsonTree(value));
             } catch (final IllegalAccessException e) {
                 e.printStackTrace();
