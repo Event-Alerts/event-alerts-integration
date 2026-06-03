@@ -101,6 +101,6 @@ public class EventJsonTest {
 
         final Event event = GSONProvider.GSON.fromJson(json, Event.class);
 
-        assertNull(event.platforms);
+        assertEquals(Set.of(Event.Platform.JAVA), event.platforms);
     }
 }
