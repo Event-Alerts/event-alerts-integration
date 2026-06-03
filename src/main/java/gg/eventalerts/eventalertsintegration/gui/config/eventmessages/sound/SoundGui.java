@@ -23,21 +23,21 @@ public class SoundGui extends EventMessagesGui {
         return Gui.of(1)
                 .title(Component.text("Sound"))
                 .statelessComponent(container -> container.setItem(0, booleanItem(
-                        plugin.config.eventMessages.soundEnabled,
+                        plugin.config.event_messages.soundEnabled,
                         "Enabled",
                         "Whether to play a sound when\nan event message is broadcasted",
                         (player, context) -> {
-                            final boolean newStatus = !plugin.config.eventMessages.soundEnabled;
-                            plugin.config.eventMessages.soundEnabled = newStatus;
+                            final boolean newStatus = !plugin.config.event_messages.soundEnabled;
+                            plugin.config.event_messages.soundEnabled = newStatus;
                             plugin.config.setSave(ConfigYml.EventMessages.PATH_SOUND_ENABLED, newStatus);
                             playDingSound(newStatus);
                             open(false);
                         })))
                 .statelessComponent(container -> container.setItem(1, ItemBuilder.from(Material.NOTE_BLOCK)
                         .name(unitalicize(Component.text("Sound", NamedTextColor.GOLD)))
-                        .lore(lore("The ID/name of the sound that will play\n\n<gray>Current value: " + (plugin.config.eventMessages.sound == null
+                        .lore(lore("The ID/name of the sound that will play\n\n<gray>Current value: " + (plugin.config.event_messages.sound == null
                                 ? "<red>Disabled"
-                                : "<green>" + plugin.config.eventMessages.sound.sound)))
+                                : "<green>" + plugin.config.event_messages.sound.sound)))
                         .asGuiItem((player, context) -> { //TODO switch to anvil GUI when Triumph GUI updates
                             // Send chat message
                             player.sendMessage(Component.text()
@@ -56,9 +56,9 @@ public class SoundGui extends EventMessagesGui {
                         })))
                 .statelessComponent(container -> container.setItem(2, ItemBuilder.from(Material.BELL)
                         .name(unitalicize(Component.text("Volume", NamedTextColor.GOLD)))
-                        .lore(lore("The volume at which the\nsound will be played\n\n<gray>Current value: " + (plugin.config.eventMessages.sound == null
+                        .lore(lore("The volume at which the\nsound will be played\n\n<gray>Current value: " + (plugin.config.event_messages.sound == null
                                 ? "<red>Disabled"
-                                : "<green>" + plugin.config.eventMessages.sound.volume)))
+                                : "<green>" + plugin.config.event_messages.sound.volume)))
                         .asGuiItem((player, context) -> { //TODO switch to anvil GUI when Triumph GUI updates
                             // Send chat message
                             player.sendMessage(Component.text()
@@ -72,9 +72,9 @@ public class SoundGui extends EventMessagesGui {
                         })))
                 .statelessComponent(container -> container.setItem(3, ItemBuilder.from(Material.AMETHYST_SHARD)
                         .name(unitalicize(Component.text("Pitch", NamedTextColor.GOLD)))
-                        .lore(lore("The pitch at which the\nsound will be played\n\n<gray>Current value: " + (plugin.config.eventMessages.sound == null
+                        .lore(lore("The pitch at which the\nsound will be played\n\n<gray>Current value: " + (plugin.config.event_messages.sound == null
                                 ? "<red>Disabled"
-                                : "<green>" + plugin.config.eventMessages.sound.pitch)))
+                                : "<green>" + plugin.config.event_messages.sound.pitch)))
                         .asGuiItem((player, context) -> { //TODO switch to anvil GUI when Triumph GUI updates
                             // Send chat message
                             player.sendMessage(Component.text()
@@ -88,9 +88,9 @@ public class SoundGui extends EventMessagesGui {
                         })))
                 .statelessComponent(container -> container.setItem(4, ItemBuilder.from(Material.NAME_TAG)
                         .name(unitalicize(Component.text("Category", NamedTextColor.GOLD)))
-                        .lore(lore("The category that the sound\nwill be played through\n\n<gray>Current value: " + (plugin.config.eventMessages.sound == null
+                        .lore(lore("The category that the sound\nwill be played through\n\n<gray>Current value: " + (plugin.config.event_messages.sound == null
                                 ? "<red>Disabled"
-                                : "<green>" + plugin.config.eventMessages.sound.category)))
+                                : "<green>" + plugin.config.event_messages.sound.category)))
                         .asGuiItem((player, context) -> new CategoryGui(this).open(true))))
                 .statelessComponent(container -> container.setItem(8, backButton()));
     }

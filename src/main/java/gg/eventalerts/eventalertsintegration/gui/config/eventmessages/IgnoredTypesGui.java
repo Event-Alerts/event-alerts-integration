@@ -24,11 +24,11 @@ public class IgnoredTypesGui extends EventMessagesGui {
         for (final EventType type : types) {
             final int finalI = i;
             builder.statelessComponent(container1 -> container1.setItem(finalI, booleanItem(
-                    plugin.config.eventMessages.ignoredTypes.contains(type),
+                    plugin.config.event_messages.ignored_types.contains(type),
                     type.name,
                     "Whether to ignore " + type.name + "\nevents for event messages",
                     (player, context) -> {
-                        playDingSound(plugin.config.eventMessages.toggleIgnoredType(type));
+                        playDingSound(plugin.config.event_messages.toggleIgnoredType(type));
                         open(false);
                     })));
             i++;

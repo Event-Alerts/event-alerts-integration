@@ -18,11 +18,22 @@ public class WebsocketsGui extends AdvancedGui {
 
     @Override @NotNull
     public PaperGuiBuilder getGui() {
-        final String retryDelayValue = plugin.config.advanced.websockets.retryDelay == null
+        final String retryDelayValue = plugin.config.advanced.websocket.retry
                 ? "<red>Disabled"
-                : "<green>" + plugin.config.advanced.websockets.retryDelay + " minutes";
+                : "<green>" + plugin.config.advanced.websocket.retry_delay;
         return Gui.of(new HopperContainerType())
                 .title(Component.text("Websockets", NamedTextColor.DARK_RED))
+                .statelessComponent(container -> container.setItem(2, booleanItem(
+                        plugin.config.advanced.websocket.retry,
+                        "Retry",
+                        "Whether to automatically reconnect\nthe websocket if it disconnects",
+                        (player, context) -> {
+                            final boolean newValue = !plugin.config.advanced.websocket.retry;
+                            plugin.config.advanced.websocket.retry = newValue;
+                            plugin.config.setSave(ConfigYml.Advanced.Websocket.PATH_RETRY, newValue);
+                            playDingSound(newValue);
+                            open(false);
+                        })))
                 .statelessComponent(container -> container.setItem(0, ItemBuilder.from(Material.CLOCK)
                         .name(unitalicize(Component.text("Retry Delay", NamedTextColor.GOLD)))
                         .lore(lore("Minutes until a websocket attempts to\nreconnect after being disconnected\n\n<gray>Current value: " + retryDelayValue))
@@ -33,18 +44,18 @@ public class WebsocketsGui extends AdvancedGui {
                                     .append(CANCEL));
 
                             // Add to map and close GUI
-                            plugin.guiInput.put(player.getUniqueId(), ConfigYml.Advanced.Websockets.PATH_RETRY_DELAY);
+                            plugin.guiInput.put(player.getUniqueId(), ConfigYml.Advanced.Websocket.PATH_RETRY_DELAY);
                             playDingSound(true);
                             context.guiView().close();
                         })))
                 .statelessComponent(container -> container.setItem(1, booleanItem(
-                        plugin.config.advanced.websockets.logs,
+                        plugin.config.advanced.websocket.logs,
                         "Logs",
                         "Whether to log websocket\nconnection messages",
                         (player, context) -> {
-                            final boolean newStatus = !plugin.config.advanced.websockets.logs;
-                            plugin.config.advanced.websockets.logs = newStatus;
-                            plugin.config.setSave(ConfigYml.Advanced.Websockets.PATH_LOGS, newStatus);
+                            final boolean newStatus = !plugin.config.advanced.websocket.logs;
+                            plugin.config.advanced.websocket.logs = newStatus;
+                            plugin.config.setSave(ConfigYml.Advanced.Websocket.PATH_LOGS, newStatus);
                             playDingSound(newStatus);
                             open(false);
                         })))

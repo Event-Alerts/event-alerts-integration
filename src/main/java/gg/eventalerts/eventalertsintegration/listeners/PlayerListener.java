@@ -43,7 +43,7 @@ public class PlayerListener extends AnnoyingListener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(@NotNull PlayerLoginEvent event) {
-        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED || plugin.config.apiKeys.serverApiKey == null) return;
+        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED || plugin.config.api_keys.server == null) return;
 
         // Get PlayerConnectionClient
         final SocketClient<?> client = plugin.webSockets.clients.get(SocketEndpoint.PLAYER_CONNECTION);
@@ -60,7 +60,7 @@ public class PlayerListener extends AnnoyingListener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
-        if (plugin.config.apiKeys.serverApiKey == null) return;
+        if (plugin.config.api_keys.server == null) return;
 
         // Get PlayerConnectionClient
         final SocketClient<?> client = plugin.webSockets.clients.get(SocketEndpoint.PLAYER_CONNECTION);
@@ -84,7 +84,7 @@ public class PlayerListener extends AnnoyingListener {
      * @return  true if the player is allowed to join, false if they should be kicked (or if the check failed and they should be kicked or allowed based on config)
      */
     private boolean checkLinking(@NotNull PlayerLoginEvent event) {
-        if (!plugin.config.linking.requireLink || !plugin.config.linking.checkOnJoin) return true;
+        if (!plugin.config.linking.require_link || !plugin.config.linking.check_on_join) return true;
         final Player player = event.getPlayer();
 
         // Check permission
@@ -132,7 +132,7 @@ public class PlayerListener extends AnnoyingListener {
 
     private void failLinking(@NotNull PlayerLoginEvent event, @NotNull String reason, @Nullable Exception exception) {
         AnnoyingPlugin.log(Level.SEVERE, "Failed to check linking status for " + event.getPlayer().getName() + ": " + reason, exception);
-        if (!plugin.config.linking.allowJoinOnFailure) event.disallow(PlayerLoginEvent.Result.KICK_OTHER, Component.text()
+        if (!plugin.config.linking.allow_join_on_failure) event.disallow(PlayerLoginEvent.Result.KICK_OTHER, Component.text()
                 .append(EventAlertsIntegration.GATE)
                 .append(MINI_MESSAGE.deserialize("<red>Failed to check linking status, try again later!\n\n<gray>If this issue persists, contact support"))
                 .build());
@@ -142,7 +142,7 @@ public class PlayerListener extends AnnoyingListener {
      * @return  true if the player is allowed to join, false if they should be kicked (or if the check failed and they should be kicked or allowed based on config)
      */
     private boolean checkCrossBan(@NotNull PlayerLoginEvent event) {
-        if (!plugin.config.crossBan.enabled || !plugin.config.crossBan.checkOnJoin) return true;
+        if (!plugin.config.cross_ban.enabled || !plugin.config.cross_ban.check_on_join) return true;
         final Player player = event.getPlayer();
 
         // Check permission
@@ -193,7 +193,7 @@ public class PlayerListener extends AnnoyingListener {
 
     private void failCrossBan(@NotNull PlayerLoginEvent event, @NotNull String reason, @Nullable Exception exception) {
         AnnoyingPlugin.log(Level.SEVERE, "Failed to check cross-ban status for " + event.getPlayer().getName() + ": " + reason, exception);
-        if (!plugin.config.crossBan.allowJoinOnFailure) event.disallow(PlayerLoginEvent.Result.KICK_OTHER, Component.text()
+        if (!plugin.config.cross_ban.allow_join_on_failure) event.disallow(PlayerLoginEvent.Result.KICK_OTHER, Component.text()
                 .append(EventAlertsIntegration.GATE)
                 .append(MINI_MESSAGE.deserialize("<red>Failed to check cross-ban status, try again later!\n\n<gray>If this issue persists, contact support"))
                 .build());

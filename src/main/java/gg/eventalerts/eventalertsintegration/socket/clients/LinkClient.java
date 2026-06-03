@@ -18,7 +18,7 @@ public class LinkClient extends SocketClient<EAPlayer> {
 
     @Override
     public boolean shouldConnect() {
-        return plugin.config.linking.requireLink;
+        return plugin.config.linking.require_link;
     }
 
     @Override
@@ -29,7 +29,7 @@ public class LinkClient extends SocketClient<EAPlayer> {
         if (eaPlayer.linkStatus == EAPlayer.LinkStatus.ADDED && eaPlayer.discord != null) return;
 
         // Unlinked
-        if (eaPlayer.linkStatus == EAPlayer.LinkStatus.REMOVED && plugin.config.linking.requireLink) {
+        if (eaPlayer.linkStatus == EAPlayer.LinkStatus.REMOVED && plugin.config.linking.require_link) {
             // Kick player
             final Player player = Bukkit.getPlayer(eaPlayer.minecraft.uuid);
             if (player != null) plugin.runOnMainThread(() -> player.kick(Component.text()

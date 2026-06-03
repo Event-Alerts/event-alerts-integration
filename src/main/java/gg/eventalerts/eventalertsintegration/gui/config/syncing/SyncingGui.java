@@ -24,12 +24,12 @@ public class SyncingGui extends ConfigGui {
         return Gui.of(new HopperContainerType())
                 .title(Component.text("Syncing"))
                 .statelessComponent(container -> container.setItem(0, booleanItem(
-                        plugin.config.syncing.minecraftToDiscord.connections,
+                        plugin.config.syncing.minecraft_to_discord.connections,
                         "Minecraft -> Discord Connections",
                         "Whether to enable join/quit messages\nbeing synced to Discord threads",
                         (player, context) -> {
-                            final boolean newStatus = !plugin.config.syncing.minecraftToDiscord.connections;
-                            plugin.config.syncing.minecraftToDiscord.setConnections(newStatus);
+                            final boolean newStatus = !plugin.config.syncing.minecraft_to_discord.connections;
+                            plugin.config.syncing.minecraft_to_discord.setConnections(newStatus);
                             playDingSound(newStatus);
                             open(false);
                         })))

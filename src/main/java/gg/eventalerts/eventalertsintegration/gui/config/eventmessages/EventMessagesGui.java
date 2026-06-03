@@ -24,22 +24,22 @@ public class EventMessagesGui extends ConfigGui {
         return Gui.of(1)
                 .title(Component.text("Event Messages"))
                 .statelessComponent(container -> container.setItem(0, booleanItem(
-                        plugin.config.eventMessages.enabled,
+                        plugin.config.event_messages.enabled,
                         "Enabled",
                         "Whether to enable event messages\nbeing broadcast in the server chat",
                         (player, context) -> {
-                            final boolean newStatus = !plugin.config.eventMessages.enabled;
-                            plugin.config.eventMessages.setEnabled(newStatus);
+                            final boolean newStatus = !plugin.config.event_messages.enabled;
+                            plugin.config.event_messages.setEnabled(newStatus);
                             playDingSound(newStatus);
                             open(false);
                         })))
                 .statelessComponent(container -> container.setItem(1, booleanItem(
-                        plugin.config.eventMessages.detectIps,
+                        plugin.config.event_messages.detect_ips,
                         "Detect IPs <dark_gray>1.20.5+",
                         "If an IP is detected in an event message,\nplayers will be able to click a button to join\nthe event's server using transfer packets",
                         (player, context) -> {
-                            final boolean newStatus = !plugin.config.eventMessages.detectIps;
-                            plugin.config.eventMessages.detectIps = newStatus;
+                            final boolean newStatus = !plugin.config.event_messages.detect_ips;
+                            plugin.config.event_messages.detect_ips = newStatus;
                             plugin.config.setSave(ConfigYml.EventMessages.PATH_DETECT_IPS, newStatus);
                             playDingSound(newStatus);
                             open(false);

@@ -80,7 +80,7 @@ public class ChatListener extends AnnoyingListener {
                     }
 
                     // Set sound
-                    if (plugin.config.eventMessages.sound != null) plugin.config.eventMessages.sound.sound = sound;
+                    if (plugin.config.event_messages.sound != null) plugin.config.event_messages.sound.sound = sound;
                     plugin.config.setSave(inputKey, message);
 
                     // Send message and reopen GUI
@@ -108,7 +108,7 @@ public class ChatListener extends AnnoyingListener {
                     }
 
                     // Set volume
-                    if (plugin.config.eventMessages.sound != null) plugin.config.eventMessages.sound.volume = volume;
+                    if (plugin.config.event_messages.sound != null) plugin.config.event_messages.sound.volume = volume;
                     plugin.config.setSave(inputKey, volume);
 
                     // Send message and reopen GUI
@@ -135,7 +135,7 @@ public class ChatListener extends AnnoyingListener {
                     }
 
                     // Set pitch
-                    if (plugin.config.eventMessages.sound != null) plugin.config.eventMessages.sound.pitch = pitch;
+                    if (plugin.config.event_messages.sound != null) plugin.config.event_messages.sound.pitch = pitch;
                     plugin.config.setSave(inputKey, pitch);
 
                     // Send message and reopen GUI
@@ -169,7 +169,7 @@ public class ChatListener extends AnnoyingListener {
             }
 
             // Set format
-            plugin.config.syncing.discordToMinecraft.messages.setFormat(message);
+            plugin.config.syncing.discord_to_minecraft.messages.setFormat(message);
 
             // Send message and reopen GUI
             player.sendMessage(Component.text()
@@ -182,7 +182,7 @@ public class ChatListener extends AnnoyingListener {
         }
 
         // Websockets retry delay
-        if (inputKey.equals(ConfigYml.Advanced.Websockets.PATH_RETRY_DELAY)) {
+        if (inputKey.equals(ConfigYml.Advanced.Websocket.PATH_RETRY_DELAY)) {
             // Cancel
             if (message.equalsIgnoreCase("cancel")) {
                 player.sendMessage(Component.text("\nCancelled websockets retry delay change\n", NamedTextColor.GREEN));
@@ -209,8 +209,8 @@ public class ChatListener extends AnnoyingListener {
             }
 
             // Set retry delay
-            plugin.config.advanced.websockets.retryDelay = retryDelay;
-            plugin.config.setSave(ConfigYml.Advanced.Websockets.PATH_RETRY_DELAY, retryDelay);
+            plugin.config.advanced.websocket.retry_delay = retryDelay;
+            plugin.config.setSave(ConfigYml.Advanced.Websocket.PATH_RETRY_DELAY, retryDelay);
 
             // Send message and reopen GUI
             if (retryDelay == -1) {
@@ -264,9 +264,7 @@ public class ChatListener extends AnnoyingListener {
         }
 
         // Save config
-        final List<String> combined = new ArrayList<>(plugin.config.eventMessages.hostFilterServers);
-        combined.addAll(plugin.config.eventMessages.hostFilterUsers);
-        plugin.config.setSave(ConfigYml.EventMessages.PATH_HOST_FILTER, combined);
+        plugin.config.setSave(ConfigYml.EventMessages.PATH_HOST_FILTER, plugin.config.event_messages.host_filter);
 
         // Send message and reopen GUI
         player.sendMessage(Component.text()

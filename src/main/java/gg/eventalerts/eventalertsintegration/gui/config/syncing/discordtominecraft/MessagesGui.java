@@ -25,26 +25,26 @@ public class MessagesGui extends ConfigGui {
         return Gui.of(new HopperContainerType())
                 .title(Component.text("Discord -> Minecraft Messages"))
                 .statelessComponent(container -> container.setItem(0, booleanItem(
-                        plugin.config.syncing.discordToMinecraft.messages.enabled,
+                        plugin.config.syncing.discord_to_minecraft.messages.enabled,
                         "Enabled",
                         "Whether to enable Discord messages\nbeing synced to Minecraft chat",
                         (player, context) -> {
-                            final boolean newStatus = !plugin.config.syncing.discordToMinecraft.messages.enabled;
-                            plugin.config.syncing.discordToMinecraft.messages.setEnabled(newStatus);
+                            final boolean newStatus = !plugin.config.syncing.discord_to_minecraft.messages.enabled;
+                            plugin.config.syncing.discord_to_minecraft.messages.setEnabled(newStatus);
                             playDingSound(newStatus);
                             open(false);
                         })))
                 .statelessComponent(container -> container.setItem(1, ItemBuilder.from(Material.WRITABLE_BOOK)
                         .name(unitalicize(Component.text("Format", NamedTextColor.GOLD)))
-                        .lore(lore("The format of Discord messages in the Minecraft chat.\nSee config.yml for placeholders!\n\n<gray>Current value: <reset>" + plugin.config.syncing.discordToMinecraft.messages.format))
+                        .lore(lore("The format of Discord messages in the Minecraft chat.\nSee config.yml for placeholders!\n\n<gray>Current value: <reset>" + plugin.config.syncing.discord_to_minecraft.messages.format))
                         .asGuiItem((player, context) -> { //TODO switch to anvil GUI when Triumph GUI updates
                             // Send chat message
                             player.sendMessage(Component.text()
                                     .color(NamedTextColor.GREEN)
                                     .append(Component.text("\nType the new message format in chat!\nSee config.yml for placeholders\nClick "))
                                     .append(Component.text("here", NamedTextColor.DARK_GREEN, TextDecoration.UNDERLINED)
-                                            .hoverEvent(Component.text(plugin.config.syncing.discordToMinecraft.messages.format, NamedTextColor.YELLOW))
-                                            .clickEvent(ClickEvent.suggestCommand(plugin.config.syncing.discordToMinecraft.messages.format)))
+                                            .hoverEvent(Component.text(plugin.config.syncing.discord_to_minecraft.messages.format, NamedTextColor.YELLOW))
+                                            .clickEvent(ClickEvent.suggestCommand(plugin.config.syncing.discord_to_minecraft.messages.format)))
                                     .append(Component.text(" to insert the current format to chat"))
                                     .append(CANCEL));
 

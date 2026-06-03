@@ -23,11 +23,11 @@ public class AdvancedGui extends ConfigGui {
         return Gui.of(new HopperContainerType())
                 .title(Component.text("Advanced", NamedTextColor.DARK_RED))
                 .statelessComponent(container -> container.setItem(0, booleanItem(
-                        plugin.config.advanced.useTestingApi,
+                        plugin.config.advanced.use_testing_api,
                         "Use Testing API",
                         "Whether to enable using the testing API hosts\nOnly the developer really needs to enable this",
                         (player, context) -> {
-                            final boolean newStatus = !plugin.config.advanced.useTestingApi;
+                            final boolean newStatus = !plugin.config.advanced.use_testing_api;
                             plugin.config.advanced.setUseTestingApi(newStatus);
                             playDingSound(newStatus);
                             open(false);

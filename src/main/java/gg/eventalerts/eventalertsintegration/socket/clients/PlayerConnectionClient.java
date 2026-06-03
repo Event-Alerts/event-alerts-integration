@@ -14,6 +14,6 @@ public class PlayerConnectionClient extends SocketClient<PlayerConnection> {
 
     @Override
     public boolean shouldConnect() {
-        return plugin.config.syncing.minecraftToDiscord.connections && plugin.config.apiKeys.serverApiKey != null;
+        return plugin.config.syncing.minecraft_to_discord.connections && plugin.config.api_keys.server != null;
     }
 }

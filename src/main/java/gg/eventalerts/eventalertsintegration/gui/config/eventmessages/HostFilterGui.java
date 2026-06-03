@@ -58,8 +58,8 @@ public class HostFilterGui extends EventMessagesGui {
                             .lore(lore("Click to remove this " + hostFilter.lower + "\nfrom the host filter"))
                             .asGuiItem((player1, context1) -> {
                                 set.remove(id);
-                                final List<String> combinedFilter = new ArrayList<>(plugin.config.eventMessages.hostFilterServers);
-                                combinedFilter.addAll(plugin.config.eventMessages.hostFilterUsers);
+                                final List<String> combinedFilter = new ArrayList<>(plugin.config.event_messages.hostFilterServers);
+                                combinedFilter.addAll(plugin.config.event_messages.hostFilterUsers);
                                 plugin.config.setSave(ConfigYml.EventMessages.PATH_HOST_FILTER, combinedFilter);
                                 playDingSound(false);
                                 open(false);

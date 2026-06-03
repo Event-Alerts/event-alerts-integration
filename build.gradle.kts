@@ -34,14 +34,21 @@ sourceSets.main { blossom.javaSources {
     property("jemoji_version", jEmojiVersion)
 } }
 
-// Dependencies
+// Repositories
 repository(Repository.TRIUMPH_SNAPSHOTS, Repository.PLACEHOLDER_API)
+repository("https://repo.okaeri.cloud/releases")
+
+// Dependencies
 dependencies {
+    implementationRelocate("eu.okaeri:okaeri-configs-yaml-bukkit:6.1.0-beta.4")
+    implementationRelocate("eu.okaeri:okaeri-configs-serdes-commons:6.1.0-beta.4")
+    implementationRelocate("eu.okaeri:okaeri-configs-serdes-bukkit:6.1.0-beta.4")
     implementationRelocate("dev.triumphteam:triumph-gui-paper:4.0.0-SNAPSHOT", "dev.triumphteam")
 
     compileOnly("org.java-websocket:Java-WebSocket:$javaWebSocketVersion") { // Downloaded on runtime
         relocate("org.java_websocket")
     }
+    @Suppress("AvoidDuplicateDependencies")
     compileOnly("org.mongodb:bson:$bsonVersion") { // Downloaded on runtime
         relocate("org.bson")
         relocate("org.checkerframework")
@@ -53,6 +60,7 @@ dependencies {
     compileOnly("me.clip:placeholderapi:2.12.2")
 
     testImplementation("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
+    @Suppress("AvoidDuplicateDependencies")
     testImplementation("org.mongodb:bson:$bsonVersion")
     testImplementation(platform("org.junit:junit-bom:6.1.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")

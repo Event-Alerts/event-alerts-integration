@@ -8,7 +8,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import xyz.srnyx.annoyingapi.file.PlayableSound;
 
 import static gg.eventalerts.eventalertsintegration.EventAlertsIntegration.MINI_MESSAGE;
 
@@ -46,13 +45,11 @@ public class EventMessageUtility {
     }
 
     public static void broadcast(@NotNull EventAlertsIntegration plugin, @NotNull TextComponent message) {
-        final PlayableSound sound = plugin.config.eventMessages.sound;
-        final boolean playSound = plugin.config.eventMessages.soundEnabled && sound != null;
         for (final Player player : Bukkit.getOnlinePlayers()) {
             // Message
             player.sendMessage(message);
             // Sound
-            if (playSound) sound.play(player);
+            if (plugin.config.event_messages.sound.enabled) plugin.config.event_messages.sound.sound.play(player);
         }
     }
 }

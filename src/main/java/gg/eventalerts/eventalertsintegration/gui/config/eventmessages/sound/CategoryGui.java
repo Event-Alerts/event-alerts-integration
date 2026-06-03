@@ -22,7 +22,7 @@ public class CategoryGui extends SoundGui {
         final PaperGuiBuilder builder = Gui.of(rows);
 
         // Add sound category buttons
-        final SoundCategory current = plugin.config.eventMessages.sound != null ? (SoundCategory) plugin.config.eventMessages.sound.category : null;
+        final SoundCategory current = plugin.config.event_messages.sound != null ? (SoundCategory) plugin.config.event_messages.sound.category : null;
         int i = 0;
         for (final SoundCategory category : categories) {
             final int finalI = i;
@@ -31,7 +31,7 @@ public class CategoryGui extends SoundGui {
                     category.name(),
                     "Whether to play the sound\nin the " + category.name() + " category",
                     (player, context) -> {
-                        plugin.config.eventMessages.sound.category = category;
+                        plugin.config.event_messages.sound.category = category;
                         plugin.config.setSave(ConfigYml.EventMessages.PATH_SOUND + ".category", category.name());
                         playDingSound(true);
                         open(false);

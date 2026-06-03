@@ -1,6 +1,10 @@
 package gg.eventalerts.eventalertsintegration;
 
+import eu.okaeri.configs.serdes.commons.SerdesCommons;
+import eu.okaeri.configs.yaml.bukkit.YamlBukkitConfigurer;
+import eu.okaeri.configs.yaml.bukkit.serdes.SerdesBukkit;
 import gg.eventalerts.eventalertsintegration.config.ConfigYml;
+import gg.eventalerts.eventalertsintegration.config.serdes.PlayableSoundSerializer;
 import gg.eventalerts.eventalertsintegration.socket.WebSockets;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -12,10 +16,13 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.PluginPlatform;
+import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
 
 public class EventAlertsIntegration extends AnnoyingPlugin {
@@ -32,7 +39,7 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
             .append(Component.text(" for more information"))
             .build();
 
-    public ConfigYml config;
+    @NotNull public final ConfigYml config = new ConfigYml(this);
     public WebSockets webSockets;
     /**
      * [player UUID, input key ID]
@@ -47,7 +54,18 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
                         "gg.eventalerts.eventalertsintegration.commands",
                         "gg.eventalerts.eventalertsintegration.listeners");
 
+        // Load BSON
         libraryManager.loadLibrary(EALibrary.BSON);
+
+        // Configure config
+        config.configure(opt -> {
+            opt.configurer(new YamlBukkitConfigurer(), new SerdesCommons(), new SerdesBukkit(), registry -> {
+                registry.register(new PlayableSoundSerializer());
+            });
+            opt.bindFile(new File(getDataFolder(), "config.yml"));
+            opt.removeOrphans(true);
+        });
+        config.saveDefaults();
     }
 
     @Override
@@ -58,7 +76,12 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
     @Override
     public void reload() {
         // Load config
-        config = new ConfigYml(this);
+        config.load(true);
+
+        // Toggle debug
+        AnnoyingPlugin.LOGGER.setLevel(config.advanced.debug ? Level.FINE : Level.INFO);
+        HttpUtility.DEBUG = config.advanced.debug;
+
         // Reconnect websockets
         if (webSockets == null) webSockets = new WebSockets(this);
         webSockets.reconnectAll("Plugin reload");
@@ -71,12 +94,12 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
 
     @NotNull
     public String getApiHost() {
-        return config.advanced.useTestingApi ? "http://localhost:8080/api/v1/" : "https://eventalerts.gg/api/v1/";
+        return config.advanced.use_testing_api ? "http://localhost:8080/api/v1/" : "https://eventalerts.gg/api/v1/";
     }
 
     @NotNull
     public String getSocketHost() {
-        return config.advanced.useTestingApi ? "ws://localhost:9090/api/v1/socket/" : "wss://eventalerts.gg/api/v1/socket/";
+        return config.advanced.use_testing_api ? "ws://localhost:9090/api/v1/socket/" : "wss://eventalerts.gg/api/v1/socket/";
     }
 
     @NotNull
@@ -88,8 +111,8 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
     public Map<String, String> getSocketHeaders() {
         final Map<String, String> headers = new HashMap<>();
         headers.put("User-Agent", getUserAgent());
-        if (config.apiKeys.playerApiKey != null) headers.put("X-Player-Key", config.apiKeys.playerApiKey);
-        if (config.apiKeys.serverApiKey != null) headers.put("X-Server-Key", config.apiKeys.serverApiKey);
+        if (config.api_keys.player != null) headers.put("X-Player-Key", config.api_keys.player);
+        if (config.api_keys.server != null) headers.put("X-Server-Key", config.api_keys.server);
         return headers;
     }
 

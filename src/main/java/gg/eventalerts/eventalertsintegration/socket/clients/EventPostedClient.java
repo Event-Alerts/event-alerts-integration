@@ -35,28 +35,28 @@ public class EventPostedClient extends SocketClient<Event> {
 
     @Override
     public boolean shouldConnect() {
-        return plugin.config.eventMessages.enabled && !plugin.config.eventMessages.ignoredTypes.containsAll(EventType.REGULAR_TYPES);
+        return plugin.config.event_messages.enabled && !plugin.config.event_messages.ignored_types.containsAll(EventType.REGULAR_TYPES);
     }
 
     @Override
     public void onMessage(@NotNull Event object) {
         // Get/check type
         final EventType type = object.server != null ? EventType.PARTNER : EventType.COMMUNITY;
-        if (plugin.config.eventMessages.ignoredTypes.contains(type)) return;
+        if (plugin.config.event_messages.ignored_types.contains(type)) return;
 
         // Get/check format
         final EventFormat format = object.custom() ? EventFormat.CUSTOM : EventFormat.BUILT;
-        if (plugin.config.eventMessages.ignoredFormats.contains(format)) return;
+        if (plugin.config.event_messages.ignored_formats.contains(format)) return;
 
         // Check server
-        if (object.server != null && !plugin.config.eventMessages.hostFilterServers.isEmpty() && !plugin.config.eventMessages.hostFilterServers.contains(object.server.toString())) return;
+        if (object.server != null && !plugin.config.event_messages.isInHostFilter(object.server)) return;
 
         // Check host
-        if (!plugin.config.eventMessages.hostFilterUsers.isEmpty() && !plugin.config.eventMessages.hostFilterUsers.contains(String.valueOf(object.host))) return;
+        if (object.host != null && !plugin.config.event_messages.isInHostFilter(object.host)) return;
 
         // Check Partner ping roles
         final boolean hasRoles = object.rolesNamed != null && !object.rolesNamed.isEmpty();
-        final Set<PingRole> ignoredPartnerRoles = plugin.config.eventMessages.ignoredPartnerRoles;
+        final Set<PingRole> ignoredPartnerRoles = plugin.config.event_messages.ignored_partner_roles;
         if (hasRoles && object.rolesNamed.stream().anyMatch(ignoredPartnerRoles::contains)) return;
 
         // Replace emojis in description
@@ -132,7 +132,7 @@ public class EventPostedClient extends SocketClient<Event> {
         }
 
         // Join button
-        if (plugin.config.eventMessages.detectIps && RefPlayer.TRANSFER != null) {
+        if (plugin.config.event_messages.detect_ips && RefPlayer.TRANSFER != null) {
             EAStringUtility.IpPort ipPort = null;
             // Get from dedicated IP field
             if (object.ip != null) ipPort = EAStringUtility.extractIpPort(object.ip, null);
