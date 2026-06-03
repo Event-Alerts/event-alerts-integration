@@ -2,23 +2,25 @@ package gg.eventalerts.eventalertsintegration.config;
 
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.file.AnnoyingResource;
 import xyz.srnyx.annoyingapi.file.PlayableSound;
 import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
+import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.Mapper;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 
 public class ConfigYml extends AnnoyingResource {
     @NotNull public static final String PATH_API_KEYS  = "api-keys";
-    @NotNull public static final String PATH_DISCORD_MESSAGE_SYNCING = "discord-message-syncing";
+    @NotNull public static final String PATH_SYNCING = "syncing";
     @NotNull public static final String PATH_LINKING = "linking";
     @NotNull public static final String PATH_CROSS_BAN = "cross-ban";
     @NotNull public static final String PATH_EVENT_MESSAGES = "event-messages";
@@ -27,7 +29,7 @@ public class ConfigYml extends AnnoyingResource {
     @NotNull private final EventAlertsIntegration eaPlugin;
 
     @NotNull public final ApiKeys apiKeys;
-    @NotNull public final DiscordMessageSyncing discordMessageSyncing;
+    @NotNull public final ConfigYml.Syncing syncing;
     @NotNull public final Linking linking;
     @NotNull public final CrossBan crossBan;
     @NotNull public final EventMessages eventMessages;
@@ -38,7 +40,7 @@ public class ConfigYml extends AnnoyingResource {
         eaPlugin = plugin;
 
         apiKeys = new ApiKeys();
-        discordMessageSyncing = new DiscordMessageSyncing();
+        syncing = new Syncing();
         linking = new Linking();
         crossBan = new CrossBan();
         eventMessages = new EventMessages();
@@ -75,14 +77,60 @@ public class ConfigYml extends AnnoyingResource {
         }
     }
 
-    public class DiscordMessageSyncing {
-        @NotNull public static final String PATH_ENABLED = PATH_DISCORD_MESSAGE_SYNCING + ".enabled";
-        @NotNull public static final String DISCORDSRV_INTEGRATION = PATH_DISCORD_MESSAGE_SYNCING + ".discordsrv-integration";
-        @NotNull public static final String PATH_FORMAT = PATH_DISCORD_MESSAGE_SYNCING + ".format";
+    public class Syncing {
+        @NotNull public static final String PATH_DISCORD_TO_MINECRAFT = PATH_SYNCING + ".discord-to-minecraft";
+        @NotNull public static final String PATH_MINECRAFT_TO_DISCORD = PATH_SYNCING + ".minecraft-to-discord";
 
-        public boolean enabled = getBoolean(PATH_ENABLED, true);
-        public boolean discordSRVIntegration = getBoolean(DISCORDSRV_INTEGRATION, true);
-        @NotNull public String format = getString(PATH_FORMAT, "<dark_aqua>\uD83C\uDF89 [<event_title>] <aqua>[<author_name>] <content_stripped>");
+        @NotNull public final DiscordToMinecraft discordToMinecraft = new DiscordToMinecraft();
+        @NotNull public final MinecraftToDiscord minecraftToDiscord = new MinecraftToDiscord();
+
+        public class DiscordToMinecraft {
+            @NotNull public static final String PATH_MESSAGES = PATH_DISCORD_TO_MINECRAFT + ".messages";
+
+            @NotNull public final Messages messages = new Messages();
+
+            public class Messages {
+                @NotNull public static final String PATH_ENABLED = PATH_MESSAGES + ".enabled";
+                @NotNull public static final String PATH_FORMAT = PATH_MESSAGES + ".format";
+
+                public boolean enabled = getBoolean(PATH_ENABLED, true);
+                @NotNull public String format = getString(PATH_FORMAT, "<dark_aqua>\uD83C\uDF89 [<event_title>] <aqua>[<author_name>] <message_content_stripped><message_attachments_pretty>");
+
+                public void setEnabled(boolean newStatus) {
+                    if (enabled == newStatus) return;
+
+                    // Update config
+                    enabled = newStatus;
+                    setSave(PATH_ENABLED, newStatus);
+
+                    // Reconnect websocket
+                    eaPlugin.webSockets.reconnect("Config updated", SocketEndpoint.EVENT_CHAT);
+                }
+
+                public void setFormat(@NotNull String newFormat) {
+                    if (format.equals(newFormat)) return;
+                    format = newFormat;
+                    setSave(PATH_FORMAT, newFormat);
+                }
+            }
+        }
+
+        public class MinecraftToDiscord {
+            @NotNull public static final String PATH_CONNECTIONS = PATH_MINECRAFT_TO_DISCORD + ".connections";
+
+            public boolean connections = getBoolean(PATH_CONNECTIONS, true);
+
+            public void setConnections(boolean newStatus) {
+                if (connections == newStatus) return;
+
+                // Update config
+                connections = newStatus;
+                setSave(PATH_CONNECTIONS, newStatus);
+
+                // Reconnect websocket
+                eaPlugin.webSockets.reconnect("Config updated", SocketEndpoint.PLAYER_CONNECTION);
+            }
+        }
     }
 
     public class Linking {
@@ -140,7 +188,7 @@ public class ConfigYml extends AnnoyingResource {
         public boolean enabled = getBoolean(PATH_ENABLED, true);
         public boolean detectIps = getBoolean(PATH_DETECT_IPS);
         public boolean soundEnabled = getBoolean(PATH_SOUND_ENABLED, true);
-        @Nullable public PlayableSound sound = getPlayableSound(PATH_SOUND).orElse(null);
+        @Nullable public final PlayableSound sound = getPlayableSound(PATH_SOUND).orElse(null);
         @NotNull public final Set<EventType> ignoredTypes = getEnumSet(EventType.class, PATH_IGNORED_TYPES);
         @NotNull public final Set<PingRole> ignoredPartnerRoles = getEnumSet(PingRole.class, PATH_IGNORED_PARTNER_ROLES);
         @NotNull public final Set<EventFormat> ignoredFormats = getEnumSet(EventFormat.class, PATH_IGNORED_FORMATS);
@@ -168,8 +216,9 @@ public class ConfigYml extends AnnoyingResource {
         @NotNull
         private <T extends Enum<T>> Set<T> getEnumSet(@NotNull Class<T> enumClass, @NotNull String path) {
             return getStringList(path).stream()
-                    .map(string -> EventAlertsIntegration.getEnum(enumClass, string))
-                    .filter(java.util.Objects::nonNull)
+                    .map(string -> Mapper.toEnum(string, enumClass))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
                     .collect(Collectors.toSet());
         }
 
@@ -198,7 +247,7 @@ public class ConfigYml extends AnnoyingResource {
         @NotNull public static final String PATH_USE_TESTING_API = PATH_ADVANCED + ".use-testing-api";
         @NotNull public static final String PATH_WEBSOCKETS = PATH_ADVANCED + ".websockets";
 
-        public boolean debug = getBoolean(PATH_DEBUG, false);
+        public final boolean debug = getBoolean(PATH_DEBUG, false);
         public boolean useTestingApi = getBoolean(PATH_USE_TESTING_API, false);
         @NotNull public final Websockets websockets = new Websockets();
 

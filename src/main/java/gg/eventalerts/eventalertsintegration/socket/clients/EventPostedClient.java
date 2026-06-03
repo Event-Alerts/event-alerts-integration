@@ -2,31 +2,27 @@ package gg.eventalerts.eventalertsintegration.socket.clients;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
+import gg.eventalerts.eventalertsintegration.json.GSONProvider;
 import gg.eventalerts.eventalertsintegration.reflection.org.bukkit.entity.RefPlayer;
 import gg.eventalerts.eventalertsintegration.utility.EAStringUtility;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.config.EventFormat;
 import gg.eventalerts.eventalertsintegration.config.EventType;
 import gg.eventalerts.eventalertsintegration.config.PingRole;
-import gg.eventalerts.eventalertsintegration.objects.EAObject;
 import gg.eventalerts.eventalertsintegration.objects.Event;
 import gg.eventalerts.eventalertsintegration.objects.Server;
 import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
 import gg.eventalerts.eventalertsintegration.socket.SocketClient;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-
 import org.jetbrains.annotations.NotNull;
-
 import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
 import xyz.srnyx.annoyingapi.libs.javautilities.StringUtility;
 import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.DurationFormatter;
 
-import java.util.*;
+import java.util.Set;
 
 import static gg.eventalerts.eventalertsintegration.EventAlertsIntegration.MINI_MESSAGE;
 import static gg.eventalerts.eventalertsintegration.utility.EventMessageUtility.*;
@@ -43,13 +39,13 @@ public class EventPostedClient extends SocketClient<Event> {
     }
 
     @Override
-    public void handle(@NotNull Event object) {
+    public void onMessage(@NotNull Event object) {
         // Get/check type
         final EventType type = object.server != null ? EventType.PARTNER : EventType.COMMUNITY;
         if (plugin.config.eventMessages.ignoredTypes.contains(type)) return;
 
         // Get/check format
-        final EventFormat format = object.custom ? EventFormat.CUSTOM : EventFormat.BUILT;
+        final EventFormat format = object.custom() ? EventFormat.CUSTOM : EventFormat.BUILT;
         if (plugin.config.eventMessages.ignoredFormats.contains(format)) return;
 
         // Check server
@@ -59,10 +55,9 @@ public class EventPostedClient extends SocketClient<Event> {
         if (!plugin.config.eventMessages.hostFilterUsers.isEmpty() && !plugin.config.eventMessages.hostFilterUsers.contains(String.valueOf(object.host))) return;
 
         // Check Partner ping roles
-        final Set<PingRole> pingRoles = object.getPingRoles();
-        final boolean hasRoles = !pingRoles.isEmpty();
+        final boolean hasRoles = object.rolesNamed != null && !object.rolesNamed.isEmpty();
         final Set<PingRole> ignoredPartnerRoles = plugin.config.eventMessages.ignoredPartnerRoles;
-        if (hasRoles && pingRoles.stream().anyMatch(ignoredPartnerRoles::contains)) return;
+        if (hasRoles && object.rolesNamed.stream().anyMatch(ignoredPartnerRoles::contains)) return;
 
         // Replace emojis in description
         String description = object.description;
@@ -85,7 +80,7 @@ public class EventPostedClient extends SocketClient<Event> {
         // roles
         if (hasRoles) {
             final TextComponent.Builder rolesComponent = Component.text().color(NamedTextColor.YELLOW);
-            for (final PingRole role : pingRoles) rolesComponent.append(Component.text(" @" + role.name));
+            for (final PingRole role : object.rolesNamed) rolesComponent.append(Component.text(" @" + role.name));
             builder.append(rolesComponent);
         }
         // description
@@ -109,7 +104,7 @@ public class EventPostedClient extends SocketClient<Event> {
                 .append(MINI_MESSAGE.deserialize("<#88a7b5>» <#bfebff>IP: <aqua>" + object.ip));
         // platform & version
         final StringBuilder platformVersion = new StringBuilder();
-        if (object.platform != null) platformVersion.append(object.platform).append(" ");
+        if (object.platforms != null && !object.platforms.isEmpty()) platformVersion.append(Event.Platform.toString(object.platforms)).append(" ");
         if (object.version != null) platformVersion.append(object.version);
         if (!platformVersion.isEmpty()) builder
                 .append(LINE)
@@ -125,7 +120,7 @@ public class EventPostedClient extends SocketClient<Event> {
             if (json != null && json.has("server")) {
                 final JsonElement serverElement = json.get("server");
                 if (serverElement.isJsonObject()) {
-                    final Server server = EAObject.newObject(plugin, Server.class, serverElement.getAsJsonObject());
+                    final Server server = GSONProvider.GSON.fromJson(serverElement.getAsJsonObject(), Server.class);
                     if (server != null) name = server.name;
                 }
             }

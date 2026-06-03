@@ -1,7 +1,6 @@
 package gg.eventalerts.eventalertsintegration;
 
 import org.jetbrains.annotations.NotNull;
-
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.library.AnnoyingLibrary;
 import xyz.srnyx.annoyingapi.libs.libby.Library;

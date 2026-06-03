@@ -3,27 +3,25 @@ package gg.eventalerts.eventalertsintegration.listeners;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.config.ConfigYml;
 import gg.eventalerts.eventalertsintegration.config.HostFilter;
+import gg.eventalerts.eventalertsintegration.gui.EAGui;
 import gg.eventalerts.eventalertsintegration.gui.config.ConfigGui;
 import gg.eventalerts.eventalertsintegration.gui.config.advanced.AdvancedGui;
 import gg.eventalerts.eventalertsintegration.gui.config.advanced.WebsocketsGui;
 import gg.eventalerts.eventalertsintegration.gui.config.eventmessages.EventMessagesGui;
 import gg.eventalerts.eventalertsintegration.gui.config.eventmessages.HostFilterGui;
 import gg.eventalerts.eventalertsintegration.gui.config.eventmessages.sound.SoundGui;
-
+import gg.eventalerts.eventalertsintegration.gui.config.syncing.SyncingGui;
+import gg.eventalerts.eventalertsintegration.gui.config.syncing.discordtominecraft.MessagesGui;
 import io.papermc.paper.event.player.AsyncChatEvent;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-
 import org.jetbrains.annotations.NotNull;
-
 import xyz.srnyx.annoyingapi.AnnoyingListener;
 import xyz.srnyx.annoyingapi.libs.javautilities.MiscUtility;
 
@@ -161,8 +159,31 @@ public class ChatListener extends AnnoyingListener {
             }
         }
 
+        // Discord -> Minecraft Messages format
+        if (inputKey.equals(ConfigYml.Syncing.DiscordToMinecraft.Messages.PATH_FORMAT)) {
+            // Cancel
+            if (message.equalsIgnoreCase("cancel")) {
+                player.sendMessage(Component.text("\nCancelled format change\n", NamedTextColor.GREEN));
+                reopenMessagesSyncingGui(player);
+                return;
+            }
+
+            // Set format
+            plugin.config.syncing.discordToMinecraft.messages.setFormat(message);
+
+            // Send message and reopen GUI
+            player.sendMessage(Component.text()
+                    .color(NamedTextColor.GREEN)
+                    .append(Component.text("\nFormat set to "))
+                    .append(Component.text(message, NamedTextColor.DARK_GREEN))
+                    .append(Component.text("!\n")));
+            reopenMessagesSyncingGui(player);
+            return;
+        }
+
         // Websockets retry delay
         if (inputKey.equals(ConfigYml.Advanced.Websockets.PATH_RETRY_DELAY)) {
+            // Cancel
             if (message.equalsIgnoreCase("cancel")) {
                 player.sendMessage(Component.text("\nCancelled websockets retry delay change\n", NamedTextColor.GREEN));
                 reopenWebsocketsRetryDelayGui(player);
@@ -256,18 +277,29 @@ public class ChatListener extends AnnoyingListener {
         reopenHostFilterGui(player, hostFilter);
     }
 
-    private void reopenSoundGui(@NotNull Player player) {
+    private void removeInput(@NotNull Player player) {
         plugin.guiInput.remove(player.getUniqueId());
-        new SoundGui(new EventMessagesGui(new ConfigGui(plugin, player))).open(true);
+    }
+
+    private void reopenGui(@NotNull Player player, @NotNull EAGui gui) {
+        removeInput(player);
+        gui.open(true);
+    }
+
+    private void reopenSoundGui(@NotNull Player player) {
+        reopenGui(player, new SoundGui(new EventMessagesGui(new ConfigGui(plugin, player))));
+    }
+
+    private void reopenMessagesSyncingGui(@NotNull Player player) {
+        reopenGui(player, new MessagesGui(new SyncingGui(new ConfigGui(plugin, player))));
     }
 
     private void reopenWebsocketsRetryDelayGui(@NotNull Player player) {
-        plugin.guiInput.remove(player.getUniqueId());
-        new WebsocketsGui(new AdvancedGui(new ConfigGui(plugin, player))).open(true);
+        reopenGui(player, new WebsocketsGui(new AdvancedGui(new ConfigGui(plugin, player))));
     }
 
     private void reopenHostFilterGui(@NotNull Player player, @NotNull HostFilter hostFilter) {
-        plugin.guiInput.remove(player.getUniqueId());
+        removeInput(player);
         new HostFilterGui(new EventMessagesGui(new ConfigGui(plugin, player))).openHostFilterGui(hostFilter);
     }
 }

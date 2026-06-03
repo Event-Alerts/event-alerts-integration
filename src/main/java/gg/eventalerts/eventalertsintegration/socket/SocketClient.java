@@ -1,21 +1,16 @@
 package gg.eventalerts.eventalertsintegration.socket;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
+import gg.eventalerts.eventalertsintegration.json.GSONProvider;
 import gg.eventalerts.eventalertsintegration.objects.EAObject;
-
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.enums.ReadyState;
+import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ServerHandshake;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 
 import java.net.URI;
@@ -23,8 +18,6 @@ import java.util.logging.Level;
 
 
 public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
-    @NotNull private static final Gson GSON = new Gson();
-
     @NotNull protected final EventAlertsIntegration plugin;
     @NotNull public final SocketEndpoint endpoint;
     @NotNull private final Class<T> objectClass;
@@ -37,8 +30,6 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
         this.endpoint = endpoint;
         this.objectClass = objectClass;
     }
-
-    public abstract boolean shouldConnect();
 
     public void close(int code, @NotNull String reason, @Nullable Runnable toRunOnStop) {
         final ReadyState readyState = getReadyState();
@@ -53,7 +44,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
     public void retryConnection(@NotNull String reason, @Nullable Integer retryDelay) {
         if (retryTask != null) return;
 
-        // Get delay from config
+        // Get delay from config if not specified
         if (retryDelay == null) {
             retryDelay = plugin.config.advanced.websockets.retryDelay;
             if (retryDelay == null) return;
@@ -75,6 +66,10 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
         }.runTaskLaterAsynchronously(plugin, finalRetryDelay * 1200L);
     }
 
+    public void send(@NotNull T object) {
+        send(GSONProvider.GSON.toJson(object));
+    }
+
     @Override
     public void onOpen(@NotNull ServerHandshake handshake) {
         if (plugin.config.advanced.websockets.logs) AnnoyingPlugin.log(Level.INFO, endpoint.name() + " socket opened");
@@ -82,36 +77,41 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
 
     @Override
     public void onMessage(@NotNull String message) {
-        // Parse JSON
-        final JsonObject json;
+        // Create object
+        final T object;
         try {
-            json = GSON.fromJson(message, JsonObject.class);
+            object = GSONProvider.GSON.fromJson(message, objectClass);
         } catch (final Exception e) {
             AnnoyingPlugin.log(Level.WARNING, "Failed to parse JSON: " + message);
             return;
         }
-
-        // Create object
-        final T object = EAObject.newObject(plugin, objectClass, json);
         if (object == null) return;
 
         // Handle
-        handle(object);
+        onMessage(object);
     }
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
+        // Protect against double-errors when initial connection fails
+        if (code == CloseFrame.NEVER_CONNECTED) return;
+
+        // Cancel retryTask
         if (retryTask != null) {
             retryTask.cancel();
             retryTask = null;
         }
 
-        if (code == -1 || code == 1006){
+        // Abnormal closure
+        if (code == CloseFrame.ABNORMAL_CLOSE) {
             retryConnection("Experienced abnormal closure", null);
             return;
         }
+
+        // Log closure
         if (plugin.config.advanced.websockets.logs) AnnoyingPlugin.log(Level.INFO, endpoint.name() + " socket closed with status code " + code + " and reason: " + reason);
 
+        // Run toRunOnStop
         if (toRunOnStop != null) {
             toRunOnStop.run();
             toRunOnStop = null;
@@ -120,9 +120,11 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
 
     @Override
     public void onError(@NotNull Exception exception) {
-        retryConnection("Experienced an error! See nearby for details...", null);
-        exception.printStackTrace();
+        retryConnection("Experienced an error! If logs are enabled, see nearby for details.", null);
+        if (plugin.config.advanced.websockets.logs) exception.printStackTrace();
     }
 
-    public abstract void handle(@NotNull T object);
+    public abstract boolean shouldConnect();
+
+    public void onMessage(@NotNull T object) {}
 }

@@ -3,17 +3,13 @@ package gg.eventalerts.eventalertsintegration.gui.config.eventmessages.sound;
 import dev.triumphteam.gui.paper.Gui;
 import dev.triumphteam.gui.paper.builder.gui.PaperGuiBuilder;
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder;
-
 import gg.eventalerts.eventalertsintegration.config.ConfigYml;
 import gg.eventalerts.eventalertsintegration.gui.config.eventmessages.EventMessagesGui;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-
 import org.bukkit.Material;
-
 import org.jetbrains.annotations.NotNull;
 
 
@@ -26,20 +22,19 @@ public class SoundGui extends EventMessagesGui {
     public PaperGuiBuilder getGui() {
         return Gui.of(1)
                 .title(Component.text("Sound"))
-                .statelessComponent(container -> container.setItem(0,
-                        booleanItem(
-                                plugin.config.eventMessages.soundEnabled,
-                                "Enabled",
-                                "Whether to play a sound when\nan event message is broadcasted",
-                                (player, context) -> {
-                                    final boolean newStatus = !plugin.config.eventMessages.soundEnabled;
-                                    plugin.config.eventMessages.soundEnabled = newStatus;
-                                    plugin.config.setSave(ConfigYml.EventMessages.PATH_SOUND_ENABLED, newStatus);
-                                    playDingSound(newStatus);
-                                    open(false);
-                                })))
+                .statelessComponent(container -> container.setItem(0, booleanItem(
+                        plugin.config.eventMessages.soundEnabled,
+                        "Enabled",
+                        "Whether to play a sound when\nan event message is broadcasted",
+                        (player, context) -> {
+                            final boolean newStatus = !plugin.config.eventMessages.soundEnabled;
+                            plugin.config.eventMessages.soundEnabled = newStatus;
+                            plugin.config.setSave(ConfigYml.EventMessages.PATH_SOUND_ENABLED, newStatus);
+                            playDingSound(newStatus);
+                            open(false);
+                        })))
                 .statelessComponent(container -> container.setItem(1, ItemBuilder.from(Material.NOTE_BLOCK)
-                        .name(uninitialize(Component.text("Sound", NamedTextColor.GOLD)))
+                        .name(unitalicize(Component.text("Sound", NamedTextColor.GOLD)))
                         .lore(lore("The ID/name of the sound that will play\n\n<gray>Current value: " + (plugin.config.eventMessages.sound == null
                                 ? "<red>Disabled"
                                 : "<green>" + plugin.config.eventMessages.sound.sound)))
@@ -60,7 +55,7 @@ public class SoundGui extends EventMessagesGui {
                             context.guiView().close();
                         })))
                 .statelessComponent(container -> container.setItem(2, ItemBuilder.from(Material.BELL)
-                        .name(uninitialize(Component.text("Volume", NamedTextColor.GOLD)))
+                        .name(unitalicize(Component.text("Volume", NamedTextColor.GOLD)))
                         .lore(lore("The volume at which the\nsound will be played\n\n<gray>Current value: " + (plugin.config.eventMessages.sound == null
                                 ? "<red>Disabled"
                                 : "<green>" + plugin.config.eventMessages.sound.volume)))
@@ -76,7 +71,7 @@ public class SoundGui extends EventMessagesGui {
                             context.guiView().close();
                         })))
                 .statelessComponent(container -> container.setItem(3, ItemBuilder.from(Material.AMETHYST_SHARD)
-                        .name(uninitialize(Component.text("Pitch", NamedTextColor.GOLD)))
+                        .name(unitalicize(Component.text("Pitch", NamedTextColor.GOLD)))
                         .lore(lore("The pitch at which the\nsound will be played\n\n<gray>Current value: " + (plugin.config.eventMessages.sound == null
                                 ? "<red>Disabled"
                                 : "<green>" + plugin.config.eventMessages.sound.pitch)))
@@ -92,7 +87,7 @@ public class SoundGui extends EventMessagesGui {
                             context.guiView().close();
                         })))
                 .statelessComponent(container -> container.setItem(4, ItemBuilder.from(Material.NAME_TAG)
-                        .name(uninitialize(Component.text("Category", NamedTextColor.GOLD)))
+                        .name(unitalicize(Component.text("Category", NamedTextColor.GOLD)))
                         .lore(lore("The category that the sound\nwill be played through\n\n<gray>Current value: " + (plugin.config.eventMessages.sound == null
                                 ? "<red>Disabled"
                                 : "<green>" + plugin.config.eventMessages.sound.category)))

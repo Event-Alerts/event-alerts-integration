@@ -2,24 +2,19 @@ package gg.eventalerts.eventalertsintegration.commands;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.gui.config.ConfigGui;
+import gg.eventalerts.eventalertsintegration.json.GSONProvider;
 import gg.eventalerts.eventalertsintegration.objects.CrossBan;
-import gg.eventalerts.eventalertsintegration.objects.EAObject;
 import gg.eventalerts.eventalertsintegration.reflection.org.bukkit.entity.RefPlayer;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
 import org.jetbrains.annotations.NotNull;
-
 import xyz.srnyx.annoyingapi.command.AnnoyingCommand;
 import xyz.srnyx.annoyingapi.command.AnnoyingSender;
 import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
@@ -29,7 +24,11 @@ import xyz.srnyx.annoyingapi.message.AnnoyingMessage;
 import xyz.srnyx.annoyingapi.utility.BukkitUtility;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -283,8 +282,8 @@ public class EventAlertsCmd extends AnnoyingCommand {
                         for (final JsonElement jsonElement : crossBans) {
                             final JsonObject jsonObject = MiscUtility.handleException(jsonElement::getAsJsonObject).orElse(null);
                             if (jsonObject == null) continue;
-                            final CrossBan ban = EAObject.newObject(plugin, CrossBan.class, jsonObject);
-                            if (ban == null) continue;
+                            final CrossBan ban = GSONProvider.GSON.fromJson(jsonObject, CrossBan.class);
+                            if (ban == null || ban.minecraftUuid == null) continue;
                             final Player player = Bukkit.getPlayer(ban.minecraftUuid);
                             if (player == null) continue;
                             banned++;

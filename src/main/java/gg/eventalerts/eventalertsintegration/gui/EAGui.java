@@ -3,16 +3,12 @@ package gg.eventalerts.eventalertsintegration.gui;
 import dev.triumphteam.gui.element.GuiItem;
 import dev.triumphteam.gui.paper.builder.gui.PaperGuiBuilder;
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder;
-
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +17,6 @@ import java.util.List;
 
 
 public abstract class EAGui {
-    @NotNull public static final String RED_BACK_ARROW = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjg0ZjU5NzEzMWJiZTI1ZGMwNThhZjg4OGNiMjk4MzFmNzk1OTliYzY3Yzk1YzgwMjkyNWNlNGFmYmEzMzJmYyJ9fX0=";
 
     @NotNull public final EventAlertsIntegration plugin;
     @NotNull public final Player opener;
@@ -66,8 +61,8 @@ public abstract class EAGui {
     @NotNull
     public GuiItem<Player, ItemStack> backButton() {
         return ItemBuilder.skull()
-                .texture(RED_BACK_ARROW)
-                .name(uninitialize(Component.text("← Back", NamedTextColor.RED)))
+                .texture(Heads.RED_ARROW_LEFT)
+                .name(unitalicize(Component.text("← Back", NamedTextColor.RED)))
                 .lore(lore("<gray>Return to the\n<gray>previous page"))
                 .asGuiItem((player, context) -> back(true));
     }
@@ -77,13 +72,13 @@ public abstract class EAGui {
         final List<Component> components = new ArrayList<>();
         for (String line : lore.split("\n")) {
             if (!line.startsWith("<")) line = "<yellow>" + line; // Default color
-            components.add(uninitialize(EventAlertsIntegration.MINI_MESSAGE.deserialize(line)));
+            components.add(unitalicize(EventAlertsIntegration.MINI_MESSAGE.deserialize(line)));
         }
         return components;
     }
 
     @NotNull
-    public static Component uninitialize(@NotNull Component component) {
+    public static Component unitalicize(@NotNull Component component) {
         return component.decoration(TextDecoration.ITALIC, false);
     }
 }

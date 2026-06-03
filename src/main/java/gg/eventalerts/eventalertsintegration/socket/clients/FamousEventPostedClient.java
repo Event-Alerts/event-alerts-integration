@@ -1,5 +1,6 @@
 package gg.eventalerts.eventalertsintegration.socket.clients;
 
+import gg.eventalerts.eventalertsintegration.IDMappings;
 import gg.eventalerts.eventalertsintegration.config.EventType;
 import gg.eventalerts.eventalertsintegration.reflection.org.bukkit.entity.RefPlayer;
 import gg.eventalerts.eventalertsintegration.utility.EAStringUtility;
@@ -7,16 +8,13 @@ import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.objects.FamousEvent;
 import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
 import gg.eventalerts.eventalertsintegration.socket.SocketClient;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.Mapper;
 
@@ -41,8 +39,8 @@ public class FamousEventPostedClient extends SocketClient<FamousEvent> {
     }
 
     @Override
-    public void handle(@NotNull FamousEvent object) {
-        if (object.type == null) {
+    public void onMessage(@NotNull FamousEvent object) {
+        if (object.type == null || object.message == null) {
             AnnoyingPlugin.log(Level.WARNING, "Invalid FamousEvent: " + object);
             return;
         }
@@ -70,7 +68,7 @@ public class FamousEventPostedClient extends SocketClient<FamousEvent> {
                 }
                 // Replace IDs with known mappings
                 final String name = Mapper.toLong(matcher.group(1))
-                        .map(EventAlertsIntegration.ID_MAPPINGS::get)
+                        .map(IDMappings.ID_MAPPINGS::get)
                         .orElse(null);
                 if (name == null) {
                     builder.append(Component.text(word + " ", NamedTextColor.GRAY));
