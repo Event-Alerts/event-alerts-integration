@@ -40,7 +40,7 @@ public class FamousEventPostedClient extends SocketClient<FamousEvent> {
 
     @Override
     public void onMessage(@NotNull FamousEvent object) {
-        if (object.type == null) {
+        if (object.type == null || object.message == null) {
             AnnoyingPlugin.log(Level.WARNING, "Invalid FamousEvent: " + object);
             return;
         }

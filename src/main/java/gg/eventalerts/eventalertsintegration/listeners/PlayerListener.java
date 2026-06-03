@@ -3,8 +3,8 @@ package gg.eventalerts.eventalertsintegration.listeners;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
+import gg.eventalerts.eventalertsintegration.json.GSONProvider;
 import gg.eventalerts.eventalertsintegration.objects.CrossBan;
-import gg.eventalerts.eventalertsintegration.objects.EAObject;
 import gg.eventalerts.eventalertsintegration.objects.PlayerConnection;
 import gg.eventalerts.eventalertsintegration.socket.SocketClient;
 import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
@@ -173,7 +173,7 @@ public class PlayerListener extends AnnoyingListener {
         // Get ban
         final JsonElement ban = json.get("cross_ban");
         if (ban == null || ban.isJsonNull()) return true;
-        final CrossBan crossBan = EAObject.newObject(plugin, CrossBan.class, ban.getAsJsonObject());
+        final CrossBan crossBan = GSONProvider.GSON.fromJson(ban.getAsJsonObject(), CrossBan.class);
         if (crossBan == null) {
             failCrossBan(event, "Failed to parse CrossBan", null);
             return false;

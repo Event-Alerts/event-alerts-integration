@@ -94,7 +94,7 @@ public class ConfigYml extends AnnoyingResource {
                 @NotNull public static final String PATH_FORMAT = PATH_MESSAGES + ".format";
 
                 public boolean enabled = getBoolean(PATH_ENABLED, true);
-                @NotNull public String format = getString(PATH_FORMAT, "<dark_aqua>\uD83C\uDF89 [<event_title>] <aqua>[<author_name>] <content_stripped>");
+                @NotNull public String format = getString(PATH_FORMAT, "<dark_aqua>\uD83C\uDF89 [<event_title>] <aqua>[<author_name>] <message_content_stripped><message_attachments_pretty>");
 
                 public void setEnabled(boolean newStatus) {
                     if (enabled == newStatus) return;
@@ -188,7 +188,7 @@ public class ConfigYml extends AnnoyingResource {
         public boolean enabled = getBoolean(PATH_ENABLED, true);
         public boolean detectIps = getBoolean(PATH_DETECT_IPS);
         public boolean soundEnabled = getBoolean(PATH_SOUND_ENABLED, true);
-        @Nullable public PlayableSound sound = getPlayableSound(PATH_SOUND).orElse(null);
+        @Nullable public final PlayableSound sound = getPlayableSound(PATH_SOUND).orElse(null);
         @NotNull public final Set<EventType> ignoredTypes = getEnumSet(EventType.class, PATH_IGNORED_TYPES);
         @NotNull public final Set<PingRole> ignoredPartnerRoles = getEnumSet(PingRole.class, PATH_IGNORED_PARTNER_ROLES);
         @NotNull public final Set<EventFormat> ignoredFormats = getEnumSet(EventFormat.class, PATH_IGNORED_FORMATS);
@@ -247,7 +247,7 @@ public class ConfigYml extends AnnoyingResource {
         @NotNull public static final String PATH_USE_TESTING_API = PATH_ADVANCED + ".use-testing-api";
         @NotNull public static final String PATH_WEBSOCKETS = PATH_ADVANCED + ".websockets";
 
-        public boolean debug = getBoolean(PATH_DEBUG, false);
+        public final boolean debug = getBoolean(PATH_DEBUG, false);
         public boolean useTestingApi = getBoolean(PATH_USE_TESTING_API, false);
         @NotNull public final Websockets websockets = new Websockets();
 

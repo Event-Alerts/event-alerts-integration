@@ -1,8 +1,10 @@
 package gg.eventalerts.eventalertsintegration.objects;
 
 import com.google.gson.JsonObject;
+import gg.eventalerts.eventalertsintegration.json.GSONProvider;
 import org.junit.jupiter.api.Test;
 
+import java.util.Date;
 import java.util.UUID;
 
 import static gg.eventalerts.eventalertsintegration.JsonTestSupport.assertJsonEquals;
@@ -22,7 +24,7 @@ public class CrossBanJsonTest {
             object.addProperty("created", "1750000000000");
         });
 
-        final CrossBan crossBan = new CrossBan(json);
+        final CrossBan crossBan = GSONProvider.GSON.fromJson(json, CrossBan.class);
 
         assertEquals(UUID.fromString("bbbbbbbb-cccc-dddd-eeee-ffffffffffff"), crossBan.minecraftUuid);
         assertEquals("Synthetic moderation reason", crossBan.reason);
@@ -31,6 +33,21 @@ public class CrossBanJsonTest {
         assertJsonEquals(jsonObject(object -> {
             object.addProperty("minecraftUuid", "bbbbbbbb-cccc-dddd-eeee-ffffffffffff");
             object.addProperty("reason", "Synthetic moderation reason");
-        }), crossBan.toJson());
+        }), GSONProvider.GSON.toJsonTree(crossBan));
+    }
+
+    @Test
+    void crossBanInvalidUuidLeavesOtherFieldsIntact() {
+        final JsonObject json = jsonObject(object -> {
+            object.addProperty("minecraftUuid", "not-a-uuid");
+            object.addProperty("reason", "Still valid");
+            object.addProperty("expiration", "1700000000123");
+        });
+
+        final CrossBan crossBan = GSONProvider.GSON.fromJson(json, CrossBan.class);
+
+        assertNull(crossBan.minecraftUuid);
+        assertEquals("Still valid", crossBan.reason);
+        assertEquals(new Date(1_700_000_000_123L), crossBan.expiration);
     }
 }

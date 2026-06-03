@@ -1,6 +1,7 @@
 package gg.eventalerts.eventalertsintegration.objects;
 
 import com.google.gson.JsonObject;
+import gg.eventalerts.eventalertsintegration.json.GSONProvider;
 import org.junit.jupiter.api.Test;
 
 import static gg.eventalerts.eventalertsintegration.JsonTestSupport.assertJsonEquals;
@@ -26,10 +27,10 @@ public class ServerJsonTest {
             object.add("gets", jsonObject(gets -> gets.addProperty("555555555555555555", 1)));
         });
 
-        final Server server = new Server(json);
+        final Server server = GSONProvider.GSON.fromJson(json, Server.class);
 
         assertEquals("Test Server", server.name);
-        assertJsonEquals(jsonObject(object -> object.addProperty("name", "Test Server")), server.toJson());
+        assertJsonEquals(jsonObject(object -> object.addProperty("name", "Test Server")), GSONProvider.GSON.toJsonTree(server));
     }
 
     @Test
@@ -41,9 +42,9 @@ public class ServerJsonTest {
             object.add("gets", jsonObject(gets -> gets.addProperty("777777777777777777", 1)));
         });
 
-        final Server server = new Server(json);
+        final Server server = GSONProvider.GSON.fromJson(json, Server.class);
 
         assertNull(server.name);
-        assertJsonEquals(new JsonObject(), server.toJson());
+        assertJsonEquals(new JsonObject(), GSONProvider.GSON.toJsonTree(server));
     }
 }

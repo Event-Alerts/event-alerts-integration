@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.ArrayList;
@@ -30,17 +31,25 @@ public final class JsonTestSupport {
     }
 
     @NotNull
-    public static JsonArray stringArray(String @NotNull ... values) {
+    public static JsonArray stringArray(@NotNull String @NotNull ... values) {
         final JsonArray array = new JsonArray();
         for (final String value : values) array.add(new JsonPrimitive(value));
         return array;
     }
 
-    public static void assertJsonEquals(JsonElement expected, JsonElement actual) {
+    @NotNull
+    public static JsonArray jsonArray(@NotNull Consumer<JsonArray> consumer) {
+        final JsonArray json = new JsonArray();
+        consumer.accept(json);
+        return json;
+    }
+
+    public static void assertJsonEquals(@Nullable JsonElement expected, @Nullable JsonElement actual) {
         Assertions.assertEquals(canonicalize(expected), canonicalize(actual));
     }
 
-    static JsonElement canonicalize(JsonElement element) {
+    @Nullable
+    static JsonElement canonicalize(@Nullable JsonElement element) {
         if (element == null || element.isJsonNull()) return element;
         if (element.isJsonPrimitive()) return element;
         if (element.isJsonObject()) {

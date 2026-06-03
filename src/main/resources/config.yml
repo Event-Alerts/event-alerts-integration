@@ -41,10 +41,10 @@ syncing:
       #   - event: <event_id>, <event_type>, <event_channel>, <event_message>, <event_control_panel>, <event_custom>, <event_created>, <event_title>, <event_host>, <event_description>, <event_roles>, <event_roles_named>, <event_server>, <event_media_name>, <event_ip>, <event_platform>, <event_version>, <event_prize>, <event_max_players>, <event_time>, <event_subscribers>
       #  - channel: <channel_id>, <channel_name>
       #  - author: <author_id>, <author_name>, <author_effectivename>
-      #  - content: <content_raw>, <content_display>, <content_stripped>
-      #  - other: <messageid>, <player_name>
+      #  - message: <message_id>, <message_content_raw>, <message_content_display>, <message_content_stripped>
+      #  - other: <player_name>
       #  - Any PlaceholderAPI placeholder (%placeholder%)
-      format: "<dark_aqua>🎉 [<event_title>] <aqua>[<author_name>] <content_stripped>"
+      format: "<dark_aqua>🎉 [<event_title>] <aqua>[<author_name>] <message_content_stripped><message_attachments_pretty>"
 
   # Settings for Minecraft -> Discord syncing
   minecraft-to-discord:

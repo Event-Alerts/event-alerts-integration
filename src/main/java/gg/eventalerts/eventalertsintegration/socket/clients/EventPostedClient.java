@@ -2,13 +2,13 @@ package gg.eventalerts.eventalertsintegration.socket.clients;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import gg.eventalerts.eventalertsintegration.json.GSONProvider;
 import gg.eventalerts.eventalertsintegration.reflection.org.bukkit.entity.RefPlayer;
 import gg.eventalerts.eventalertsintegration.utility.EAStringUtility;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.config.EventFormat;
 import gg.eventalerts.eventalertsintegration.config.EventType;
 import gg.eventalerts.eventalertsintegration.config.PingRole;
-import gg.eventalerts.eventalertsintegration.objects.EAObject;
 import gg.eventalerts.eventalertsintegration.objects.Event;
 import gg.eventalerts.eventalertsintegration.objects.Server;
 import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
@@ -45,7 +45,7 @@ public class EventPostedClient extends SocketClient<Event> {
         if (plugin.config.eventMessages.ignoredTypes.contains(type)) return;
 
         // Get/check format
-        final EventFormat format = object.custom ? EventFormat.CUSTOM : EventFormat.BUILT;
+        final EventFormat format = object.custom() ? EventFormat.CUSTOM : EventFormat.BUILT;
         if (plugin.config.eventMessages.ignoredFormats.contains(format)) return;
 
         // Check server
@@ -120,7 +120,7 @@ public class EventPostedClient extends SocketClient<Event> {
             if (json != null && json.has("server")) {
                 final JsonElement serverElement = json.get("server");
                 if (serverElement.isJsonObject()) {
-                    final Server server = EAObject.newObject(plugin, Server.class, serverElement.getAsJsonObject());
+                    final Server server = GSONProvider.GSON.fromJson(serverElement.getAsJsonObject(), Server.class);
                     if (server != null) name = server.name;
                 }
             }

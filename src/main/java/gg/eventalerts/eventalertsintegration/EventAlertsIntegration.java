@@ -46,6 +46,8 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
                 .registrationOptions.automaticRegistration.packages(
                         "gg.eventalerts.eventalertsintegration.commands",
                         "gg.eventalerts.eventalertsintegration.listeners");
+
+        libraryManager.loadLibrary(EALibrary.BSON);
     }
 
     @Override

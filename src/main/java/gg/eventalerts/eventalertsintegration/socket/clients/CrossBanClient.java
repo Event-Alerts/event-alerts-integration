@@ -28,6 +28,7 @@ public class CrossBanClient extends SocketClient<CrossBan> {
         if (object.status != CrossBan.Status.ADDED) return;
 
         // Kick player
+        if (object.minecraftUuid == null) return;
         final Player player = Bukkit.getPlayer(object.minecraftUuid);
         if (player != null) plugin.runOnMainThread(() -> player.kick(Component.text()
                         .append(EventAlertsIntegration.GATE)

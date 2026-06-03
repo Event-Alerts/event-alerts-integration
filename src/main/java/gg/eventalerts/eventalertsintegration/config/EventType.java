@@ -8,10 +8,10 @@ import java.util.stream.Collectors;
 
 
 public enum EventType {
-    SKEPPY(true),
-    POTENTIAL_FAMOUS(true, "POTENTIAL FAMOUS"),
+    SKEPPY(true, "CREATOR"),
+    POTENTIAL_FAMOUS(true, "POTENTIAL SKEPPY"),
     SIGHTING(true, "SKEPPY SIGHTING"),
-    FAMOUS(true),
+    FAMOUS(true, "CREATOR"),
     PARTNER,
     COMMUNITY;
 

@@ -4,8 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.gui.config.ConfigGui;
+import gg.eventalerts.eventalertsintegration.json.GSONProvider;
 import gg.eventalerts.eventalertsintegration.objects.CrossBan;
-import gg.eventalerts.eventalertsintegration.objects.EAObject;
 import gg.eventalerts.eventalertsintegration.reflection.org.bukkit.entity.RefPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -282,8 +282,8 @@ public class EventAlertsCmd extends AnnoyingCommand {
                         for (final JsonElement jsonElement : crossBans) {
                             final JsonObject jsonObject = MiscUtility.handleException(jsonElement::getAsJsonObject).orElse(null);
                             if (jsonObject == null) continue;
-                            final CrossBan ban = EAObject.newObject(plugin, CrossBan.class, jsonObject);
-                            if (ban == null) continue;
+                            final CrossBan ban = GSONProvider.GSON.fromJson(jsonObject, CrossBan.class);
+                            if (ban == null || ban.minecraftUuid == null) continue;
                             final Player player = Bukkit.getPlayer(ban.minecraftUuid);
                             if (player == null) continue;
                             banned++;

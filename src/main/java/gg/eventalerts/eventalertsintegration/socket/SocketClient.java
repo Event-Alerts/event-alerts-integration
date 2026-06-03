@@ -1,6 +1,5 @@
 package gg.eventalerts.eventalertsintegration.socket;
 
-import com.google.gson.JsonObject;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.json.GSONProvider;
 import gg.eventalerts.eventalertsintegration.objects.EAObject;
@@ -68,7 +67,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
     }
 
     public void send(@NotNull T object) {
-        send(object.toJson().toString());
+        send(GSONProvider.GSON.toJson(object));
     }
 
     @Override
@@ -78,17 +77,14 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
 
     @Override
     public void onMessage(@NotNull String message) {
-        // Parse JSON
-        final JsonObject json;
+        // Create object
+        final T object;
         try {
-            json = GSONProvider.GSON.fromJson(message, JsonObject.class);
+            object = GSONProvider.GSON.fromJson(message, objectClass);
         } catch (final Exception e) {
             AnnoyingPlugin.log(Level.WARNING, "Failed to parse JSON: " + message);
             return;
         }
-
-        // Create object
-        final T object = EAObject.newObject(plugin, objectClass, json);
         if (object == null) return;
 
         // Handle

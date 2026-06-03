@@ -169,8 +169,7 @@ public class ChatListener extends AnnoyingListener {
             }
 
             // Set format
-            plugin.config.syncing.discordToMinecraft.messages.format = message;
-            plugin.config.setSave(inputKey, message);
+            plugin.config.syncing.discordToMinecraft.messages.setFormat(message);
 
             // Send message and reopen GUI
             player.sendMessage(Component.text()
