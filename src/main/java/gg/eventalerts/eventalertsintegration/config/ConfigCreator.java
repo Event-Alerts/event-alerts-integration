@@ -9,7 +9,6 @@ import gg.eventalerts.eventalertsintegration.config.migration.C0002_Migrate_soun
 import gg.eventalerts.eventalertsintegration.config.migration.C0003_Migrate_negative_retry_delay;
 import gg.eventalerts.eventalertsintegration.config.migration.C0004_Migrate_websockets_to_websocket;
 import gg.eventalerts.eventalertsintegration.config.serdes.PlayableSoundSerializer;
-import gg.eventalerts.eventalertsintegration.config.serdes.XBaseSerializer;
 import gg.eventalerts.eventalertsintegration.config.validator.EAConfigValidator;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,7 +21,6 @@ public class ConfigCreator {
         return (ConfigYml) new ConfigYml(plugin)
                 .configure(opt -> {
                     opt.configurer(new YamlBukkitConfigurer(), new SerdesCommons(), new SerdesBukkit(), registry -> {
-                        registry.register(new XBaseSerializer<>());
                         registry.register(new PlayableSoundSerializer());
                     });
                     opt.validator(new EAConfigValidator());

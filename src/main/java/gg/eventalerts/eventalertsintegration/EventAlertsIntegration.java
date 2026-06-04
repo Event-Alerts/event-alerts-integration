@@ -58,7 +58,6 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
         libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_SERDES_BUKKIT);
         libraryManager.loadLibrary(EALibrary.OKAERI_VALIDATOR);
         libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_VALIDATOR_OKAERI);
-        libraryManager.loadLibrary(EALibrary.XSERIES);
         libraryManager.loadLibrary(EALibrary.BSON);
 
         // Configure config

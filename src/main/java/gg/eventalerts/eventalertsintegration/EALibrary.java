@@ -76,16 +76,6 @@ public enum EALibrary implements AnnoyingLibrary {
                     .version(BuildProperties.OKAERI_CONFIGS_VERSION),
             plugin -> Collections.singleton(plugin.getRelocation("eu{}okaeri"))),
     /**
-     * {@code com.github.cryptomorin:XSeries}
-     */
-    XSERIES(
-            () -> Library.builder()
-                    .repository(Repositories.MAVEN_CENTRAL)
-                    .groupId("com{}github{}cryptomorin")
-                    .artifactId("XSeries")
-                    .version(BuildProperties.XSERIES_VERSION),
-            plugin -> Collections.singleton(plugin.getRelocation("com{}cryptomorin{}xseries"))),
-    /**
      * {@code org.java-websocket:Java-WebSocket}
      */
     JAVA_WEBSOCKET(

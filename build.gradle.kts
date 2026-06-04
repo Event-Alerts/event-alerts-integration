@@ -1,3 +1,4 @@
+@file:Suppress("AvoidDuplicateDependencies")
 import xyz.srnyx.gradlegalaxy.data.config.DependencyConfig
 import xyz.srnyx.gradlegalaxy.data.config.JavaSetupConfig
 import xyz.srnyx.gradlegalaxy.enums.Repository
@@ -51,7 +52,6 @@ dependencies {
     compileOnly("org.java-websocket:Java-WebSocket:$javaWebSocketVersion") {
         relocate("org.java_websocket")
     }
-    @Suppress("AvoidDuplicateDependencies")
     compileOnly("org.mongodb:bson:$bsonVersion") {
         relocate("org.bson")
         relocate("org.checkerframework")
@@ -62,9 +62,6 @@ dependencies {
     compileOnly("eu.okaeri:okaeri-configs-serdes-commons:$okaeriConfigsVersion")
     compileOnly("eu.okaeri:okaeri-configs-serdes-bukkit:$okaeriConfigsVersion")
     compileOnly("eu.okaeri:okaeri-configs-validator-okaeri:$okaeriConfigsVersion")
-    compileOnly("com.github.cryptomorin:XSeries:$xSeriesVersion") {
-        relocate("com.cryptomorin.xseries")
-    }
     compileOnly("net.fellbaum:jemoji:$jEmojiVersion") {
         relocate("net.fellbaum")
     }
@@ -74,7 +71,6 @@ dependencies {
 
     // Unit tests
     testImplementation("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
-    @Suppress("AvoidDuplicateDependencies")
     testImplementation("org.mongodb:bson:$bsonVersion")
     testImplementation(platform("org.junit:junit-bom:6.1.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")

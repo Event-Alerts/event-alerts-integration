@@ -1,6 +1,5 @@
 package gg.eventalerts.eventalertsintegration.config.serdes;
 
-import com.cryptomorin.xseries.XSound;
 import eu.okaeri.configs.schema.GenericsDeclaration;
 import eu.okaeri.configs.serdes.DeserializationData;
 import eu.okaeri.configs.serdes.ObjectSerializer;
@@ -28,14 +27,20 @@ public class PlayableSoundSerializer implements ObjectSerializer<PlayableSound> 
 
     @Override @Nullable
     public PlayableSound deserialize(@NotNull DeserializationData data, @NotNull GenericsDeclaration generics) {
-        final XSound sound = data.get("sound", XSound.class);
+        final String soundName = data.get("sound", String.class);
         final SoundCategory category = data.get("category", SoundCategory.class);
         final Float volume = data.get("volume", Float.class);
         final Float pitch = data.get("pitch", Float.class);
-        if (sound == null || category == null) return null;
-        final Sound bukkitSound = sound.get();
-        if (bukkitSound == null) return null;
+        if (soundName == null || category == null) return null;
 
-        return new PlayableSound(bukkitSound, category, volume, pitch);
+        // Get sound. Need to do this to support modern enum (alternative is XSeries).
+        final Sound sound;
+        try {
+            sound = Sound.valueOf(soundName);
+        } catch (final IllegalArgumentException ignored) {
+            return null;
+        }
+
+        return new PlayableSound(sound, category, volume, pitch);
     }
 }
