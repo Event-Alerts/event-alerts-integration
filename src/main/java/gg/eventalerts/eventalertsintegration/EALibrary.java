@@ -98,6 +98,36 @@ public enum EALibrary implements AnnoyingLibrary {
                     plugin.getRelocation("org{}bson"),
                     plugin.getRelocation("org{}checkerframework"))), //TODO not sure if should include checkerframework here
     /**
+     * {@code dev.triumphteam:nova}
+     */
+    NOVA(
+            () -> Library.builder()
+                    .repository("https://repo.triumphteam.dev/snapshots/")
+                    .groupId("dev{}triumphteam")
+                    .artifactId("nova")
+                    .version("1.0.0-SNAPSHOT"),
+            plugin -> Collections.singleton(plugin.getRelocation("dev{}triumphteam"))),
+    /**
+     * {@code dev.triumphteam:triumph-gui-core}
+     */
+    TRIUMPH_GUI_CORE(
+            () -> Library.builder()
+                    .repository("https://repo.triumphteam.dev/snapshots/")
+                    .groupId("dev{}triumphteam")
+                    .artifactId("triumph-gui-core")
+                    .version(BuildProperties.TRIUMPH_GUI_VERSION),
+            plugin -> Collections.singleton(plugin.getRelocation("dev{}triumphteam"))),
+    /**
+     * {@code dev.triumphteam:triumph-gui-paper}
+     */
+    TRIUMPH_GUI_PAPER(
+            () -> Library.builder()
+                    .repository("https://repo.triumphteam.dev/snapshots/")
+                    .groupId("dev{}triumphteam")
+                    .artifactId("triumph-gui-paper")
+                    .version(BuildProperties.TRIUMPH_GUI_VERSION),
+            plugin -> Collections.singleton(plugin.getRelocation("dev{}triumphteam"))),
+    /**
      * {@code net.fellbaum:jememoji}
      */
     JEMOJI(

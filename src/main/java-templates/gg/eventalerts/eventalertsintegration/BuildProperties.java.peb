@@ -8,13 +8,13 @@ import org.jetbrains.annotations.NotNull;
  * <br>Uses <a href="https://github.com/KyoriPowered/blossom">Blossom</a>
  */
 public class BuildProperties {
+    @NotNull public static final String OKAERI_CONFIGS_VERSION = "{{ okaeri_configs_version }}";
+
     @NotNull public static final String JAVA_WEBSOCKET_VERSION = "{{ java_websocket_version }}";
 
     @NotNull public static final String BSON_VERSION = "{{ bson_version }}";
 
-    @NotNull public static final String OKAERI_CONFIGS_VERSION = "{{ okaeri_configs_version }}";
-
-    @NotNull public static final String XSERIES_VERSION = "{{ xseries_version }}";
+    @NotNull public static final String TRIUMPH_GUI_VERSION = "{{ triumph_gui_version }}";
 
     @NotNull public static final String JEMOJI_VERSION = "{{ jemoji_version }}";
 

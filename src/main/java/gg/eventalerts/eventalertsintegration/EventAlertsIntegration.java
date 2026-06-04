@@ -59,6 +59,9 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
         libraryManager.loadLibrary(EALibrary.OKAERI_VALIDATOR);
         libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_VALIDATOR_OKAERI);
         libraryManager.loadLibrary(EALibrary.BSON);
+        libraryManager.loadLibrary(EALibrary.NOVA);
+        libraryManager.loadLibrary(EALibrary.TRIUMPH_GUI_CORE);
+        libraryManager.loadLibrary(EALibrary.TRIUMPH_GUI_PAPER);
 
         // Configure config
         config = ConfigCreator.create(this);

@@ -29,7 +29,6 @@ public class ConfigCreator {
                 })
                 .load()
                 .migrate(
-                        //TODO add unit tests
                         new C0001_Rename_hyphen_names_to_snake_case(),
                         new C0002_Migrate_sound_to_nested_structure(),
                         new C0003_Migrate_negative_retry_delay(),

@@ -23,7 +23,7 @@ public class EAStringUtility {
         emojiMatcher.reset();
 
         // Load JEmoji library for EmojiManager
-        if (!plugin.libraryManager.isLoaded(EALibrary.JEMOJI) && !plugin.libraryManager.loadLibrary(EALibrary.JEMOJI)) return string;
+        if (!plugin.libraryManager.loadIfNotLoaded(EALibrary.JEMOJI)) return string;
 
         // Replace emojis
         final StringBuilder description = new StringBuilder();
