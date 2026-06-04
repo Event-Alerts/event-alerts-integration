@@ -8,7 +8,7 @@ import gg.eventalerts.eventalertsintegration.gui.GuiInputType;
 import gg.eventalerts.eventalertsintegration.gui.EAGui;
 import gg.eventalerts.eventalertsintegration.gui.config.ConfigGui;
 import gg.eventalerts.eventalertsintegration.gui.config.advanced.AdvancedGui;
-import gg.eventalerts.eventalertsintegration.gui.config.advanced.WebsocketsGui;
+import gg.eventalerts.eventalertsintegration.gui.config.advanced.WebsocketGui;
 import gg.eventalerts.eventalertsintegration.gui.config.eventmessages.EventMessagesGui;
 import gg.eventalerts.eventalertsintegration.gui.config.eventmessages.HostFilterGui;
 import gg.eventalerts.eventalertsintegration.gui.config.eventmessages.sound.SoundGui;
@@ -271,7 +271,7 @@ public class ChatListener extends AnnoyingListener {
     }
 
     private void reopenWebsocketsRetryDelayGui(@NotNull Player player) {
-        reopenGui(player, new WebsocketsGui(new AdvancedGui(new ConfigGui(plugin, player))));
+        reopenGui(player, new WebsocketGui(new AdvancedGui(new ConfigGui(plugin, player))));
     }
 
     private void reopenHostFilterGui(@NotNull Player player) {

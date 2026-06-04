@@ -3,7 +3,6 @@ package gg.eventalerts.eventalertsintegration.gui.config.syncing;
 import dev.triumphteam.gui.paper.Gui;
 import dev.triumphteam.gui.paper.builder.gui.PaperGuiBuilder;
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder;
-import dev.triumphteam.gui.paper.container.type.HopperContainerType;
 import gg.eventalerts.eventalertsintegration.gui.EAGui;
 import gg.eventalerts.eventalertsintegration.gui.Heads;
 import gg.eventalerts.eventalertsintegration.gui.config.ConfigGui;
@@ -21,7 +20,7 @@ public class SyncingGui extends ConfigGui {
 
     @Override @NotNull
     public PaperGuiBuilder getGui() {
-        return Gui.of(new HopperContainerType())
+        return Gui.of(1)
                 .title(Component.text("Syncing"))
                 .statelessComponent(container -> container.setItem(0, booleanItem(
                         plugin.config.syncing.minecraft_to_discord.connections,
@@ -38,6 +37,6 @@ public class SyncingGui extends ConfigGui {
                         .name(unitalicize(Component.text("DISCORD -> MINECRAFT MESSAGES", NamedTextColor.GOLD, TextDecoration.BOLD)))
                         .lore(lore("Manage syncing settings for\nDiscord -> Minecraft messages"))
                         .asGuiItem((player, context) -> new MessagesGui(this).open(true))))
-                .statelessComponent(container -> container.setItem(4, backButton()));
+                .statelessComponent(container -> container.setItem(8, backButton()));
     }
 }

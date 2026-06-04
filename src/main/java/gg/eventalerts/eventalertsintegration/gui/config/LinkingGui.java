@@ -2,7 +2,6 @@ package gg.eventalerts.eventalertsintegration.gui.config;
 
 import dev.triumphteam.gui.paper.Gui;
 import dev.triumphteam.gui.paper.builder.gui.PaperGuiBuilder;
-import dev.triumphteam.gui.paper.container.type.HopperContainerType;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +13,7 @@ public class LinkingGui extends ConfigGui {
 
     @Override @NotNull
     public PaperGuiBuilder getGui() {
-        return Gui.of(new HopperContainerType())
+        return Gui.of(1)
                 .title(Component.text("Linking"))
                 .statelessComponent(container -> container.setItem(0,
                         booleanItem(
@@ -49,6 +48,6 @@ public class LinkingGui extends ConfigGui {
                                     playDingSound(newStatus);
                                     open(false);
                                 })))
-                .statelessComponent(container -> container.setItem(4, backButton()));
+                .statelessComponent(container -> container.setItem(8, backButton()));
     }
 }

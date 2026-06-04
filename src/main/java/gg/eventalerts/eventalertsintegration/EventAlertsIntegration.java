@@ -78,8 +78,7 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
         config.load(true);
 
         // Toggle debug
-        AnnoyingPlugin.LOGGER.setLevel(config.advanced.debug ? Level.FINE : Level.INFO);
-        HttpUtility.DEBUG = config.advanced.debug;
+        setDebug(config.advanced.debug);
 
         // Reconnect websockets
         if (webSockets == null) webSockets = new WebSockets(this);
@@ -115,6 +114,11 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
         final String serverKey = config.api_keys.getServer();
         if (serverKey != null) headers.put("X-Server-Key", serverKey);
         return headers;
+    }
+
+    public void setDebug(boolean debug) {
+        AnnoyingPlugin.LOGGER.setLevel(debug ? Level.FINE : Level.INFO);
+        HttpUtility.DEBUG = debug;
     }
 
     public void runOnMainThread(@NotNull Runnable runnable) {

@@ -21,7 +21,7 @@ public class IgnoredPartnerRolesGui extends EventMessagesGui {
         // Add ping role buttons
         int i = 0;
         for (final PingRole role : PingRole.PARTNER_PINGABLE) {
-            final int finalI = i;
+            final int finalI = i++;
             builder.statelessComponent(container1 -> container1.setItem(finalI, booleanItem(
                     plugin.config.event_messages.ignored_partner_roles.contains(role),
                     role.name,
@@ -30,7 +30,6 @@ public class IgnoredPartnerRolesGui extends EventMessagesGui {
                         playDingSound(plugin.config.event_messages.toggleIgnoredPartnerRole(role));
                         open(false);
                     })));
-            i++;
         }
 
         return builder

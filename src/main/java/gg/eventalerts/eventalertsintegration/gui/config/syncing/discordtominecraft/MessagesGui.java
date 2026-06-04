@@ -3,7 +3,6 @@ package gg.eventalerts.eventalertsintegration.gui.config.syncing.discordtominecr
 import dev.triumphteam.gui.paper.Gui;
 import dev.triumphteam.gui.paper.builder.gui.PaperGuiBuilder;
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder;
-import dev.triumphteam.gui.paper.container.type.HopperContainerType;
 import gg.eventalerts.eventalertsintegration.gui.EAGui;
 import gg.eventalerts.eventalertsintegration.gui.GuiInputType;
 import gg.eventalerts.eventalertsintegration.gui.config.ConfigGui;
@@ -22,7 +21,7 @@ public class MessagesGui extends ConfigGui {
 
     @Override @NotNull
     public PaperGuiBuilder getGui() {
-        return Gui.of(new HopperContainerType())
+        return Gui.of(1)
                 .title(Component.text("Discord -> Minecraft Messages"))
                 .statelessComponent(container -> container.setItem(0, booleanItem(
                         plugin.config.syncing.discord_to_minecraft.messages.enabled,
@@ -34,7 +33,7 @@ public class MessagesGui extends ConfigGui {
                             playDingSound(newStatus);
                             open(false);
                         })))
-                .statelessComponent(container -> container.setItem(1, ItemBuilder.from(Material.WRITABLE_BOOK)
+                .statelessComponent(container -> container.setItem(2, ItemBuilder.from(Material.WRITABLE_BOOK)
                         .name(unitalicize(Component.text("Format", NamedTextColor.GOLD)))
                         .lore(lore("The format of Discord messages in the Minecraft chat.\nSee config.yml for placeholders!\n\n<gray>Current value: <reset>" + plugin.config.syncing.discord_to_minecraft.messages.format))
                         .asGuiItem((player, context) -> { //TODO switch to anvil GUI when Triumph GUI updates
@@ -53,6 +52,6 @@ public class MessagesGui extends ConfigGui {
                             playDingSound(true);
                             context.guiView().close();
                         })))
-                .statelessComponent(container -> container.setItem(4, backButton()));
+                .statelessComponent(container -> container.setItem(8, backButton()));
     }
 }

@@ -13,13 +13,16 @@ import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.file.PlayableSound;
+import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
 import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.DurationFormatter;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 
 
 @Header("# --- WIKIS ---")
@@ -30,8 +33,9 @@ public class ConfigYml extends OkaeriConfig {
      * @param   plugin  Only {@code null} for unit tests
      */
     public ConfigYml(@Nullable EventAlertsIntegration plugin) {
+        System.out.println("this: " + this);
         this.syncing = new Syncing(plugin);
-        this.linking = new Linking(plugin);
+        this.linking = new Linking( plugin);
         this.cross_ban = new CrossBan(plugin);
         this.event_messages = new EventMessages(plugin);
         this.advanced = new Advanced(plugin);
@@ -97,8 +101,9 @@ public class ConfigYml extends OkaeriConfig {
         }
     }
 
-    public static class Syncing extends OkaeriConfig {
+    public static class Syncing extends SubConfig {
         public Syncing(@Nullable EventAlertsIntegration plugin) {
+            super(plugin);
             this.discord_to_minecraft = new DiscordToMinecraft(plugin);
             this.minecraft_to_discord = new MinecraftToDiscord(plugin);
         }
@@ -110,19 +115,18 @@ public class ConfigYml extends OkaeriConfig {
         @Comment("Settings for Minecraft -> Discord syncing")
         @NotNull public MinecraftToDiscord minecraft_to_discord;
 
-        public static class DiscordToMinecraft extends OkaeriConfig {
+        public static class DiscordToMinecraft extends SubConfig {
             public DiscordToMinecraft(@Nullable EventAlertsIntegration plugin) {
+                super(plugin);
                 this.messages = new Messages(plugin);
             }
 
             @Comment("Settings for syncing Discord messages to Minecraft in-game chat")
             @NotNull public Messages messages;
 
-            public static class Messages extends OkaeriConfig {
-                @Nullable private transient final EventAlertsIntegration plugin;
-
+            public static class Messages extends SubConfig {
                 public Messages(@Nullable EventAlertsIntegration plugin) {
-                    this.plugin = plugin;
+                    super(plugin);
                 }
 
                 @Comment("Whether to send messages to the Minecraft in-game chat from the event's Event Alerts thread")
@@ -141,7 +145,6 @@ public class ConfigYml extends OkaeriConfig {
 
                 public void setEnabled(boolean newStatus) {
                     if (enabled == newStatus) return;
-
                     enabled = newStatus;
                     save();
 
@@ -156,11 +159,9 @@ public class ConfigYml extends OkaeriConfig {
             }
         }
 
-        public static class MinecraftToDiscord extends OkaeriConfig {
-            @Nullable private transient final EventAlertsIntegration plugin;
-
+        public static class MinecraftToDiscord extends SubConfig {
             public MinecraftToDiscord(@Nullable EventAlertsIntegration plugin) {
-                this.plugin = plugin;
+                super(plugin);
             }
 
             @Comment("Whether to send join/quit messages in the event's Event Alerts thread in Discord")
@@ -168,7 +169,6 @@ public class ConfigYml extends OkaeriConfig {
 
             public void setConnections(boolean newStatus) {
                 if (connections == newStatus) return;
-
                 connections = newStatus;
                 save();
 
@@ -177,11 +177,9 @@ public class ConfigYml extends OkaeriConfig {
         }
     }
 
-    public static class Linking extends OkaeriConfig {
-        @Nullable private transient final EventAlertsIntegration plugin;
-
+    public static class Linking extends SubConfig {
         public Linking(@Nullable EventAlertsIntegration plugin) {
-            this.plugin = plugin;
+            super(plugin);
         }
 
         @Comment("Whether to force players to be linked with Event Alerts to join/stay on the server")
@@ -198,7 +196,6 @@ public class ConfigYml extends OkaeriConfig {
 
         public void setRequireLink(boolean newStatus) {
             if (require_link == newStatus) return;
-
             require_link = newStatus;
             save();
 
@@ -207,24 +204,20 @@ public class ConfigYml extends OkaeriConfig {
 
         public void setCheckOnJoin(boolean newStatus) {
             if (check_on_join == newStatus) return;
-
             check_on_join = newStatus;
             save();
         }
 
         public void setAllowJoinOnFailure(boolean newStatus) {
             if (allow_join_on_failure == newStatus) return;
-
             allow_join_on_failure = newStatus;
             save();
         }
     }
 
-    public static class CrossBan extends OkaeriConfig {
-        @Nullable private transient final EventAlertsIntegration plugin;
-
+    public static class CrossBan extends SubConfig {
         public CrossBan(@Nullable EventAlertsIntegration plugin) {
-            this.plugin = plugin;
+            super(plugin);
         }
 
         @Comment("Whether to enable cross-ban checking")
@@ -241,7 +234,6 @@ public class ConfigYml extends OkaeriConfig {
 
         public void setEnabled(boolean newStatus) {
             if (enabled == newStatus) return;
-
             enabled = newStatus;
             save();
 
@@ -250,24 +242,21 @@ public class ConfigYml extends OkaeriConfig {
 
         public void setCheckOnJoin(boolean newStatus) {
             if (check_on_join == newStatus) return;
-
             check_on_join = newStatus;
             save();
         }
 
         public void setAllowJoinOnFailure(boolean newStatus) {
             if (allow_join_on_failure == newStatus) return;
-
             allow_join_on_failure = newStatus;
             save();
         }
     }
 
-    public static class EventMessages extends OkaeriConfig {
-        @Nullable private transient final EventAlertsIntegration plugin;
-
+    public static class EventMessages extends SubConfig {
         public EventMessages(@Nullable EventAlertsIntegration plugin) {
-            this.plugin = plugin;
+            super(plugin);
+            sound = new SoundYml(plugin);
         }
 
         @Comment("Whether to enable event messages being broadcast in the server chat")
@@ -280,7 +269,7 @@ public class ConfigYml extends OkaeriConfig {
 
         @Comment
         @Comment("The sound to play when an event message is broadcasted")
-        @NotNull public SoundYml sound = new SoundYml();
+        @NotNull public SoundYml sound;
 
         @Comment
         @Comment("Types of events that shouldn't be broadcasted in the server chat")
@@ -313,7 +302,6 @@ public class ConfigYml extends OkaeriConfig {
 
         public void setEnabled(boolean newStatus) {
             if (enabled == newStatus) return;
-
             enabled = newStatus;
             save();
 
@@ -322,7 +310,6 @@ public class ConfigYml extends OkaeriConfig {
 
         public void setDetectIps(boolean newStatus) {
             if (detect_ips == newStatus) return;
-
             detect_ips = newStatus;
             save();
         }
@@ -335,6 +322,7 @@ public class ConfigYml extends OkaeriConfig {
             return toggleSetItem(ignored_partner_roles, role);
         }
 
+        //TODO
         public boolean toggleIgnoredFormat(@NotNull EventFormat format) {
             return toggleSetItem(ignored_formats, format);
         }
@@ -345,21 +333,21 @@ public class ConfigYml extends OkaeriConfig {
             return true;
         }
 
-        public boolean removeHostFilter(@NotNull String id) {
-            if (!host_filter.remove(id)) return false;
-            save();
-            return true;
+        public void removeHostFilter(@NotNull String id) {
+            if (host_filter.remove(id)) save();
         }
 
         private <T> boolean toggleSetItem(@NotNull Set<T> set, @NotNull T item) {
             final boolean newStatus = !set.remove(item);
             if (newStatus) set.add(item);
-
             save();
             return newStatus;
         }
 
-        public static class SoundYml extends OkaeriConfig {
+        public static class SoundYml extends SubConfig {
+            public SoundYml(@Nullable EventAlertsIntegration plugin) {
+                super(plugin);
+            }
 
             @Comment("Whether to play a sound")
             public boolean enabled = true;
@@ -400,11 +388,10 @@ public class ConfigYml extends OkaeriConfig {
         }
     }
 
-    public static class Advanced extends OkaeriConfig {
-        @Nullable private transient final EventAlertsIntegration plugin;
-
+    public static class Advanced extends SubConfig {
         public Advanced(@Nullable EventAlertsIntegration plugin) {
-            this.plugin = plugin;
+            super(plugin);
+            websocket = new Websocket(plugin);
         }
 
         @Comment("Whether to enable debug logging")
@@ -417,18 +404,28 @@ public class ConfigYml extends OkaeriConfig {
 
         @Comment
         @Comment("Settings for websocket connections")
-        @NotNull public ConfigYml.Advanced.Websocket websocket = new Websocket();
+        @NotNull public ConfigYml.Advanced.Websocket websocket;
+
+        public void setDebug(boolean newStatus) {
+            if (debug == newStatus) return;
+            debug = newStatus;
+            save();
+
+            if (plugin != null) plugin.setDebug(newStatus);
+        }
 
         public void setUseTestingApi(boolean newStatus) {
             if (use_testing_api == newStatus) return;
-
             use_testing_api = newStatus;
             save();
 
             if (plugin != null) plugin.webSockets.reconnectAll("Testing API toggled");
         }
 
-        public static class Websocket extends OkaeriConfig {
+        public static class Websocket extends SubConfig {
+            public Websocket(@Nullable EventAlertsIntegration plugin) {
+                super(plugin);
+            }
 
             @Comment("Whether to automatically reconnect to the websocket if it is disconnected")
             public boolean retry = true;

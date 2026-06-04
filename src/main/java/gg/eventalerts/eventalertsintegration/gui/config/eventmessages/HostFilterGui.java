@@ -67,15 +67,14 @@ public class HostFilterGui extends EventMessagesGui {
 
     @NotNull
     private GuiItem<Player, ItemStack> hostFilterItem(@NotNull String id, @Nullable HostFilter hostFilter) {
-        final Material material = hostFilter == null ? Material.BARRIER : hostFilter.material;
-        final String title = hostFilter == null ? id : hostFilter.capitalized + ": " + id;
-        final String description = hostFilter == null
-                ? "This entry no longer matches a valid host filter type"
-                : "Click to remove this " + hostFilter.lower + " from the host filter";
-
-        return ItemBuilder.from(material)
-                .name(unitalicize(Component.text(title, NamedTextColor.GOLD, TextDecoration.BOLD)))
-                .lore(lore(description))
+        return ItemBuilder.from(hostFilter == null ? Material.BARRIER : hostFilter.material)
+                .name(unitalicize(Component.text()
+                        .color(NamedTextColor.GOLD)
+                        .append(Component.text(hostFilter == null ? "" : hostFilter.capitalized + ": ")
+                                .decorate(TextDecoration.BOLD))
+                        .append(Component.text(id))
+                        .build()))
+                .lore(lore("Click to remove this " + (hostFilter != null ? hostFilter.lower : "???") + " from the host filter"))
                 .asGuiItem((player, context) -> {
                     plugin.config.event_messages.removeHostFilter(id);
                     playDingSound(false);
