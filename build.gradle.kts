@@ -72,6 +72,11 @@ dependencies {
     // Unit tests
     testImplementation("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
     testImplementation("org.mongodb:bson:$bsonVersion")
+    testImplementation("eu.okaeri:okaeri-configs-core:$okaeriConfigsVersion")
+    testImplementation("eu.okaeri:okaeri-configs-yaml-bukkit:$okaeriConfigsVersion")
+    testImplementation("eu.okaeri:okaeri-configs-serdes-commons:$okaeriConfigsVersion")
+    testImplementation("eu.okaeri:okaeri-configs-serdes-bukkit:$okaeriConfigsVersion")
+    testImplementation("eu.okaeri:okaeri-configs-validator-okaeri:$okaeriConfigsVersion")
     testImplementation(platform("org.junit:junit-bom:6.1.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

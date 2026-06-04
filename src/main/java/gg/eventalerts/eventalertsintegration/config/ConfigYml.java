@@ -26,8 +26,10 @@ import java.util.Set;
 @Header("# 1: https://wiki.eventalerts.gg/EventAlertsIntegration/configuration")
 @Header("# 2: https://github.com/srnyx/annoying-api/wiki/File-objects")
 public class ConfigYml extends OkaeriConfig {
-
-    public ConfigYml(@NotNull EventAlertsIntegration plugin) {
+    /**
+     * @param   plugin  Only {@code null} for unit tests
+     */
+    public ConfigYml(@Nullable EventAlertsIntegration plugin) {
         this.syncing = new Syncing(plugin);
         this.linking = new Linking(plugin);
         this.cross_ban = new CrossBan(plugin);
@@ -96,8 +98,7 @@ public class ConfigYml extends OkaeriConfig {
     }
 
     public static class Syncing extends OkaeriConfig {
-
-        public Syncing(@NotNull EventAlertsIntegration plugin) {
+        public Syncing(@Nullable EventAlertsIntegration plugin) {
             this.discord_to_minecraft = new DiscordToMinecraft(plugin);
             this.minecraft_to_discord = new MinecraftToDiscord(plugin);
         }
@@ -110,8 +111,7 @@ public class ConfigYml extends OkaeriConfig {
         @NotNull public MinecraftToDiscord minecraft_to_discord;
 
         public static class DiscordToMinecraft extends OkaeriConfig {
-
-            public DiscordToMinecraft(@NotNull EventAlertsIntegration plugin) {
+            public DiscordToMinecraft(@Nullable EventAlertsIntegration plugin) {
                 this.messages = new Messages(plugin);
             }
 
@@ -119,10 +119,9 @@ public class ConfigYml extends OkaeriConfig {
             @NotNull public Messages messages;
 
             public static class Messages extends OkaeriConfig {
+                @Nullable private transient final EventAlertsIntegration plugin;
 
-                @NotNull private transient final EventAlertsIntegration plugin;
-
-                public Messages(@NotNull EventAlertsIntegration plugin) {
+                public Messages(@Nullable EventAlertsIntegration plugin) {
                     this.plugin = plugin;
                 }
 
@@ -146,7 +145,7 @@ public class ConfigYml extends OkaeriConfig {
                     enabled = newStatus;
                     save();
 
-                    plugin.webSockets.reconnect("Config updated", SocketEndpoint.EVENT_CHAT);
+                    if (plugin != null) plugin.webSockets.reconnect("Config updated", SocketEndpoint.EVENT_CHAT);
                 }
 
                 public void setFormat(@NotNull String newFormat) {
@@ -158,10 +157,9 @@ public class ConfigYml extends OkaeriConfig {
         }
 
         public static class MinecraftToDiscord extends OkaeriConfig {
+            @Nullable private transient final EventAlertsIntegration plugin;
 
-            @NotNull private transient final EventAlertsIntegration plugin;
-
-            public MinecraftToDiscord(@NotNull EventAlertsIntegration plugin) {
+            public MinecraftToDiscord(@Nullable EventAlertsIntegration plugin) {
                 this.plugin = plugin;
             }
 
@@ -174,16 +172,15 @@ public class ConfigYml extends OkaeriConfig {
                 connections = newStatus;
                 save();
 
-                plugin.webSockets.reconnect("Config updated", SocketEndpoint.PLAYER_CONNECTION);
+                if (plugin != null) plugin.webSockets.reconnect("Config updated", SocketEndpoint.PLAYER_CONNECTION);
             }
         }
     }
 
     public static class Linking extends OkaeriConfig {
+        @Nullable private transient final EventAlertsIntegration plugin;
 
-        @NotNull private transient final EventAlertsIntegration plugin;
-
-        public Linking(@NotNull EventAlertsIntegration plugin) {
+        public Linking(@Nullable EventAlertsIntegration plugin) {
             this.plugin = plugin;
         }
 
@@ -205,7 +202,7 @@ public class ConfigYml extends OkaeriConfig {
             require_link = newStatus;
             save();
 
-            plugin.webSockets.reconnect("Config updated", SocketEndpoint.LINK);
+            if (plugin != null) plugin.webSockets.reconnect("Config updated", SocketEndpoint.LINK);
         }
 
         public void setCheckOnJoin(boolean newStatus) {
@@ -224,10 +221,9 @@ public class ConfigYml extends OkaeriConfig {
     }
 
     public static class CrossBan extends OkaeriConfig {
+        @Nullable private transient final EventAlertsIntegration plugin;
 
-        @NotNull private transient final EventAlertsIntegration plugin;
-
-        public CrossBan(@NotNull EventAlertsIntegration plugin) {
+        public CrossBan(@Nullable EventAlertsIntegration plugin) {
             this.plugin = plugin;
         }
 
@@ -249,7 +245,7 @@ public class ConfigYml extends OkaeriConfig {
             enabled = newStatus;
             save();
 
-            plugin.webSockets.reconnect("Config updated", SocketEndpoint.CROSS_BAN);
+            if (plugin != null) plugin.webSockets.reconnect("Config updated", SocketEndpoint.CROSS_BAN);
         }
 
         public void setCheckOnJoin(boolean newStatus) {
@@ -268,10 +264,9 @@ public class ConfigYml extends OkaeriConfig {
     }
 
     public static class EventMessages extends OkaeriConfig {
+        @Nullable private transient final EventAlertsIntegration plugin;
 
-        @NotNull private transient final EventAlertsIntegration plugin;
-
-        public EventMessages(@NotNull EventAlertsIntegration plugin) {
+        public EventMessages(@Nullable EventAlertsIntegration plugin) {
             this.plugin = plugin;
         }
 
@@ -322,7 +317,7 @@ public class ConfigYml extends OkaeriConfig {
             enabled = newStatus;
             save();
 
-            plugin.webSockets.reconnect("Config updated", SocketEndpoint.EVENT_POSTED, SocketEndpoint.FAMOUS_EVENT_POSTED);
+            if (plugin != null) plugin.webSockets.reconnect("Config updated", SocketEndpoint.EVENT_POSTED, SocketEndpoint.FAMOUS_EVENT_POSTED);
         }
 
         public void setDetectIps(boolean newStatus) {
@@ -406,10 +401,9 @@ public class ConfigYml extends OkaeriConfig {
     }
 
     public static class Advanced extends OkaeriConfig {
+        @Nullable private transient final EventAlertsIntegration plugin;
 
-        @NotNull private transient final EventAlertsIntegration plugin;
-
-        public Advanced(@NotNull EventAlertsIntegration plugin) {
+        public Advanced(@Nullable EventAlertsIntegration plugin) {
             this.plugin = plugin;
         }
 
@@ -431,7 +425,7 @@ public class ConfigYml extends OkaeriConfig {
             use_testing_api = newStatus;
             save();
 
-            plugin.webSockets.reconnectAll("Testing API toggled");
+            if (plugin != null) plugin.webSockets.reconnectAll("Testing API toggled");
         }
 
         public static class Websocket extends OkaeriConfig {
