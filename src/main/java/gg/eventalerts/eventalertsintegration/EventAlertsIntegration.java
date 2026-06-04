@@ -1,10 +1,8 @@
 package gg.eventalerts.eventalertsintegration;
 
-import eu.okaeri.configs.serdes.commons.SerdesCommons;
-import eu.okaeri.configs.yaml.bukkit.YamlBukkitConfigurer;
-import eu.okaeri.configs.yaml.bukkit.serdes.SerdesBukkit;
+import gg.eventalerts.eventalertsintegration.config.ConfigCreator;
 import gg.eventalerts.eventalertsintegration.config.ConfigYml;
-import gg.eventalerts.eventalertsintegration.config.serdes.PlayableSoundSerializer;
+import gg.eventalerts.eventalertsintegration.gui.GuiInputType;
 import gg.eventalerts.eventalertsintegration.socket.WebSockets;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -18,7 +16,6 @@ import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.PluginPlatform;
 import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -39,12 +36,12 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
             .append(Component.text(" for more information"))
             .build();
 
-    @NotNull public final ConfigYml config = new ConfigYml(this);
+    @NotNull public final ConfigYml config;
     public WebSockets webSockets;
     /**
-     * [player UUID, input key ID]
+     * [player UUID, pending GUI input target]
      */
-    @NotNull public final Map<UUID, String> guiInput = new HashMap<>();
+    @NotNull public final Map<UUID, GuiInputType> guiInput = new HashMap<>();
 
     public EventAlertsIntegration() {
         options
@@ -54,18 +51,18 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
                         "gg.eventalerts.eventalertsintegration.commands",
                         "gg.eventalerts.eventalertsintegration.listeners");
 
-        // Load BSON
+        // Load libraries
+        libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_CORE);
+        libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_YAML_BUKKIT);
+        libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_SERDES_COMMONS);
+        libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_SERDES_BUKKIT);
+        libraryManager.loadLibrary(EALibrary.OKAERI_VALIDATOR);
+        libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_VALIDATOR_OKAERI);
+        libraryManager.loadLibrary(EALibrary.XSERIES);
         libraryManager.loadLibrary(EALibrary.BSON);
 
         // Configure config
-        config.configure(opt -> {
-            opt.configurer(new YamlBukkitConfigurer(), new SerdesCommons(), new SerdesBukkit(), registry -> {
-                registry.register(new PlayableSoundSerializer());
-            });
-            opt.bindFile(new File(getDataFolder(), "config.yml"));
-            opt.removeOrphans(true);
-        });
-        config.saveDefaults();
+        config = ConfigCreator.create(this);
     }
 
     @Override
@@ -89,7 +86,7 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
 
     @Override
     public void disable() {
-        webSockets.closeAll("Plugin disable");
+        if (webSockets != null) webSockets.closeAll("Plugin disable");
     }
 
     @NotNull
@@ -111,8 +108,10 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
     public Map<String, String> getSocketHeaders() {
         final Map<String, String> headers = new HashMap<>();
         headers.put("User-Agent", getUserAgent());
-        if (config.api_keys.player != null) headers.put("X-Player-Key", config.api_keys.player);
-        if (config.api_keys.server != null) headers.put("X-Server-Key", config.api_keys.server);
+        final String playerKey = config.api_keys.getPlayer();
+        if (playerKey != null) headers.put("X-Player-Key", playerKey);
+        final String serverKey = config.api_keys.getServer();
+        if (serverKey != null) headers.put("X-Server-Key", serverKey);
         return headers;
     }
 

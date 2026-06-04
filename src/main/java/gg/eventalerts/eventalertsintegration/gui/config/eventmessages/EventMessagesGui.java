@@ -3,7 +3,6 @@ package gg.eventalerts.eventalertsintegration.gui.config.eventmessages;
 import dev.triumphteam.gui.paper.Gui;
 import dev.triumphteam.gui.paper.builder.gui.PaperGuiBuilder;
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder;
-import gg.eventalerts.eventalertsintegration.config.ConfigYml;
 import gg.eventalerts.eventalertsintegration.gui.EAGui;
 import gg.eventalerts.eventalertsintegration.gui.config.ConfigGui;
 import gg.eventalerts.eventalertsintegration.gui.config.eventmessages.sound.SoundGui;
@@ -39,8 +38,7 @@ public class EventMessagesGui extends ConfigGui {
                         "If an IP is detected in an event message,\nplayers will be able to click a button to join\nthe event's server using transfer packets",
                         (player, context) -> {
                             final boolean newStatus = !plugin.config.event_messages.detect_ips;
-                            plugin.config.event_messages.detect_ips = newStatus;
-                            plugin.config.setSave(ConfigYml.EventMessages.PATH_DETECT_IPS, newStatus);
+                            plugin.config.event_messages.setDetectIps(newStatus);
                             playDingSound(newStatus);
                             open(false);
                         })))

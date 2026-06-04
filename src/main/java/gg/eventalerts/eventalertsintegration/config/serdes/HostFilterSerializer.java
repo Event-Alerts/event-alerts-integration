@@ -28,16 +28,10 @@ public class HostFilterSerializer implements ObjectSerializer<Set<String>> {
     public Set<String> deserialize(@NotNull DeserializationData data, @NotNull GenericsDeclaration generics) {
         final Set<String> filters = data.getValueAsSet(String.class);
         for (final String filter : new HashSet<>(filters)) {
-            boolean valid = false;
-            for (final HostFilter hostFilterEnum : HostFilter.values()) {
-                if (hostFilterEnum.idValidator.apply(filter)) {
-                    valid = true;
-                    break;
-                }
-            }
+            // Valid
+            if (HostFilter.fromId(filter) != null) continue;
 
             // Invalid
-            if (valid) continue;
             filters.remove(filter);
             AnnoyingPlugin.log(Level.WARNING, "Invalid host filter entry: " + filter);
         }

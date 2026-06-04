@@ -20,17 +20,21 @@ setupAnnoyingAPI(
         version = "1.1.0",
         description = "A plugin to integrate your Minecraft server with the Event Alerts ecosystem",
         javaVersion = JavaVersion.VERSION_21),
-    annoyingAPIConfig = DependencyConfig(version = "db46b2b"))
+    annoyingAPIConfig = DependencyConfig(version = "569085e"))
 
 // Runtime dependency versions
 val javaWebSocketVersion: String = "1.6.0"
 val bsonVersion: String = "5.7.0"
+val okaeriConfigsVersion: String = "6.1.0-beta.4"
+val xSeriesVersion: String = "13.7.0"
 val jEmojiVersion: String = "2.0.0"
 
 // Blossom (see java-templates module)
 sourceSets.main { blossom.javaSources {
     property("java_websocket_version", javaWebSocketVersion)
     property("bson_version", bsonVersion)
+    property("okaeri_configs_version", okaeriConfigsVersion)
+    property("xseries_version", xSeriesVersion)
     property("jemoji_version", jEmojiVersion)
 } }
 
@@ -40,25 +44,35 @@ repository("https://repo.okaeri.cloud/releases")
 
 // Dependencies
 dependencies {
-    implementationRelocate("eu.okaeri:okaeri-configs-yaml-bukkit:6.1.0-beta.4")
-    implementationRelocate("eu.okaeri:okaeri-configs-serdes-commons:6.1.0-beta.4")
-    implementationRelocate("eu.okaeri:okaeri-configs-serdes-bukkit:6.1.0-beta.4")
+    // Bundled
     implementationRelocate("dev.triumphteam:triumph-gui-paper:4.0.0-SNAPSHOT", "dev.triumphteam")
 
-    compileOnly("org.java-websocket:Java-WebSocket:$javaWebSocketVersion") { // Downloaded on runtime
+    // Downloaded on runtime
+    compileOnly("org.java-websocket:Java-WebSocket:$javaWebSocketVersion") {
         relocate("org.java_websocket")
     }
     @Suppress("AvoidDuplicateDependencies")
-    compileOnly("org.mongodb:bson:$bsonVersion") { // Downloaded on runtime
+    compileOnly("org.mongodb:bson:$bsonVersion") {
         relocate("org.bson")
         relocate("org.checkerframework")
     }
-    compileOnly("net.fellbaum:jemoji:$jEmojiVersion") { // Downloaded on runtime
+    compileOnly("eu.okaeri:okaeri-configs-yaml-bukkit:$okaeriConfigsVersion") {
+        relocate("eu.okaeri")
+    }
+    compileOnly("eu.okaeri:okaeri-configs-serdes-commons:$okaeriConfigsVersion")
+    compileOnly("eu.okaeri:okaeri-configs-serdes-bukkit:$okaeriConfigsVersion")
+    compileOnly("eu.okaeri:okaeri-configs-validator-okaeri:$okaeriConfigsVersion")
+    compileOnly("com.github.cryptomorin:XSeries:$xSeriesVersion") {
+        relocate("com.cryptomorin.xseries")
+    }
+    compileOnly("net.fellbaum:jemoji:$jEmojiVersion") {
         relocate("net.fellbaum")
     }
 
+    // Optional
     compileOnly("me.clip:placeholderapi:2.12.2")
 
+    // Unit tests
     testImplementation("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
     @Suppress("AvoidDuplicateDependencies")
     testImplementation("org.mongodb:bson:$bsonVersion")

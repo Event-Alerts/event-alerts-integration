@@ -16,6 +16,76 @@ import java.util.function.Supplier;
 
 public enum EALibrary implements AnnoyingLibrary {
     /**
+     * {@code eu.okaeri:okaeri-configs-core}
+     */
+    OKAERI_CONFIGS_CORE(
+            () -> Library.builder()
+                    .repository("https://repo.okaeri.cloud/releases/")
+                    .groupId("eu{}okaeri")
+                    .artifactId("okaeri-configs-core")
+                    .version(BuildProperties.OKAERI_CONFIGS_VERSION),
+            plugin -> Collections.singleton(plugin.getRelocation("eu{}okaeri"))),
+    /**
+     * {@code eu.okaeri:okaeri-configs-yaml-bukkit}
+     */
+    OKAERI_CONFIGS_YAML_BUKKIT(
+            () -> Library.builder()
+                    .repository("https://repo.okaeri.cloud/releases/")
+                    .groupId("eu{}okaeri")
+                    .artifactId("okaeri-configs-yaml-bukkit")
+                    .version(BuildProperties.OKAERI_CONFIGS_VERSION),
+            plugin -> Collections.singleton(plugin.getRelocation("eu{}okaeri"))),
+    /**
+     * {@code eu.okaeri:okaeri-configs-serdes-commons}
+     */
+    OKAERI_CONFIGS_SERDES_COMMONS(
+            () -> Library.builder()
+                    .repository("https://repo.okaeri.cloud/releases/")
+                    .groupId("eu{}okaeri")
+                    .artifactId("okaeri-configs-serdes-commons")
+                    .version(BuildProperties.OKAERI_CONFIGS_VERSION),
+            plugin -> Collections.singleton(plugin.getRelocation("eu{}okaeri"))),
+    /**
+     * {@code eu.okaeri:okaeri-configs-serdes-bukkit}
+     */
+    OKAERI_CONFIGS_SERDES_BUKKIT(
+            () -> Library.builder()
+                    .repository("https://repo.okaeri.cloud/releases/")
+                    .groupId("eu{}okaeri")
+                    .artifactId("okaeri-configs-serdes-bukkit")
+                    .version(BuildProperties.OKAERI_CONFIGS_VERSION),
+            plugin -> Collections.singleton(plugin.getRelocation("eu{}okaeri"))),
+    /**
+     * {@code eu.okaeri:okaeri-validator}
+     */
+    OKAERI_VALIDATOR(
+            () -> Library.builder()
+                    .repository("https://repo.okaeri.cloud/releases/")
+                    .groupId("eu{}okaeri")
+                    .artifactId("okaeri-validator")
+                    .version("2.0.5"),
+            plugin -> Collections.singleton(plugin.getRelocation("eu{}okaeri"))),
+    /**
+     * {@code eu.okaeri:okaeri-configs-validator-okaeri}
+     */
+    OKAERI_CONFIGS_VALIDATOR_OKAERI(
+            () -> Library.builder()
+                    .repository("https://repo.okaeri.cloud/releases/")
+                    .groupId("eu{}okaeri")
+                    .artifactId("okaeri-configs-validator-okaeri")
+                    .version(BuildProperties.OKAERI_CONFIGS_VERSION),
+            plugin -> Collections.singleton(plugin.getRelocation("eu{}okaeri"))),
+    /**
+     * {@code com.github.cryptomorin:XSeries}
+     */
+    XSERIES(
+            () -> Library.builder()
+                    .repository(Repositories.MAVEN_CENTRAL)
+                    .groupId("com{}github{}cryptomorin")
+                    .artifactId("XSeries")
+                    .version(BuildProperties.XSERIES_VERSION),
+            plugin -> Collections.singleton(plugin.getRelocation("com{}cryptomorin{}xseries"))),
+    /**
      * {@code org.java-websocket:Java-WebSocket}
      */
     JAVA_WEBSOCKET(

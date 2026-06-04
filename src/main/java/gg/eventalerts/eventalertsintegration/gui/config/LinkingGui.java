@@ -3,7 +3,6 @@ package gg.eventalerts.eventalertsintegration.gui.config;
 import dev.triumphteam.gui.paper.Gui;
 import dev.triumphteam.gui.paper.builder.gui.PaperGuiBuilder;
 import dev.triumphteam.gui.paper.container.type.HopperContainerType;
-import gg.eventalerts.eventalertsintegration.config.ConfigYml;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,8 +34,7 @@ public class LinkingGui extends ConfigGui {
                                 "Whether to check link status\nwhen a player joins the server",
                                 (player, context) -> {
                                     final boolean newStatus = !plugin.config.linking.check_on_join;
-                                    plugin.config.linking.check_on_join = newStatus;
-                                    plugin.config.setSave(ConfigYml.Linking.PATH_CHECK_ON_JOIN, newStatus);
+                                    plugin.config.linking.setCheckOnJoin(newStatus);
                                     playDingSound(newStatus);
                                     open(false);
                                 })))
@@ -47,8 +45,7 @@ public class LinkingGui extends ConfigGui {
                                 "Whether to allow players to join the\nserver when the linking check fails",
                                 (player, context) -> {
                                     final boolean newStatus = !plugin.config.linking.allow_join_on_failure;
-                                    plugin.config.linking.allow_join_on_failure = newStatus;
-                                    plugin.config.setSave(ConfigYml.Linking.PATH_ALLOW_JOIN_ON_FAILURE, newStatus);
+                                    plugin.config.linking.setAllowJoinOnFailure(newStatus);
                                     playDingSound(newStatus);
                                     open(false);
                                 })))

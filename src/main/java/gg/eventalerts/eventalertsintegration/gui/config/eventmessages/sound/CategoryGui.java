@@ -3,7 +3,6 @@ package gg.eventalerts.eventalertsintegration.gui.config.eventmessages.sound;
 import dev.triumphteam.gui.container.type.GuiContainerType;
 import dev.triumphteam.gui.paper.Gui;
 import dev.triumphteam.gui.paper.builder.gui.PaperGuiBuilder;
-import gg.eventalerts.eventalertsintegration.config.ConfigYml;
 import net.kyori.adventure.text.Component;
 import org.bukkit.SoundCategory;
 import org.jetbrains.annotations.NotNull;
@@ -22,17 +21,15 @@ public class CategoryGui extends SoundGui {
         final PaperGuiBuilder builder = Gui.of(rows);
 
         // Add sound category buttons
-        final SoundCategory current = plugin.config.event_messages.sound != null ? (SoundCategory) plugin.config.event_messages.sound.category : null;
         int i = 0;
         for (final SoundCategory category : categories) {
             final int finalI = i;
             builder.statelessComponent(container -> container.setItem(finalI, booleanItem(
-                    current == category,
+                    plugin.config.event_messages.sound.sound.category == category,
                     category.name(),
                     "Whether to play the sound\nin the " + category.name() + " category",
                     (player, context) -> {
-                        plugin.config.event_messages.sound.category = category;
-                        plugin.config.setSave(ConfigYml.EventMessages.PATH_SOUND + ".category", category.name());
+                        plugin.config.event_messages.sound.setCategory(category);
                         playDingSound(true);
                         open(false);
                     })));

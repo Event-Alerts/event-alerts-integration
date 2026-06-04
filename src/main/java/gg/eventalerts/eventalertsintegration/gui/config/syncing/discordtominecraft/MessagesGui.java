@@ -4,8 +4,8 @@ import dev.triumphteam.gui.paper.Gui;
 import dev.triumphteam.gui.paper.builder.gui.PaperGuiBuilder;
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder;
 import dev.triumphteam.gui.paper.container.type.HopperContainerType;
-import gg.eventalerts.eventalertsintegration.config.ConfigYml;
 import gg.eventalerts.eventalertsintegration.gui.EAGui;
+import gg.eventalerts.eventalertsintegration.gui.GuiInputType;
 import gg.eventalerts.eventalertsintegration.gui.config.ConfigGui;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -49,7 +49,7 @@ public class MessagesGui extends ConfigGui {
                                     .append(CANCEL));
 
                             // Add to map and close GUI
-                            plugin.guiInput.put(player.getUniqueId(), ConfigYml.Syncing.DiscordToMinecraft.Messages.PATH_FORMAT);
+                            plugin.guiInput.put(player.getUniqueId(), GuiInputType.SYNC_MESSAGE_FORMAT);
                             playDingSound(true);
                             context.guiView().close();
                         })))

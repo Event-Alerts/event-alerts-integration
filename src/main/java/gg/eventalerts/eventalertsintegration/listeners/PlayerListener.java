@@ -43,7 +43,7 @@ public class PlayerListener extends AnnoyingListener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(@NotNull PlayerLoginEvent event) {
-        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED || plugin.config.api_keys.server == null) return;
+        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED || plugin.config.api_keys.getServer() == null) return;
 
         // Get PlayerConnectionClient
         final SocketClient<?> client = plugin.webSockets.clients.get(SocketEndpoint.PLAYER_CONNECTION);
@@ -60,7 +60,7 @@ public class PlayerListener extends AnnoyingListener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
-        if (plugin.config.api_keys.server == null) return;
+        if (plugin.config.api_keys.getServer() == null) return;
 
         // Get PlayerConnectionClient
         final SocketClient<?> client = plugin.webSockets.clients.get(SocketEndpoint.PLAYER_CONNECTION);

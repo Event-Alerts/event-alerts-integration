@@ -1,6 +1,7 @@
 package gg.eventalerts.eventalertsintegration.socket;
 
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
+import gg.eventalerts.eventalertsintegration.config.ConfigYml;
 import gg.eventalerts.eventalertsintegration.json.GSONProvider;
 import gg.eventalerts.eventalertsintegration.objects.EAObject;
 import org.java_websocket.client.WebSocketClient;
@@ -51,7 +52,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
         close(1001, "Retrying connection");
 
         // Schedule retry
-        if (plugin.config.advanced.websocket.logs) AnnoyingPlugin.log(Level.INFO, "We will try to reconnect to " + endpoint + " in " + retryDelay + " minutes due to: " + reason);
+        if (plugin.config.advanced.websocket.logs) AnnoyingPlugin.log(Level.INFO, "We will try to reconnect to " + endpoint + " in " + ConfigYml.Advanced.Websocket.formatRetryDelay(retryDelay) + " due to: " + reason);
         retryTask = plugin.scheduler.runGlobalTaskLaterAsync(task -> {
             if (plugin.config.advanced.websocket.logs) AnnoyingPlugin.log(Level.INFO, "Retrying websocket connection for " + endpoint + " with reason: " + reason);
             retryTask = null;
