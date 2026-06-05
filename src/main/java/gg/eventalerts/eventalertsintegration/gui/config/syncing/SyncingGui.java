@@ -3,7 +3,6 @@ package gg.eventalerts.eventalertsintegration.gui.config.syncing;
 import dev.triumphteam.gui.paper.Gui;
 import dev.triumphteam.gui.paper.builder.gui.PaperGuiBuilder;
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder;
-import gg.eventalerts.eventalertsintegration.gui.EAGui;
 import gg.eventalerts.eventalertsintegration.gui.Heads;
 import gg.eventalerts.eventalertsintegration.gui.config.ConfigGui;
 import gg.eventalerts.eventalertsintegration.gui.config.syncing.discordtominecraft.MessagesGui;
@@ -14,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class SyncingGui extends ConfigGui {
-    public SyncingGui(@NotNull EAGui parent) {
+    public SyncingGui(@NotNull ConfigGui parent) {
         super(parent);
     }
 

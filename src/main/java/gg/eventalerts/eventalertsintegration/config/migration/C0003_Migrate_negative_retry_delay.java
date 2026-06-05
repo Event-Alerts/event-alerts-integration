@@ -1,9 +1,8 @@
 package gg.eventalerts.eventalertsintegration.config.migration;
 
 import eu.okaeri.configs.migrate.builtin.NamedMigration;
+import gg.eventalerts.eventalertsintegration.config.ConfigYml;
 import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.Mapper;
-
-import java.time.Duration;
 
 import static eu.okaeri.configs.migrate.ConfigMigrationDsl.*;
 
@@ -22,6 +21,6 @@ public class C0003_Migrate_negative_retry_delay extends NamedMigration {
                         }),
                         multi(
                                 update("advanced.websockets.retry", oldValue -> false),
-                                update("advanced.websockets.retry_delay", oldValue -> Duration.ofMinutes(5)))));
+                                update("advanced.websockets.retry_delay", oldValue -> ConfigYml.Advanced.Websocket.RETRY_DELAY_DEFAULT))));
     }
 }

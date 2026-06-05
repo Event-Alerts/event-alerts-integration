@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class AdvancedGui extends ConfigGui {
-    public AdvancedGui(@NotNull EAGui parent) {
+    public AdvancedGui(@NotNull ConfigGui parent) {
         super(parent);
     }
 

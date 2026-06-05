@@ -3,7 +3,6 @@ package gg.eventalerts.eventalertsintegration.gui.config.eventmessages;
 import dev.triumphteam.gui.paper.Gui;
 import dev.triumphteam.gui.paper.builder.gui.PaperGuiBuilder;
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder;
-import gg.eventalerts.eventalertsintegration.gui.EAGui;
 import gg.eventalerts.eventalertsintegration.gui.config.ConfigGui;
 import gg.eventalerts.eventalertsintegration.gui.config.eventmessages.sound.SoundGui;
 import net.kyori.adventure.text.Component;
@@ -14,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class EventMessagesGui extends ConfigGui {
-    public EventMessagesGui(@NotNull EAGui parent) {
+    public EventMessagesGui(@NotNull ConfigGui parent) {
         super(parent);
     }
 

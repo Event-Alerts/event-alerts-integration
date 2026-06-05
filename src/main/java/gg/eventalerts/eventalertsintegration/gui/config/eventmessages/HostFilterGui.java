@@ -39,12 +39,12 @@ public class HostFilterGui extends EventMessagesGui {
         final PaperGuiBuilder builder = Gui.of(6)
                 .title(Component.text("Host Filter"));
 
+        // Add entry items
         int i = 0;
         for (final String id : ids) {
             if (i >= ADD_SLOT) break;
             final int slot = i++;
-            final HostFilter hostFilter = HostFilter.fromId(id);
-            builder.statelessComponent(container -> container.setItem(slot, hostFilterItem(id, hostFilter)));
+            builder.statelessComponent(container -> container.setItem(slot, hostFilterItem(id, HostFilter.fromId(id))));
         }
 
         return builder

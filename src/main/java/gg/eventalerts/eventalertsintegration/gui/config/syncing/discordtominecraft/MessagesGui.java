@@ -3,9 +3,8 @@ package gg.eventalerts.eventalertsintegration.gui.config.syncing.discordtominecr
 import dev.triumphteam.gui.paper.Gui;
 import dev.triumphteam.gui.paper.builder.gui.PaperGuiBuilder;
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder;
-import gg.eventalerts.eventalertsintegration.gui.EAGui;
 import gg.eventalerts.eventalertsintegration.gui.GuiInputType;
-import gg.eventalerts.eventalertsintegration.gui.config.ConfigGui;
+import gg.eventalerts.eventalertsintegration.gui.config.syncing.SyncingGui;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -14,8 +13,8 @@ import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 
 
-public class MessagesGui extends ConfigGui {
-    public MessagesGui(@NotNull EAGui parent) {
+public class MessagesGui extends SyncingGui {
+    public MessagesGui(@NotNull SyncingGui parent) {
         super(parent);
     }
 

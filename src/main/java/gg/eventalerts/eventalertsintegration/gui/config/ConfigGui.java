@@ -36,7 +36,7 @@ public class ConfigGui extends EAGui {
         super(plugin, opener);
     }
 
-    public ConfigGui(@NotNull EAGui parent) {
+    public ConfigGui(@NotNull ConfigGui parent) {
         super(parent);
     }
 

@@ -3,6 +3,7 @@ package gg.eventalerts.eventalertsintegration.listeners;
 import eu.okaeri.configs.schema.GenericsDeclaration;
 import eu.okaeri.configs.serdes.SerdesContext;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
+import gg.eventalerts.eventalertsintegration.config.ConfigYml;
 import gg.eventalerts.eventalertsintegration.config.HostFilter;
 import gg.eventalerts.eventalertsintegration.gui.GuiInputType;
 import gg.eventalerts.eventalertsintegration.gui.EAGui;
@@ -111,6 +112,7 @@ public class ChatListener extends AnnoyingListener {
             volume = Float.parseFloat(message);
         } catch (final NumberFormatException e) {
             player.sendMessage(Component.text()
+                    .color(NamedTextColor.RED)
                     .append(Component.text("\n" + message, NamedTextColor.DARK_RED))
                     .append(Component.text(" is not a valid float!", NamedTextColor.RED))
                     .append(ConfigGui.CANCEL));
@@ -143,6 +145,7 @@ public class ChatListener extends AnnoyingListener {
             pitch = Float.parseFloat(message);
         } catch (final NumberFormatException e) {
             player.sendMessage(Component.text()
+                    .color(NamedTextColor.RED)
                     .append(Component.text("\n" + message, NamedTextColor.DARK_RED))
                     .append(Component.text(" is not a valid float!", NamedTextColor.RED))
                     .append(ConfigGui.CANCEL));
@@ -197,8 +200,21 @@ public class ChatListener extends AnnoyingListener {
                 .transform(message, SerdesContext.of(plugin.config.getConfigurer()));
         if (retryDelay == null) {
             player.sendMessage(Component.text()
+                    .color(NamedTextColor.RED)
                     .append(Component.text("\n" + message, NamedTextColor.DARK_RED))
                     .append(Component.text(" is not a valid duration!", NamedTextColor.RED))
+                    .append(ConfigGui.CANCEL));
+            return;
+        }
+
+        // Check if above minimum
+        if (retryDelay.compareTo(ConfigYml.Advanced.Websocket.RETRY_DELAY_MIN) < 0) {
+            player.sendMessage(Component.text()
+                    .color(NamedTextColor.RED)
+                    .append(Component.text("\n" + message, NamedTextColor.DARK_RED))
+                    .append(Component.text(" is below the minimum of "))
+                    .append(Component.text(ConfigYml.Advanced.Websocket.formatRetryDelay(ConfigYml.Advanced.Websocket.RETRY_DELAY_MIN), NamedTextColor.DARK_RED))
+                    .append(Component.text("!"))
                     .append(ConfigGui.CANCEL));
             return;
         }
@@ -239,7 +255,8 @@ public class ChatListener extends AnnoyingListener {
         // Add to filter
         if (!plugin.config.event_messages.addHostFilter(id)) {
             player.sendMessage(Component.text()
-                    .append(Component.text("\nThis " + hostFilter.lower + " is already in the host filter!\n", NamedTextColor.RED))
+                    .color(NamedTextColor.RED)
+                    .append(Component.text("\nThis " + hostFilter.lower + " is already in the host filter!", NamedTextColor.RED))
                     .append(ConfigGui.CANCEL));
             return;
         }

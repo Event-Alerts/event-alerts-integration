@@ -13,16 +13,13 @@ import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.file.PlayableSound;
-import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
 import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.DurationFormatter;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 
 
 @Header("# --- WIKIS ---")
@@ -293,11 +290,11 @@ public class ConfigYml extends OkaeriConfig {
         @NotNull public Set<String> host_filter = new HashSet<>();
 
         public boolean isInHostFilter(@NotNull ObjectId serverId) {
-            return host_filter.contains(serverId.toString());
+            return host_filter.isEmpty() || host_filter.contains(serverId.toString());
         }
 
         public boolean isInHostFilter(long hostId) {
-            return host_filter.contains(Long.toString(hostId));
+            return host_filter.isEmpty() || host_filter.contains(Long.toString(hostId));
         }
 
         public void setEnabled(boolean newStatus) {
@@ -322,7 +319,6 @@ public class ConfigYml extends OkaeriConfig {
             return toggleSetItem(ignored_partner_roles, role);
         }
 
-        //TODO
         public boolean toggleIgnoredFormat(@NotNull EventFormat format) {
             return toggleSetItem(ignored_formats, format);
         }
@@ -423,6 +419,9 @@ public class ConfigYml extends OkaeriConfig {
         }
 
         public static class Websocket extends SubConfig {
+            @NotNull public static final Duration RETRY_DELAY_MIN = Duration.ofMinutes(3); // Change in @DurationRange too
+            @NotNull public static final Duration RETRY_DELAY_DEFAULT = Duration.ofMinutes(5);
+
             public Websocket(@Nullable EventAlertsIntegration plugin) {
                 super(plugin);
             }
@@ -434,7 +433,7 @@ public class ConfigYml extends OkaeriConfig {
             @Comment("Duration until the websocket attempts to reconnect after being disconnected (min: 3 minutes)")
             @DurationSpec(fallbackUnit = ChronoUnit.MINUTES)
             @DurationRange(min = 3, minUnit = ChronoUnit.MINUTES)
-            @NotNull public Duration retry_delay = Duration.ofMinutes(5);
+            @NotNull public Duration retry_delay = RETRY_DELAY_DEFAULT;
 
             @Comment
             @Comment("Whether to log websocket connection messages")
