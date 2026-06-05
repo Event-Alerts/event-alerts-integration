@@ -16,6 +16,66 @@ import java.util.function.Supplier;
 
 public enum EALibrary implements AnnoyingLibrary {
     /**
+     * {@code eu.okaeri:okaeri-configs-core}
+     */
+    OKAERI_CONFIGS_CORE(
+            () -> Library.builder()
+                    .repository("https://repo.okaeri.cloud/releases/")
+                    .groupId("eu{}okaeri")
+                    .artifactId("okaeri-configs-core")
+                    .version(BuildProperties.OKAERI_CONFIGS_VERSION),
+            plugin -> Collections.singleton(plugin.getRelocation("eu{}okaeri"))),
+    /**
+     * {@code eu.okaeri:okaeri-configs-yaml-bukkit}
+     */
+    OKAERI_CONFIGS_YAML_BUKKIT(
+            () -> Library.builder()
+                    .repository("https://repo.okaeri.cloud/releases/")
+                    .groupId("eu{}okaeri")
+                    .artifactId("okaeri-configs-yaml-bukkit")
+                    .version(BuildProperties.OKAERI_CONFIGS_VERSION),
+            plugin -> Collections.singleton(plugin.getRelocation("eu{}okaeri"))),
+    /**
+     * {@code eu.okaeri:okaeri-configs-serdes-commons}
+     */
+    OKAERI_CONFIGS_SERDES_COMMONS(
+            () -> Library.builder()
+                    .repository("https://repo.okaeri.cloud/releases/")
+                    .groupId("eu{}okaeri")
+                    .artifactId("okaeri-configs-serdes-commons")
+                    .version(BuildProperties.OKAERI_CONFIGS_VERSION),
+            plugin -> Collections.singleton(plugin.getRelocation("eu{}okaeri"))),
+    /**
+     * {@code eu.okaeri:okaeri-configs-serdes-bukkit}
+     */
+    OKAERI_CONFIGS_SERDES_BUKKIT(
+            () -> Library.builder()
+                    .repository("https://repo.okaeri.cloud/releases/")
+                    .groupId("eu{}okaeri")
+                    .artifactId("okaeri-configs-serdes-bukkit")
+                    .version(BuildProperties.OKAERI_CONFIGS_VERSION),
+            plugin -> Collections.singleton(plugin.getRelocation("eu{}okaeri"))),
+    /**
+     * {@code eu.okaeri:okaeri-validator}
+     */
+    OKAERI_VALIDATOR(
+            () -> Library.builder()
+                    .repository("https://repo.okaeri.cloud/releases/")
+                    .groupId("eu{}okaeri")
+                    .artifactId("okaeri-validator")
+                    .version("2.0.5"),
+            plugin -> Collections.singleton(plugin.getRelocation("eu{}okaeri"))),
+    /**
+     * {@code eu.okaeri:okaeri-configs-validator-okaeri}
+     */
+    OKAERI_CONFIGS_VALIDATOR_OKAERI(
+            () -> Library.builder()
+                    .repository("https://repo.okaeri.cloud/releases/")
+                    .groupId("eu{}okaeri")
+                    .artifactId("okaeri-configs-validator-okaeri")
+                    .version(BuildProperties.OKAERI_CONFIGS_VERSION),
+            plugin -> Collections.singleton(plugin.getRelocation("eu{}okaeri"))),
+    /**
      * {@code org.java-websocket:Java-WebSocket}
      */
     JAVA_WEBSOCKET(
@@ -37,6 +97,36 @@ public enum EALibrary implements AnnoyingLibrary {
             plugin -> List.of(
                     plugin.getRelocation("org{}bson"),
                     plugin.getRelocation("org{}checkerframework"))), //TODO not sure if should include checkerframework here
+    /**
+     * {@code dev.triumphteam:nova}
+     */
+    NOVA(
+            () -> Library.builder()
+                    .repository("https://repo.triumphteam.dev/snapshots/")
+                    .groupId("dev{}triumphteam")
+                    .artifactId("nova")
+                    .version("1.0.0-SNAPSHOT"),
+            plugin -> Collections.singleton(plugin.getRelocation("dev{}triumphteam"))),
+    /**
+     * {@code dev.triumphteam:triumph-gui-core}
+     */
+    TRIUMPH_GUI_CORE(
+            () -> Library.builder()
+                    .repository("https://repo.triumphteam.dev/snapshots/")
+                    .groupId("dev{}triumphteam")
+                    .artifactId("triumph-gui-core")
+                    .version(BuildProperties.TRIUMPH_GUI_VERSION),
+            plugin -> Collections.singleton(plugin.getRelocation("dev{}triumphteam"))),
+    /**
+     * {@code dev.triumphteam:triumph-gui-paper}
+     */
+    TRIUMPH_GUI_PAPER(
+            () -> Library.builder()
+                    .repository("https://repo.triumphteam.dev/snapshots/")
+                    .groupId("dev{}triumphteam")
+                    .artifactId("triumph-gui-paper")
+                    .version(BuildProperties.TRIUMPH_GUI_VERSION),
+            plugin -> Collections.singleton(plugin.getRelocation("dev{}triumphteam"))),
     /**
      * {@code net.fellbaum:jememoji}
      */

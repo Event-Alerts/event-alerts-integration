@@ -1,286 +1,465 @@
 package gg.eventalerts.eventalertsintegration.config;
 
+import eu.okaeri.configs.OkaeriConfig;
+import eu.okaeri.configs.annotation.Comment;
+import eu.okaeri.configs.annotation.Header;
+import eu.okaeri.configs.serdes.commons.duration.DurationSpec;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
+import gg.eventalerts.eventalertsintegration.config.validator.annotation.DurationRange;
+import gg.eventalerts.eventalertsintegration.config.validator.annotation.PatternCollection;
 import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
+import org.bson.types.ObjectId;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xyz.srnyx.annoyingapi.AnnoyingPlugin;
-import xyz.srnyx.annoyingapi.file.AnnoyingResource;
 import xyz.srnyx.annoyingapi.file.PlayableSound;
-import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
-import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.Mapper;
+import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.DurationFormatter;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 
-public class ConfigYml extends AnnoyingResource {
-    @NotNull public static final String PATH_API_KEYS  = "api-keys";
-    @NotNull public static final String PATH_SYNCING = "syncing";
-    @NotNull public static final String PATH_LINKING = "linking";
-    @NotNull public static final String PATH_CROSS_BAN = "cross-ban";
-    @NotNull public static final String PATH_EVENT_MESSAGES = "event-messages";
-    @NotNull public static final String PATH_ADVANCED = "advanced";
-
-    @NotNull private final EventAlertsIntegration eaPlugin;
-
-    @NotNull public final ApiKeys apiKeys;
-    @NotNull public final ConfigYml.Syncing syncing;
-    @NotNull public final Linking linking;
-    @NotNull public final CrossBan crossBan;
-    @NotNull public final EventMessages eventMessages;
-    @NotNull public final Advanced advanced;
-
-    public ConfigYml(@NotNull EventAlertsIntegration plugin) {
-        super(plugin, "config.yml");
-        eaPlugin = plugin;
-
-        apiKeys = new ApiKeys();
-        syncing = new Syncing();
-        linking = new Linking();
-        crossBan = new CrossBan();
-        eventMessages = new EventMessages();
-        eventMessages.loadHostFilter();
-        advanced = new Advanced();
+@Header("# --- WIKIS ---")
+@Header("# 1: https://wiki.eventalerts.gg/EventAlertsIntegration/configuration")
+@Header("# 2: https://github.com/srnyx/annoying-api/wiki/File-objects")
+public class ConfigYml extends OkaeriConfig {
+    /**
+     * @param   plugin  Only {@code null} for unit tests
+     */
+    public ConfigYml(@Nullable EventAlertsIntegration plugin) {
+        System.out.println("this: " + this);
+        this.syncing = new Syncing(plugin);
+        this.linking = new Linking( plugin);
+        this.cross_ban = new CrossBan(plugin);
+        this.event_messages = new EventMessages(plugin);
+        this.advanced = new Advanced(plugin);
     }
 
-    private <T> boolean toggleSetItem(@NotNull String path, @NotNull Set<T> set, @NotNull T item) {
-        final boolean newStatus;
-        if (set.contains(item)) {
-            set.remove(item);
-            newStatus = false;
-        } else {
-            set.add(item);
-            newStatus = true;
+    @Comment
+    @Comment
+    @Comment
+    @Comment("API keys for Event Alerts' APIs")
+    @Comment("You can set one OR both!")
+    @Comment(" ")
+    @Comment("WARNING: Do not, under ANY circumstances, share these API keys with ANYONE, no matter WHAT they say!")
+    @Comment("Event Alerts staff will NEVER ask for your API keys.")
+    @Comment("We recommend keeping your server files private if you choose to put your API keys here.")
+    @Comment("If you think your key was leaked, regenerate it IMMEDIATELY using the appropriate command in Event Alerts' Discord server!")
+    @NotNull public ApiKeys api_keys = new ApiKeys();
+
+    @Comment
+    @Comment
+    @Comment("Settings related to syncing between Event Alerts' Discord server and the Minecraft server")
+    @Comment("Requires API key(s) to be set up (see above)")
+    @NotNull public Syncing syncing;
+
+    @Comment
+    @Comment
+    @Comment("Settings related to Event Alerts' Minecraft-Discord linking system")
+    @NotNull public Linking linking;
+
+    @Comment
+    @Comment
+    @Comment("Settings related to Event Alerts' cross-banning feature")
+    @NotNull public CrossBan cross_ban;
+
+    @Comment
+    @Comment
+    @Comment("# Settings related to Event Alerts' event messages being broadcast in-game")
+    @NotNull public EventMessages event_messages;
+
+    @Comment
+    @Comment
+    @Comment("Advanced settings that you probably shouldn't touch...")
+    @NotNull public Advanced advanced;
+
+    public static class ApiKeys extends OkaeriConfig {
+
+        @Comment("This will \"connect\" your Minecraft server to your Player account, effectively marking this Minecraft server as \"your Minecraft server\"")
+        @Comment("Run the `/playerapikey` command in Event Alerts' Discord server to get your API key")
+        @NotNull private String player = "PLAYER_API_KEY_HERE";
+
+        @Comment
+        @Comment("This will \"connect\" your Minecraft server to your Partner Server, effectively marking this Minecraft as \"your Partner Server's Minecraft server\"")
+        @Comment("Run the `/server apikey` command in Event Alerts' Discord server to get your server's API key")
+        @NotNull private String server = "SERVER_API_KEY_HERE";
+
+        @Nullable
+        public String getPlayer() {
+            return player.startsWith("EA.Player.1.") ? player : null;
         }
-        // Save the updated set to the config
-        setSave(path, set.stream()
-                .map(Object::toString)
-                .toList());
-        return newStatus;
-    }
 
-    public class ApiKeys {
-        @NotNull public static final String PATH_PLAYER_API_KEY = PATH_API_KEYS + ".player";
-        @NotNull public static final String PATH_SERVER_API_KEY = PATH_API_KEYS + ".server";
-
-        @Nullable public String playerApiKey = getString(PATH_PLAYER_API_KEY);
-        @Nullable public String serverApiKey = getString(PATH_SERVER_API_KEY);
-
-        public ApiKeys() {
-            if (playerApiKey != null && !playerApiKey.startsWith("EA.Player.1.")) playerApiKey = null;
-            if (serverApiKey != null && !serverApiKey.startsWith("EA.PartnerServer.1.")) serverApiKey = null;
+        @Nullable
+        public String getServer() {
+            return server.startsWith("EA.PartnerServer.1.") ? server : null;
         }
     }
 
-    public class Syncing {
-        @NotNull public static final String PATH_DISCORD_TO_MINECRAFT = PATH_SYNCING + ".discord-to-minecraft";
-        @NotNull public static final String PATH_MINECRAFT_TO_DISCORD = PATH_SYNCING + ".minecraft-to-discord";
+    public static class Syncing extends SubConfig {
+        public Syncing(@Nullable EventAlertsIntegration plugin) {
+            super(plugin);
+            this.discord_to_minecraft = new DiscordToMinecraft(plugin);
+            this.minecraft_to_discord = new MinecraftToDiscord(plugin);
+        }
 
-        @NotNull public final DiscordToMinecraft discordToMinecraft = new DiscordToMinecraft();
-        @NotNull public final MinecraftToDiscord minecraftToDiscord = new MinecraftToDiscord();
+        @Comment("Settings for Discord -> Minecraft syncing")
+        @NotNull public DiscordToMinecraft discord_to_minecraft;
 
-        public class DiscordToMinecraft {
-            @NotNull public static final String PATH_MESSAGES = PATH_DISCORD_TO_MINECRAFT + ".messages";
+        @Comment
+        @Comment("Settings for Minecraft -> Discord syncing")
+        @NotNull public MinecraftToDiscord minecraft_to_discord;
 
-            @NotNull public final Messages messages = new Messages();
+        public static class DiscordToMinecraft extends SubConfig {
+            public DiscordToMinecraft(@Nullable EventAlertsIntegration plugin) {
+                super(plugin);
+                this.messages = new Messages(plugin);
+            }
 
-            public class Messages {
-                @NotNull public static final String PATH_ENABLED = PATH_MESSAGES + ".enabled";
-                @NotNull public static final String PATH_FORMAT = PATH_MESSAGES + ".format";
+            @Comment("Settings for syncing Discord messages to Minecraft in-game chat")
+            @NotNull public Messages messages;
 
-                public boolean enabled = getBoolean(PATH_ENABLED, true);
-                @NotNull public String format = getString(PATH_FORMAT, "<dark_aqua>\uD83C\uDF89 [<event_title>] <aqua>[<author_name>] <message_content_stripped><message_attachments_pretty>");
+            public static class Messages extends SubConfig {
+                public Messages(@Nullable EventAlertsIntegration plugin) {
+                    super(plugin);
+                }
+
+                @Comment("Whether to send messages to the Minecraft in-game chat from the event's Event Alerts thread")
+                public boolean enabled = true;
+
+                @Comment
+                @Comment("The format of Discord messages in the Minecraft in-game chat")
+                @Comment("Available placeholders:")
+                @Comment("  - event: <event_id>, <event_type>, <event_channel>, <event_message>, <event_control_panel>, <event_custom>, <event_created>, <event_title>, <event_host>, <event_description>, <event_roles>, <event_roles_named>, <event_server>, <event_media_name>, <event_ip>, <event_platform>, <event_version>, <event_prize>, <event_max_players>, <event_time>, <event_subscribers>")
+                @Comment("  - channel: <channel_id>, <channel_name>")
+                @Comment("  - author: <author_id>, <author_name>, <author_effectivename>")
+                @Comment("  - message: <message_id>, <message_content_raw>, <message_content_display>, <message_content_stripped>")
+                @Comment("  - other: <player_name>")
+                @Comment("  - Any PlaceholderAPI placeholder (%placeholder%)")
+                @NotNull public String format = "<dark_aqua>\uD83C\uDF89 [<event_title>] <aqua>[<author_name>] <message_content_stripped><message_attachments_pretty>";
 
                 public void setEnabled(boolean newStatus) {
                     if (enabled == newStatus) return;
-
-                    // Update config
                     enabled = newStatus;
-                    setSave(PATH_ENABLED, newStatus);
+                    save();
 
-                    // Reconnect websocket
-                    eaPlugin.webSockets.reconnect("Config updated", SocketEndpoint.EVENT_CHAT);
+                    if (plugin != null) plugin.webSockets.reconnect("Config updated", SocketEndpoint.EVENT_CHAT);
                 }
 
                 public void setFormat(@NotNull String newFormat) {
                     if (format.equals(newFormat)) return;
                     format = newFormat;
-                    setSave(PATH_FORMAT, newFormat);
+                    save();
                 }
             }
         }
 
-        public class MinecraftToDiscord {
-            @NotNull public static final String PATH_CONNECTIONS = PATH_MINECRAFT_TO_DISCORD + ".connections";
+        public static class MinecraftToDiscord extends SubConfig {
+            public MinecraftToDiscord(@Nullable EventAlertsIntegration plugin) {
+                super(plugin);
+            }
 
-            public boolean connections = getBoolean(PATH_CONNECTIONS, true);
+            @Comment("Whether to send join/quit messages in the event's Event Alerts thread in Discord")
+            public boolean connections = true;
 
             public void setConnections(boolean newStatus) {
                 if (connections == newStatus) return;
-
-                // Update config
                 connections = newStatus;
-                setSave(PATH_CONNECTIONS, newStatus);
+                save();
 
-                // Reconnect websocket
-                eaPlugin.webSockets.reconnect("Config updated", SocketEndpoint.PLAYER_CONNECTION);
+                if (plugin != null) plugin.webSockets.reconnect("Config updated", SocketEndpoint.PLAYER_CONNECTION);
             }
         }
     }
 
-    public class Linking {
-        @NotNull public static final String PATH_REQUIRE_LINK = PATH_LINKING + ".require-link";
-        @NotNull public static final String PATH_CHECK_ON_JOIN = PATH_LINKING + ".check-on-join";
-        @NotNull public static final String PATH_ALLOW_JOIN_ON_FAILURE = PATH_LINKING + ".allow-join-on-failure";
+    public static class Linking extends SubConfig {
+        public Linking(@Nullable EventAlertsIntegration plugin) {
+            super(plugin);
+        }
 
-        public boolean requireLink = getBoolean(PATH_REQUIRE_LINK);
-        public boolean checkOnJoin = getBoolean(PATH_CHECK_ON_JOIN, true);
-        public boolean allowJoinOnFailure = getBoolean(PATH_ALLOW_JOIN_ON_FAILURE);
+        @Comment("Whether to force players to be linked with Event Alerts to join/stay on the server")
+        @Comment("To bypass the requirement, give the player the eventalerts.linking.bypass permission")
+        public boolean require_link = false;
+
+        @Comment
+        @Comment("Whether to check link status when a player joins the server")
+        public boolean check_on_join = true;
+
+        @Comment
+        @Comment("Whether to allow players to join the server when the linking check fails")
+        public boolean allow_join_on_failure = false;
 
         public void setRequireLink(boolean newStatus) {
-            if (requireLink == newStatus) return;
+            if (require_link == newStatus) return;
+            require_link = newStatus;
+            save();
 
-            // Update config
-            requireLink = newStatus;
-            setSave(PATH_REQUIRE_LINK, newStatus);
+            if (plugin != null) plugin.webSockets.reconnect("Config updated", SocketEndpoint.LINK);
+        }
 
-            // Reconnect websocket
-            eaPlugin.webSockets.reconnect("Config updated", SocketEndpoint.LINK);
+        public void setCheckOnJoin(boolean newStatus) {
+            if (check_on_join == newStatus) return;
+            check_on_join = newStatus;
+            save();
+        }
+
+        public void setAllowJoinOnFailure(boolean newStatus) {
+            if (allow_join_on_failure == newStatus) return;
+            allow_join_on_failure = newStatus;
+            save();
         }
     }
 
-    public class CrossBan {
-        @NotNull public static final String PATH_ENABLED = PATH_CROSS_BAN + ".enabled";
-        @NotNull public static final String PATH_CHECK_ON_JOIN = PATH_CROSS_BAN + ".check-on-join";
-        @NotNull public static final String PATH_ALLOW_JOIN_ON_FAILURE = PATH_CROSS_BAN + ".allow-join-on-failure";
+    public static class CrossBan extends SubConfig {
+        public CrossBan(@Nullable EventAlertsIntegration plugin) {
+            super(plugin);
+        }
 
-        public boolean enabled = getBoolean(PATH_ENABLED, true);
-        public boolean checkOnJoin = getBoolean(PATH_CHECK_ON_JOIN, true);
-        public boolean allowJoinOnFailure = getBoolean(PATH_ALLOW_JOIN_ON_FAILURE);
+        @Comment("Whether to enable cross-ban checking")
+        @Comment("Anyone with eventalerts.crossban.bypass will be exempt from cross-bans")
+        public boolean enabled = true;
+
+        @Comment
+        @Comment("Whether to check cross-ban status when a player joins the server")
+        public boolean check_on_join = true;
+
+        @Comment
+        @Comment("Whether to allow players to join the server when the cross-ban check fails")
+        public boolean allow_join_on_failure = false;
 
         public void setEnabled(boolean newStatus) {
             if (enabled == newStatus) return;
-
-            // Update config
             enabled = newStatus;
-            setSave(PATH_ENABLED, newStatus);
+            save();
 
-            // Reconnect websocket
-            eaPlugin.webSockets.reconnect("Config updated", SocketEndpoint.CROSS_BAN);
+            if (plugin != null) plugin.webSockets.reconnect("Config updated", SocketEndpoint.CROSS_BAN);
+        }
+
+        public void setCheckOnJoin(boolean newStatus) {
+            if (check_on_join == newStatus) return;
+            check_on_join = newStatus;
+            save();
+        }
+
+        public void setAllowJoinOnFailure(boolean newStatus) {
+            if (allow_join_on_failure == newStatus) return;
+            allow_join_on_failure = newStatus;
+            save();
         }
     }
 
-    public class EventMessages {
-        @NotNull public static final String PATH_ENABLED = PATH_EVENT_MESSAGES + ".enabled";
-        @NotNull public static final String PATH_DETECT_IPS = PATH_EVENT_MESSAGES + ".detect-ips";
-        @NotNull public static final String PATH_SOUND = PATH_EVENT_MESSAGES + ".sound";
-        @NotNull public static final String PATH_SOUND_ENABLED = PATH_SOUND + ".enabled";
-        @NotNull public static final String PATH_IGNORED_TYPES = PATH_EVENT_MESSAGES + ".ignored-types";
-        @NotNull public static final String PATH_IGNORED_PARTNER_ROLES = PATH_EVENT_MESSAGES + ".ignored-partner-roles";
-        @NotNull public static final String PATH_IGNORED_FORMATS = PATH_EVENT_MESSAGES + ".ignored-formats";
-        @NotNull public static final String PATH_HOST_FILTER = PATH_EVENT_MESSAGES + ".host-filter";
-
-        public boolean enabled = getBoolean(PATH_ENABLED, true);
-        public boolean detectIps = getBoolean(PATH_DETECT_IPS);
-        public boolean soundEnabled = getBoolean(PATH_SOUND_ENABLED, true);
-        @Nullable public final PlayableSound sound = getPlayableSound(PATH_SOUND).orElse(null);
-        @NotNull public final Set<EventType> ignoredTypes = getEnumSet(EventType.class, PATH_IGNORED_TYPES);
-        @NotNull public final Set<PingRole> ignoredPartnerRoles = getEnumSet(PingRole.class, PATH_IGNORED_PARTNER_ROLES);
-        @NotNull public final Set<EventFormat> ignoredFormats = getEnumSet(EventFormat.class, PATH_IGNORED_FORMATS);
-        @NotNull public final Set<String> hostFilterServers = new HashSet<>();
-        @NotNull public final Set<String> hostFilterUsers = new HashSet<>();
-
-        private void loadHostFilter() {
-            // Get host filter
-            final List<String> hostFilter = getStringList(PATH_HOST_FILTER);
-            for (final String filter : hostFilter) {
-                boolean valid = false;
-                for (final HostFilter hostFilterEnum : HostFilter.values()) {
-                    if (hostFilterEnum.idValidator.apply(eaPlugin, filter)) {
-                        valid = true;
-                        hostFilterEnum.setGetter.apply(ConfigYml.this).add(filter);
-                        break;
-                    }
-                }
-
-                // Invalid
-                if (!valid) AnnoyingPlugin.log(Level.WARNING, "Invalid host filter entry: " + filter);
-            }
+    public static class EventMessages extends SubConfig {
+        public EventMessages(@Nullable EventAlertsIntegration plugin) {
+            super(plugin);
+            sound = new SoundYml(plugin);
         }
 
-        @NotNull
-        private <T extends Enum<T>> Set<T> getEnumSet(@NotNull Class<T> enumClass, @NotNull String path) {
-            return getStringList(path).stream()
-                    .map(string -> Mapper.toEnum(string, enumClass))
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .collect(Collectors.toSet());
+        @Comment("Whether to enable event messages being broadcast in the server chat")
+        public boolean enabled = false;
+
+        @Comment
+        @Comment("1.20.5+")
+        @Comment("If an IP is detected in an event message, players will be able to click a button to join the event's server using transfer packets")
+        public boolean detect_ips = true;
+
+        @Comment
+        @Comment("The sound to play when an event message is broadcasted")
+        @NotNull public SoundYml sound;
+
+        @Comment
+        @Comment("Types of events that shouldn't be broadcasted in the server chat")
+        @Comment("Possible values: SKEPPY, POTENTIAL_FAMOUS, SIGHTING, FAMOUS, PARTNER, COMMUNITY")
+        @NotNull public Set<EventType> ignored_types = new HashSet<>(Set.of(EventType.SIGHTING));
+
+        @Comment
+        @Comment("Ignore Partner events that mention any of these roles")
+        @Comment("Possible values: BIG_MONEY, MONEY, FUN, HOUSING, CIVILIZATION")
+        @NotNull public Set<PingRole> ignored_partner_roles = new HashSet<>(Set.of(PingRole.HOUSING, PingRole.CIVILIZATION));
+
+        @Comment
+        @Comment("Ignore Partner/Community events that are posted using any of these formats")
+        @Comment("Possible values: CUSTOM, BUILT")
+        @NotNull public Set<EventFormat> ignored_formats = new HashSet<>();
+
+        @Comment
+        @Comment("Only broadcast events from these specific hosts")
+        @Comment("You can include both server EA IDs (found in footer of '/server get') and host IDs (Discord user IDs)")
+        @PatternCollection("^(?:[0-9a-fA-F]{24}|\\d+)$")
+        @NotNull public Set<String> host_filter = new HashSet<>();
+
+        public boolean isInHostFilter(@NotNull ObjectId serverId) {
+            return host_filter.isEmpty() || host_filter.contains(serverId.toString());
+        }
+
+        public boolean isInHostFilter(long hostId) {
+            return host_filter.isEmpty() || host_filter.contains(Long.toString(hostId));
         }
 
         public void setEnabled(boolean newStatus) {
             if (enabled == newStatus) return;
-
-            // Update config
             enabled = newStatus;
-            setSave(PATH_ENABLED, newStatus);
+            save();
 
-            // Reconnect websocket
-            eaPlugin.webSockets.reconnect("Config updated", SocketEndpoint.EVENT_POSTED, SocketEndpoint.FAMOUS_EVENT_POSTED);
+            if (plugin != null) plugin.webSockets.reconnect("Config updated", SocketEndpoint.EVENT_POSTED, SocketEndpoint.FAMOUS_EVENT_POSTED);
+        }
+
+        public void setDetectIps(boolean newStatus) {
+            if (detect_ips == newStatus) return;
+            detect_ips = newStatus;
+            save();
         }
 
         public boolean toggleIgnoredType(@NotNull EventType type) {
-            return toggleSetItem(PATH_IGNORED_TYPES, ignoredTypes, type);
+            return toggleSetItem(ignored_types, type);
         }
 
         public boolean toggleIgnoredPartnerRole(@NotNull PingRole role) {
-            return toggleSetItem(PATH_IGNORED_PARTNER_ROLES, ignoredPartnerRoles, role);
+            return toggleSetItem(ignored_partner_roles, role);
+        }
+
+        public boolean toggleIgnoredFormat(@NotNull EventFormat format) {
+            return toggleSetItem(ignored_formats, format);
+        }
+
+        public boolean addHostFilter(@NotNull String id) {
+            if (!host_filter.add(id)) return false;
+            save();
+            return true;
+        }
+
+        public void removeHostFilter(@NotNull String id) {
+            if (host_filter.remove(id)) save();
+        }
+
+        private <T> boolean toggleSetItem(@NotNull Set<T> set, @NotNull T item) {
+            final boolean newStatus = !set.remove(item);
+            if (newStatus) set.add(item);
+            save();
+            return newStatus;
+        }
+
+        public static class SoundYml extends SubConfig {
+            public SoundYml(@Nullable EventAlertsIntegration plugin) {
+                super(plugin);
+            }
+
+            @Comment("Whether to play a sound")
+            public boolean enabled = true;
+
+            @Comment
+            @Comment("The sound to play (SEE WIKI #2)")
+            @NotNull public PlayableSound sound = new PlayableSound(Sound.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.AMBIENT);
+
+            public void setEnabled(boolean newStatus) {
+                if (enabled == newStatus) return;
+                enabled = newStatus;
+                save();
+            }
+
+            public void setSound(@NotNull Sound newSound) {
+                if (sound.sound == newSound) return;
+                sound = new PlayableSound(newSound, sound.category, sound.volume, sound.pitch);
+                save();
+            }
+
+            public void setVolume(float newVolume) {
+                if (Float.compare(sound.volume, newVolume) == 0) return;
+                sound = new PlayableSound(sound.sound, sound.category, newVolume, sound.pitch);
+                save();
+            }
+
+            public void setPitch(float newPitch) {
+                if (Float.compare(sound.pitch, newPitch) == 0) return;
+                sound = new PlayableSound(sound.sound, sound.category, sound.volume, newPitch);
+                save();
+            }
+
+            public void setCategory(@NotNull SoundCategory newCategory) {
+                if (sound.category == newCategory) return;
+                sound = new PlayableSound(sound.sound, newCategory, sound.volume, sound.pitch);
+                save();
+            }
         }
     }
 
-    public class Advanced {
-        @NotNull public static final String PATH_DEBUG = PATH_ADVANCED + ".debug";
-        @NotNull public static final String PATH_USE_TESTING_API = PATH_ADVANCED + ".use-testing-api";
-        @NotNull public static final String PATH_WEBSOCKETS = PATH_ADVANCED + ".websockets";
+    public static class Advanced extends SubConfig {
+        public Advanced(@Nullable EventAlertsIntegration plugin) {
+            super(plugin);
+            websocket = new Websocket(plugin);
+        }
 
-        public final boolean debug = getBoolean(PATH_DEBUG, false);
-        public boolean useTestingApi = getBoolean(PATH_USE_TESTING_API, false);
-        @NotNull public final Websockets websockets = new Websockets();
+        @Comment("Whether to enable debug logging")
+        public boolean debug = false;
 
-        public Advanced() {
-            if (!debug) return;
-            AnnoyingPlugin.LOGGER.setLevel(Level.FINE);
-            HttpUtility.DEBUG = true;
+        @Comment
+        @Comment("Whether to enable using the testing API hosts")
+        @Comment("Only the developer really needs to enable this")
+        public boolean use_testing_api = false;
+
+        @Comment
+        @Comment("Settings for websocket connections")
+        @NotNull public ConfigYml.Advanced.Websocket websocket;
+
+        public void setDebug(boolean newStatus) {
+            if (debug == newStatus) return;
+            debug = newStatus;
+            save();
+
+            if (plugin != null) plugin.setDebug(newStatus);
         }
 
         public void setUseTestingApi(boolean newStatus) {
-            if (useTestingApi == newStatus) return;
+            if (use_testing_api == newStatus) return;
+            use_testing_api = newStatus;
+            save();
 
-            // Update config
-            useTestingApi = newStatus;
-            setSave(PATH_USE_TESTING_API, newStatus);
-
-            // Reconnect websockets
-            eaPlugin.webSockets.reconnectAll("Testing API toggled");
+            if (plugin != null) plugin.webSockets.reconnectAll("Testing API toggled");
         }
 
-        public class Websockets {
-            @NotNull public static final String PATH_LOGS = PATH_WEBSOCKETS + ".logs";
-            @NotNull public static final String PATH_RETRY_DELAY = PATH_WEBSOCKETS + ".retry-delay";
+        public static class Websocket extends SubConfig {
+            @NotNull public static final Duration RETRY_DELAY_MIN = Duration.ofMinutes(3); // Change in @DurationRange too
+            @NotNull public static final Duration RETRY_DELAY_DEFAULT = Duration.ofMinutes(5);
 
-            /**
-             * minutes
-             */
-            @Nullable public Integer retryDelay = null;
-            public boolean logs = getBoolean(PATH_LOGS, false);
+            public Websocket(@Nullable EventAlertsIntegration plugin) {
+                super(plugin);
+            }
 
-            public Websockets() {
-                final String retryDelayString = getString(PATH_RETRY_DELAY);
-                if (retryDelayString == null || !retryDelayString.equals("-1")) retryDelay = Math.max(3, getInt(PATH_RETRY_DELAY, 5));
+            @Comment("Whether to automatically reconnect to the websocket if it is disconnected")
+            public boolean retry = true;
+
+            @Comment
+            @Comment("Duration until the websocket attempts to reconnect after being disconnected (min: 3 minutes)")
+            @DurationSpec(fallbackUnit = ChronoUnit.MINUTES)
+            @DurationRange(min = 3, minUnit = ChronoUnit.MINUTES)
+            @NotNull public Duration retry_delay = RETRY_DELAY_DEFAULT;
+
+            @Comment
+            @Comment("Whether to log websocket connection messages")
+            public boolean logs = false;
+
+            @NotNull
+            public static String formatRetryDelay(@NotNull Duration duration) {
+                return DurationFormatter.formatDuration(duration.toMillis(), "H'h' m'm' s's'");
+            }
+
+            public void setRetry(boolean newStatus) {
+                if (retry == newStatus) return;
+                retry = newStatus;
+                save();
+            }
+
+            public void setRetryDelay(@NotNull Duration newRetryDelay) {
+                if (retry_delay.equals(newRetryDelay)) return;
+                retry_delay = newRetryDelay;
+                save();
+            }
+
+            public void setLogs(boolean newStatus) {
+                if (logs == newStatus) return;
+                logs = newStatus;
+                save();
             }
         }
     }

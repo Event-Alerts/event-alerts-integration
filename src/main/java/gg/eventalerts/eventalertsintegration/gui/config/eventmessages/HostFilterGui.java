@@ -4,96 +4,81 @@ import dev.triumphteam.gui.element.GuiItem;
 import dev.triumphteam.gui.paper.Gui;
 import dev.triumphteam.gui.paper.builder.gui.PaperGuiBuilder;
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder;
-import dev.triumphteam.gui.paper.container.type.HopperContainerType;
-import gg.eventalerts.eventalertsintegration.config.ConfigYml;
 import gg.eventalerts.eventalertsintegration.config.HostFilter;
+import gg.eventalerts.eventalertsintegration.gui.GuiInputType;
 import gg.eventalerts.eventalertsintegration.gui.Heads;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 
 
 public class HostFilterGui extends EventMessagesGui {
+    private static final int ADD_SLOT = 52;
+    private static final int BACK_SLOT = 53;
+
     public HostFilterGui(@NotNull EventMessagesGui parent) {
         super(parent);
     }
 
     @Override @NotNull
     public PaperGuiBuilder getGui() {
-        return Gui.of(new HopperContainerType())
-                .title(Component.text("Host Filter"))
-                .statelessComponent(container -> container.setItem(0, guiItem(HostFilter.SERVER)))
-                .statelessComponent(container -> container.setItem(1, guiItem(HostFilter.USER)))
-                .statelessComponent(container -> container.setItem(4, backButton()));
+        final List<String> ids = new ArrayList<>(plugin.config.event_messages.host_filter);
+        ids.sort(Comparator
+                .comparing((String id) -> HostFilter.fromId(id) == HostFilter.USER ? 1 : 0)
+                .thenComparing(String::compareTo));
+
+        final PaperGuiBuilder builder = Gui.of(6)
+                .title(Component.text("Host Filter"));
+
+        // Add entry items
+        int i = 0;
+        for (final String id : ids) {
+            if (i >= ADD_SLOT) break;
+            final int slot = i++;
+            builder.statelessComponent(container -> container.setItem(slot, hostFilterItem(id, HostFilter.fromId(id))));
+        }
+
+        return builder
+                .statelessComponent(container -> container.setItem(ADD_SLOT, ItemBuilder.skull()
+                        .texture(Heads.GREEN_PLUS)
+                        .name(unitalicize(Component.text("Add Entry", NamedTextColor.DARK_GREEN, TextDecoration.BOLD)))
+                        .lore(lore("Add an EA server ID or Discord\nuser ID to the host filter"))
+                        .asGuiItem((player, context) -> {
+                            player.sendMessage(Component.text()
+                                    .color(NamedTextColor.GREEN)
+                                    .append(Component.text("\nType the EA server ID or Discord user ID to add to the host filter in chat!"))
+                                    .append(CANCEL));
+
+                            plugin.guiInput.put(player.getUniqueId(), GuiInputType.HOST_FILTER_ENTRY);
+                            playDingSound(true);
+                            context.guiView().close();
+                        })))
+                .statelessComponent(container -> container.setItem(BACK_SLOT, backButton()));
     }
 
     @NotNull
-    private GuiItem<Player, ItemStack> guiItem(@NotNull HostFilter hostFilter) {
-        return ItemBuilder.from(hostFilter.material)
-                .name(unitalicize(Component.text(hostFilter + "S", NamedTextColor.GOLD, TextDecoration.BOLD)))
-                .lore(lore("Only broadcast events\nhosted by these " + hostFilter.lower + "s"))
-                .asGuiItem((player, context) -> openHostFilterGui(hostFilter));
-    }
-
-    public void openHostFilterGui(@NotNull HostFilter hostFilter) {
-        new HostFilterGui(this) {
-            @Override @NotNull
-            public PaperGuiBuilder getGui() {
-                final PaperGuiBuilder builder = Gui.of(6);
-
-                // Add buttons
-                final Set<String> set = hostFilter.setGetter.apply(plugin.config);
-                int i = 0;
-                for (final String id : set) {
-                    final int finalI = i;
-                    builder.statelessComponent(container1 -> container1.setItem(finalI, ItemBuilder.from(hostFilter.material)
-                            .name(unitalicize(Component.text(id, NamedTextColor.GOLD)))
-                            .lore(lore("Click to remove this " + hostFilter.lower + "\nfrom the host filter"))
-                            .asGuiItem((player1, context1) -> {
-                                set.remove(id);
-                                final List<String> combinedFilter = new ArrayList<>(plugin.config.eventMessages.hostFilterServers);
-                                combinedFilter.addAll(plugin.config.eventMessages.hostFilterUsers);
-                                plugin.config.setSave(ConfigYml.EventMessages.PATH_HOST_FILTER, combinedFilter);
-                                playDingSound(false);
-                                open(false);
-                            })));
-                    if (i == 51) break; // Limit to 52
-                    i++;
-                }
-
-                return builder
-                        .title(Component.text()
-                                .append(Component.text("Host Filter: ").decorate(TextDecoration.BOLD))
-                                .append(Component.text(hostFilter.capitalized + "s"))
-                                .build())
-                        .statelessComponent(container -> container.setItem(52, ItemBuilder.skull()
-                                .texture(Heads.GREEN_PLUS)
-                                .name(unitalicize(Component.text("+ Add " + hostFilter.capitalized, NamedTextColor.DARK_GREEN)))
-                                .lore(lore("<green>Click to add a " + hostFilter.lower + "\n<green>to the host filter"))
-                                .asGuiItem((player1, context1) -> { //TODO switch to anvil GUI when Triumph GUI updates
-                                    // Send chat messages
-                                    player1.sendMessage(Component.text()
-                                            .append(Component.text()
-                                                    .color(NamedTextColor.GREEN)
-                                                    .append(Component.text("\nType the "))
-                                                    .append(Component.text(hostFilter.idType + " ID", NamedTextColor.DARK_GREEN))
-                                                    .append(Component.text(" of the " + hostFilter.lower + " you want to add to the host filter in chat!")))
-                                            .append(CANCEL));
-
-                                    // Add to map and close GUI
-                                    plugin.guiInput.put(player1.getUniqueId(), hostFilter.name());
-                                    playDingSound(true);
-                                    context1.guiView().close();
-                                })))
-                        .statelessComponent(container -> container.setItem(53, backButton()));
-            }
-        }.open(true);
+    private GuiItem<Player, ItemStack> hostFilterItem(@NotNull String id, @Nullable HostFilter hostFilter) {
+        return ItemBuilder.from(hostFilter == null ? Material.BARRIER : hostFilter.material)
+                .name(unitalicize(Component.text()
+                        .color(NamedTextColor.GOLD)
+                        .append(Component.text(hostFilter == null ? "" : hostFilter.capitalized + ": ")
+                                .decorate(TextDecoration.BOLD))
+                        .append(Component.text(id))
+                        .build()))
+                .lore(lore("Click to remove this " + (hostFilter != null ? hostFilter.lower : "???") + " from the host filter"))
+                .asGuiItem((player, context) -> {
+                    plugin.config.event_messages.removeHostFilter(id);
+                    playDingSound(false);
+                    open(false);
+                });
     }
 }

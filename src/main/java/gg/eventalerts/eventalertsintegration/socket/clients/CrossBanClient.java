@@ -19,7 +19,7 @@ public class CrossBanClient extends SocketClient<CrossBan> {
 
     @Override
     public boolean shouldConnect() {
-        return plugin.config.crossBan.enabled;
+        return plugin.config.cross_ban.enabled;
     }
 
     @Override

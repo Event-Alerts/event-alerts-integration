@@ -1,10 +1,9 @@
 package gg.eventalerts.eventalertsintegration.socket;
 
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
+import gg.eventalerts.eventalertsintegration.config.ConfigYml;
 import gg.eventalerts.eventalertsintegration.json.GSONProvider;
 import gg.eventalerts.eventalertsintegration.objects.EAObject;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.enums.ReadyState;
 import org.java_websocket.framing.CloseFrame;
@@ -12,8 +11,10 @@ import org.java_websocket.handshake.ServerHandshake;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
+import xyz.srnyx.annoyingapi.scheduler.TaskWrapper;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.logging.Level;
 
 
@@ -21,7 +22,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
     @NotNull protected final EventAlertsIntegration plugin;
     @NotNull public final SocketEndpoint endpoint;
     @NotNull private final Class<T> objectClass;
-    @Nullable private BukkitTask retryTask;
+    @Nullable private TaskWrapper retryTask;
     @Nullable public Runnable toRunOnStop;
 
     public SocketClient(@NotNull EventAlertsIntegration plugin, @NotNull SocketEndpoint endpoint, @NotNull Class<T> objectClass) {
@@ -41,29 +42,22 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
         close(code, reason);
     }
 
-    public void retryConnection(@NotNull String reason, @Nullable Integer retryDelay) {
-        if (retryTask != null) return;
+    public void retryConnection(@NotNull String reason, @Nullable Duration retryDelay) {
+        if (retryTask != null || !plugin.config.advanced.websocket.retry) return;
 
         // Get delay from config if not specified
-        if (retryDelay == null) {
-            retryDelay = plugin.config.advanced.websockets.retryDelay;
-            if (retryDelay == null) return;
-        }
-        final Integer finalRetryDelay = retryDelay;
+        if (retryDelay == null) retryDelay = plugin.config.advanced.websocket.retry_delay;
 
         // Close connection
         close(1001, "Retrying connection");
 
         // Schedule retry
-        if (plugin.config.advanced.websockets.logs) AnnoyingPlugin.log(Level.INFO, "We will try to reconnect to " + endpoint + " in " + finalRetryDelay + " minutes due to: " + reason);
-        retryTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (plugin.config.advanced.websockets.logs) AnnoyingPlugin.log(Level.INFO, "Retrying websocket connection for " + endpoint + " with reason: " + reason);
-                retryTask = null;
-                reconnect();
-            }
-        }.runTaskLaterAsynchronously(plugin, finalRetryDelay * 1200L);
+        if (plugin.config.advanced.websocket.logs) AnnoyingPlugin.log(Level.INFO, "We will try to reconnect to " + endpoint + " in " + ConfigYml.Advanced.Websocket.formatRetryDelay(retryDelay) + " due to: " + reason);
+        retryTask = plugin.scheduler.runGlobalTaskLaterAsync(task -> {
+            if (plugin.config.advanced.websocket.logs) AnnoyingPlugin.log(Level.INFO, "Retrying websocket connection for " + endpoint + " with reason: " + reason);
+            retryTask = null;
+            reconnect();
+        }, retryDelay.toMillis() / 50);
     }
 
     public void send(@NotNull T object) {
@@ -72,7 +66,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
 
     @Override
     public void onOpen(@NotNull ServerHandshake handshake) {
-        if (plugin.config.advanced.websockets.logs) AnnoyingPlugin.log(Level.INFO, endpoint.name() + " socket opened");
+        if (plugin.config.advanced.websocket.logs) AnnoyingPlugin.log(Level.INFO, endpoint.name() + " socket opened");
     }
 
     @Override
@@ -109,7 +103,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
         }
 
         // Log closure
-        if (plugin.config.advanced.websockets.logs) AnnoyingPlugin.log(Level.INFO, endpoint.name() + " socket closed with status code " + code + " and reason: " + reason);
+        if (plugin.config.advanced.websocket.logs) AnnoyingPlugin.log(Level.INFO, endpoint.name() + " socket closed with status code " + code + " and reason: " + reason);
 
         // Run toRunOnStop
         if (toRunOnStop != null) {
@@ -121,7 +115,7 @@ public abstract class SocketClient<T extends EAObject> extends WebSocketClient {
     @Override
     public void onError(@NotNull Exception exception) {
         retryConnection("Experienced an error! If logs are enabled, see nearby for details.", null);
-        if (plugin.config.advanced.websockets.logs) exception.printStackTrace();
+        if (plugin.config.advanced.websocket.logs) exception.printStackTrace();
     }
 
     public abstract boolean shouldConnect();

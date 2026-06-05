@@ -18,7 +18,7 @@ public class WebSockets {
 
     public WebSockets(@NotNull EventAlertsIntegration plugin) {
         this.plugin = plugin;
-        if (!plugin.libraryManager.isLoaded(EALibrary.JAVA_WEBSOCKET)) plugin.libraryManager.loadLibrary(EALibrary.JAVA_WEBSOCKET);
+        plugin.libraryManager.loadIfNotLoaded(EALibrary.JAVA_WEBSOCKET);
     }
 
     public void reconnectAll(@Nullable String reason) {

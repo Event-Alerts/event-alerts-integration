@@ -21,7 +21,7 @@ public class EventChatClient extends SocketClient<EventThreadMessage> {
 
     @Override
     public boolean shouldConnect() {
-        return plugin.config.syncing.discordToMinecraft.messages.enabled && (plugin.config.apiKeys.playerApiKey != null || plugin.config.apiKeys.serverApiKey != null);
+        return plugin.config.syncing.discord_to_minecraft.messages.enabled && (plugin.config.api_keys.getPlayer() != null || plugin.config.api_keys.getServer() != null);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class EventChatClient extends SocketClient<EventThreadMessage> {
         final boolean hasEvent = object.event != null;
         final boolean hasChannel = object.channel != null;
         final String channelName = hasChannel && object.channel.name != null ? object.channel.name : "";
-        Component message = EventAlertsIntegration.MINI_MESSAGE.deserialize(plugin.config.syncing.discordToMinecraft.messages.format,
+        Component message = EventAlertsIntegration.MINI_MESSAGE.deserialize(plugin.config.syncing.discord_to_minecraft.messages.format,
                 Placeholder.unparsed("event_id", hasEvent && object.event.id != null ? object.event.id.toHexString() : ""),
                 Placeholder.unparsed("event_type", hasEvent && object.event.type != null ? object.event.type : ""),
                 Placeholder.unparsed("event_channel", hasEvent && object.event.channel != null ? object.event.channel.toString() : ""),

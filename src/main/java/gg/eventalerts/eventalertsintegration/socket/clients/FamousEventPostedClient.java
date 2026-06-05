@@ -35,7 +35,7 @@ public class FamousEventPostedClient extends SocketClient<FamousEvent> {
 
     @Override
     public boolean shouldConnect() {
-        return plugin.config.eventMessages.enabled && !plugin.config.eventMessages.ignoredTypes.containsAll(EventType.FAMOUS_TYPES);
+        return plugin.config.event_messages.enabled && !plugin.config.event_messages.ignored_types.containsAll(EventType.FAMOUS_TYPES);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class FamousEventPostedClient extends SocketClient<FamousEvent> {
         }
 
         // Check type
-        if (plugin.config.eventMessages.ignoredTypes.contains(object.type)) return;
+        if (plugin.config.event_messages.ignored_types.contains(object.type)) return;
 
         // Build message
         final TextComponent.Builder builder = Component.text()
@@ -79,7 +79,7 @@ public class FamousEventPostedClient extends SocketClient<FamousEvent> {
         }
 
         // Join button
-        if (plugin.config.eventMessages.detectIps && RefPlayer.TRANSFER != null) {
+        if (plugin.config.event_messages.detect_ips && RefPlayer.TRANSFER != null) {
             final EAStringUtility.IpPort ipPort = EAStringUtility.extractIpPort(message, "invadedlands.net");
             if (ipPort != null) builder.append(getJoinButton(ipPort));
         }

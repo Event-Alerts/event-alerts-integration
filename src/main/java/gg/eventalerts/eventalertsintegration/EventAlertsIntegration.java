@@ -1,6 +1,8 @@
 package gg.eventalerts.eventalertsintegration;
 
+import gg.eventalerts.eventalertsintegration.config.ConfigCreator;
 import gg.eventalerts.eventalertsintegration.config.ConfigYml;
+import gg.eventalerts.eventalertsintegration.gui.GuiInputType;
 import gg.eventalerts.eventalertsintegration.socket.WebSockets;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -12,10 +14,12 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.PluginPlatform;
+import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
 
 public class EventAlertsIntegration extends AnnoyingPlugin {
@@ -32,12 +36,12 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
             .append(Component.text(" for more information"))
             .build();
 
-    public ConfigYml config;
+    @NotNull public final ConfigYml config;
     public WebSockets webSockets;
     /**
-     * [player UUID, input key ID]
+     * [player UUID, pending GUI input target]
      */
-    @NotNull public final Map<UUID, String> guiInput = new HashMap<>();
+    @NotNull public final Map<UUID, GuiInputType> guiInput = new HashMap<>();
 
     public EventAlertsIntegration() {
         options
@@ -47,7 +51,20 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
                         "gg.eventalerts.eventalertsintegration.commands",
                         "gg.eventalerts.eventalertsintegration.listeners");
 
+        // Load libraries
+        libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_CORE);
+        libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_YAML_BUKKIT);
+        libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_SERDES_COMMONS);
+        libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_SERDES_BUKKIT);
+        libraryManager.loadLibrary(EALibrary.OKAERI_VALIDATOR);
+        libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_VALIDATOR_OKAERI);
         libraryManager.loadLibrary(EALibrary.BSON);
+        libraryManager.loadLibrary(EALibrary.NOVA);
+        libraryManager.loadLibrary(EALibrary.TRIUMPH_GUI_CORE);
+        libraryManager.loadLibrary(EALibrary.TRIUMPH_GUI_PAPER);
+
+        // Configure config
+        config = ConfigCreator.create(this);
     }
 
     @Override
@@ -58,7 +75,11 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
     @Override
     public void reload() {
         // Load config
-        config = new ConfigYml(this);
+        config.load(true);
+
+        // Toggle debug
+        setDebug(config.advanced.debug);
+
         // Reconnect websockets
         if (webSockets == null) webSockets = new WebSockets(this);
         webSockets.reconnectAll("Plugin reload");
@@ -66,17 +87,17 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
 
     @Override
     public void disable() {
-        webSockets.closeAll("Plugin disable");
+        if (webSockets != null) webSockets.closeAll("Plugin disable");
     }
 
     @NotNull
     public String getApiHost() {
-        return config.advanced.useTestingApi ? "http://localhost:8080/api/v1/" : "https://eventalerts.gg/api/v1/";
+        return config.advanced.use_testing_api ? "http://localhost:8080/api/v1/" : "https://eventalerts.gg/api/v1/";
     }
 
     @NotNull
     public String getSocketHost() {
-        return config.advanced.useTestingApi ? "ws://localhost:9090/api/v1/socket/" : "wss://eventalerts.gg/api/v1/socket/";
+        return config.advanced.use_testing_api ? "ws://localhost:9090/api/v1/socket/" : "wss://eventalerts.gg/api/v1/socket/";
     }
 
     @NotNull
@@ -88,9 +109,16 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
     public Map<String, String> getSocketHeaders() {
         final Map<String, String> headers = new HashMap<>();
         headers.put("User-Agent", getUserAgent());
-        if (config.apiKeys.playerApiKey != null) headers.put("X-Player-Key", config.apiKeys.playerApiKey);
-        if (config.apiKeys.serverApiKey != null) headers.put("X-Server-Key", config.apiKeys.serverApiKey);
+        final String playerKey = config.api_keys.getPlayer();
+        if (playerKey != null) headers.put("X-Player-Key", playerKey);
+        final String serverKey = config.api_keys.getServer();
+        if (serverKey != null) headers.put("X-Server-Key", serverKey);
         return headers;
+    }
+
+    public void setDebug(boolean debug) {
+        AnnoyingPlugin.LOGGER.setLevel(debug ? Level.FINE : Level.INFO);
+        HttpUtility.DEBUG = debug;
     }
 
     public void runOnMainThread(@NotNull Runnable runnable) {
