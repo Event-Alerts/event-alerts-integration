@@ -7,7 +7,7 @@ import eu.okaeri.configs.serdes.commons.duration.DurationSpec;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.config.validator.annotation.DurationRange;
 import gg.eventalerts.eventalertsintegration.config.validator.annotation.PatternCollection;
-import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
+import gg.eventalerts.sdk.object.EAEvent;
 import org.bson.types.ObjectId;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -30,7 +30,6 @@ public class ConfigYml extends OkaeriConfig {
      * @param   plugin  Only {@code null} for unit tests
      */
     public ConfigYml(@Nullable EventAlertsIntegration plugin) {
-        System.out.println("this: " + this);
         this.syncing = new Syncing(plugin);
         this.linking = new Linking( plugin);
         this.cross_ban = new CrossBan(plugin);
@@ -145,7 +144,7 @@ public class ConfigYml extends OkaeriConfig {
                     enabled = newStatus;
                     save();
 
-                    if (plugin != null) plugin.webSockets.reconnect("Config updated", SocketEndpoint.EVENT_CHAT);
+                    if (plugin != null) plugin.webSocket.updateSubscriptions();
                 }
 
                 public void setFormat(@NotNull String newFormat) {
@@ -169,7 +168,7 @@ public class ConfigYml extends OkaeriConfig {
                 connections = newStatus;
                 save();
 
-                if (plugin != null) plugin.webSockets.reconnect("Config updated", SocketEndpoint.PLAYER_CONNECTION);
+                if (plugin != null) plugin.webSocket.updateSubscriptions();
             }
         }
     }
@@ -196,7 +195,7 @@ public class ConfigYml extends OkaeriConfig {
             require_link = newStatus;
             save();
 
-            if (plugin != null) plugin.webSockets.reconnect("Config updated", SocketEndpoint.LINK);
+            if (plugin != null) plugin.webSocket.updateSubscriptions();
         }
 
         public void setCheckOnJoin(boolean newStatus) {
@@ -234,7 +233,7 @@ public class ConfigYml extends OkaeriConfig {
             enabled = newStatus;
             save();
 
-            if (plugin != null) plugin.webSockets.reconnect("Config updated", SocketEndpoint.CROSS_BAN);
+            if (plugin != null) plugin.webSocket.updateSubscriptions();
         }
 
         public void setCheckOnJoin(boolean newStatus) {
@@ -276,7 +275,7 @@ public class ConfigYml extends OkaeriConfig {
         @Comment
         @Comment("Ignore Partner events that mention any of these roles")
         @Comment("Possible values: BIG_MONEY, MONEY, FUN, HOUSING, CIVILIZATION")
-        @NotNull public Set<PingRole> ignored_partner_roles = new HashSet<>(Set.of(PingRole.HOUSING, PingRole.CIVILIZATION));
+        @NotNull public Set<EAEvent.PingRole> ignored_partner_roles = new HashSet<>(Set.of(EAEvent.PingRole.HOUSING, EAEvent.PingRole.CIVILIZATION));
 
         @Comment
         @Comment("Ignore Partner/Community events that are posted using any of these formats")
@@ -302,7 +301,7 @@ public class ConfigYml extends OkaeriConfig {
             enabled = newStatus;
             save();
 
-            if (plugin != null) plugin.webSockets.reconnect("Config updated", SocketEndpoint.EVENT_POSTED, SocketEndpoint.FAMOUS_EVENT_POSTED);
+            if (plugin != null) plugin.webSocket.updateSubscriptions();
         }
 
         public void setDetectIps(boolean newStatus) {
@@ -315,7 +314,7 @@ public class ConfigYml extends OkaeriConfig {
             return toggleSetItem(ignored_types, type);
         }
 
-        public boolean toggleIgnoredPartnerRole(@NotNull PingRole role) {
+        public boolean toggleIgnoredPartnerRole(@NotNull EAEvent.PingRole role) {
             return toggleSetItem(ignored_partner_roles, role);
         }
 
@@ -415,7 +414,9 @@ public class ConfigYml extends OkaeriConfig {
             use_testing_api = newStatus;
             save();
 
-            if (plugin != null) plugin.webSockets.reconnectAll("Testing API toggled");
+            if (plugin == null) return;
+            plugin.setupHTTP();
+            plugin.setupWebSocket();
         }
 
         public static class Websocket extends SubConfig {

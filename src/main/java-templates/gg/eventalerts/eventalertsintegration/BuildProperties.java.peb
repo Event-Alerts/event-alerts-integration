@@ -8,6 +8,8 @@ import org.jetbrains.annotations.NotNull;
  * <br>Uses <a href="https://github.com/KyoriPowered/blossom">Blossom</a>
  */
 public class BuildProperties {
+    @NotNull public static final String EVENT_ALERTS_SDK_VERSION = "{{ event_alerts_sdk_version }}";
+
     @NotNull public static final String OKAERI_CONFIGS_VERSION = "{{ okaeri_configs_version }}";
 
     @NotNull public static final String JAVA_WEBSOCKET_VERSION = "{{ java_websocket_version }}";

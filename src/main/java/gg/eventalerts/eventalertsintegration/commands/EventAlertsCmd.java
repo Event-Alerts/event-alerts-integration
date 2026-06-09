@@ -4,9 +4,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.gui.config.ConfigGui;
-import gg.eventalerts.eventalertsintegration.json.GSONProvider;
-import gg.eventalerts.eventalertsintegration.objects.CrossBan;
+import gg.eventalerts.eventalertsintegration.object.sdk.CrossBanUtility;
 import gg.eventalerts.eventalertsintegration.reflection.org.bukkit.entity.RefPlayer;
+import gg.eventalerts.sdk.object.EACrossBan;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -24,11 +24,7 @@ import xyz.srnyx.annoyingapi.message.AnnoyingMessage;
 import xyz.srnyx.annoyingapi.utility.BukkitUtility;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -269,35 +265,32 @@ public class EventAlertsCmd extends AnnoyingCommand {
                     .collect(Collectors.joining(","));
 
             // Make API request
-            HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "cross_bans?minecraft_uuid=" + onlineString, null)
-                    .flatMap(json -> MiscUtility.handleException(json::getAsJsonObject))
-                    .flatMap(json -> MiscUtility.handleException(() -> json.getAsJsonArray("cross_bans")))
-                    .ifPresent(crossBans -> {
-                        // Kick banned players
-                        int banned = 0;
-                        final TextComponent reason = Component.text()
-                                .append(EventAlertsIntegration.GATE)
-                                .append(Component.text("You have been cross-banned from all event servers!", NamedTextColor.RED))
-                                .build();
-                        for (final JsonElement jsonElement : crossBans) {
-                            final JsonObject jsonObject = MiscUtility.handleException(jsonElement::getAsJsonObject).orElse(null);
-                            if (jsonObject == null) continue;
-                            final CrossBan ban = GSONProvider.GSON.fromJson(jsonObject, CrossBan.class);
-                            if (ban == null || ban.minecraftUuid == null) continue;
-                            final Player player = Bukkit.getPlayer(ban.minecraftUuid);
-                            if (player == null) continue;
-                            banned++;
-                            player.kick(Component.text()
-                                    .append(reason)
-                                    .append(ban.getReasonExpires())
-                                    .build());
-                        }
+            final List<EACrossBan> crossBans = plugin.http.crossBans.retrieveMany(Map.of("minecraft_uuid", onlineString))
+                    .onErrorReturnEmptyList()
+                    .complete();
+            if (crossBans.isEmpty()) return;
 
-                        // Send message
-                        new AnnoyingMessage(plugin, "command.crossban.check.result")
-                                .replace("%banned%", banned)
-                                .send(sender);
-                    });
+            // Kick banned players
+            int banned = 0;
+            final TextComponent reason = Component.text()
+                    .append(EventAlertsIntegration.GATE)
+                    .append(Component.text("You have been cross-banned from all event servers!", NamedTextColor.RED))
+                    .build();
+            for (final EACrossBan ban : crossBans) {
+                if (ban.minecraftUuid == null) continue;
+                final Player player = Bukkit.getPlayer(ban.minecraftUuid);
+                if (player == null) continue;
+                banned++;
+                player.kick(Component.text()
+                        .append(reason)
+                        .append(CrossBanUtility.getReasonExpires(ban))
+                        .build());
+            }
+
+            // Send message
+            new AnnoyingMessage(plugin, "command.crossban.check.result")
+                    .replace("%banned%", banned)
+                    .send(sender);
             return;
         }
 
@@ -317,9 +310,15 @@ public class EventAlertsCmd extends AnnoyingCommand {
 
             // Transfer
             try {
+                // Send message
                 new AnnoyingMessage(plugin, "command.transfer.transferring")
                         .replace("%server%", host + ":" + port)
                         .send(sender);
+
+                // Increase stats
+                plugin.statsCollector.joinButtonClicks.incrementAndGet();
+
+                // Transfer
                 RefPlayer.TRANSFER.invoke(sender.getPlayer(), host, port);
             } catch (final IllegalAccessException | InvocationTargetException e) {
                 new AnnoyingMessage(plugin, "command.transfer.disabled").send(sender);

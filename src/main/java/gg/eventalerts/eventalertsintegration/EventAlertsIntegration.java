@@ -3,7 +3,15 @@ package gg.eventalerts.eventalertsintegration;
 import gg.eventalerts.eventalertsintegration.config.ConfigCreator;
 import gg.eventalerts.eventalertsintegration.config.ConfigYml;
 import gg.eventalerts.eventalertsintegration.gui.GuiInputType;
-import gg.eventalerts.eventalertsintegration.socket.WebSockets;
+import gg.eventalerts.eventalertsintegration.socket.listeners.CrossBanListener;
+import gg.eventalerts.eventalertsintegration.socket.listeners.EventChatListener;
+import gg.eventalerts.eventalertsintegration.socket.listeners.EventPostedListener;
+import gg.eventalerts.eventalertsintegration.socket.listeners.FamousEventPostedListener;
+import gg.eventalerts.eventalertsintegration.socket.listeners.LinkListener;
+import gg.eventalerts.eventalertsintegration.stats.FastStats;
+import gg.eventalerts.eventalertsintegration.stats.StatsCollector;
+import gg.eventalerts.sdk.http.EAHTTP;
+import gg.eventalerts.sdk.websocket.EAWebSocket;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -37,7 +45,9 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
             .build();
 
     @NotNull public final ConfigYml config;
-    public WebSockets webSockets;
+    public EAHTTP http;
+    public EAWebSocket webSocket;
+    @NotNull public final StatsCollector statsCollector = new StatsCollector();
     /**
      * [player UUID, pending GUI input target]
      */
@@ -46,21 +56,20 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
     public EventAlertsIntegration() {
         options
                 .pluginOptions(pluginOptions -> pluginOptions.updatePlatforms(PluginPlatform.modrinth("DmjI2XpF")))
-                .bStatsOptions(bStatsOptions -> bStatsOptions.id(24443))
+                .statsOptions(statsOptions -> statsOptions
+                        .bStats(bStatsOptions -> bStatsOptions.id(24443))
+                        .fastStats(fastStatsOptions -> fastStatsOptions.loader(FastStats.class)))
                 .registrationOptions.automaticRegistration.packages(
                         "gg.eventalerts.eventalertsintegration.commands",
                         "gg.eventalerts.eventalertsintegration.listeners");
 
         // Load libraries
-        libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_CORE);
+        libraryManager.loadLibrary(EALibrary.EVENT_ALERTS_SDK_HTTP);
+        libraryManager.loadLibrary(EALibrary.EVENT_ALERTS_SDK_WEBSOCKET);
         libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_YAML_BUKKIT);
         libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_SERDES_COMMONS);
         libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_SERDES_BUKKIT);
-        libraryManager.loadLibrary(EALibrary.OKAERI_VALIDATOR);
         libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_VALIDATOR_OKAERI);
-        libraryManager.loadLibrary(EALibrary.BSON);
-        libraryManager.loadLibrary(EALibrary.NOVA);
-        libraryManager.loadLibrary(EALibrary.TRIUMPH_GUI_CORE);
         libraryManager.loadLibrary(EALibrary.TRIUMPH_GUI_PAPER);
 
         // Configure config
@@ -80,14 +89,38 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
         // Toggle debug
         setDebug(config.advanced.debug);
 
-        // Reconnect websockets
-        if (webSockets == null) webSockets = new WebSockets(this);
-        webSockets.reconnectAll("Plugin reload");
+        // Reload HTTP and websocket
+        setupHTTP();
+        setupWebSocket();
     }
 
     @Override
     public void disable() {
-        if (webSockets != null) webSockets.closeAll("Plugin disable");
+        if (webSocket != null) webSocket.close(1000, "Plugin disable");
+    }
+
+    public void setupHTTP() {
+        http = new EAHTTP.Builder(getUserAgent())
+                .url(getApiHost())
+                .playerKey(config.api_keys.getPlayer())
+                .serverKey(config.api_keys.getServer())
+                .build();
+    }
+
+    public void setupWebSocket() {
+        if (webSocket != null) webSocket.close(1000, "Plugin reload");
+        webSocket = new EAWebSocket.Builder(getUserAgent())
+                .url(getSocketHost())
+                .handler(new CrossBanListener(this))
+                .handler(new EventChatListener(this))
+                .handler(new EventPostedListener(this))
+                .handler(new FamousEventPostedListener(this))
+                .handler(new LinkListener(this))
+                .retry(config.advanced.websocket.retry)
+                .retryDelay(config.advanced.websocket.retry_delay)
+                .playerKey(config.api_keys.getPlayer())
+                .serverKey(config.api_keys.getServer())
+                .buildThenConnect();
     }
 
     @NotNull
@@ -97,23 +130,12 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
 
     @NotNull
     public String getSocketHost() {
-        return config.advanced.use_testing_api ? "ws://localhost:9090/api/v1/socket/" : "wss://eventalerts.gg/api/v1/socket/";
+        return config.advanced.use_testing_api ? "ws://localhost:9090/api/v1/socket" : "wss://eventalerts.gg/api/v1/socket";
     }
 
     @NotNull
     public String getUserAgent() {
         return getName() + "/" + getDescription().getVersion() + " (MC/" + AnnoyingPlugin.MINECRAFT_VERSION + ")";
-    }
-
-    @NotNull
-    public Map<String, String> getSocketHeaders() {
-        final Map<String, String> headers = new HashMap<>();
-        headers.put("User-Agent", getUserAgent());
-        final String playerKey = config.api_keys.getPlayer();
-        if (playerKey != null) headers.put("X-Player-Key", playerKey);
-        final String serverKey = config.api_keys.getServer();
-        if (serverKey != null) headers.put("X-Server-Key", serverKey);
-        return headers;
     }
 
     public void setDebug(boolean debug) {
@@ -122,6 +144,10 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
     }
 
     public void runOnMainThread(@NotNull Runnable runnable) {
-        Bukkit.getScheduler().runTask(this, runnable);
+        if (Bukkit.isPrimaryThread()) {
+            runnable.run();
+        } else {
+            scheduler.runSync(runnable);
+        }
     }
 }

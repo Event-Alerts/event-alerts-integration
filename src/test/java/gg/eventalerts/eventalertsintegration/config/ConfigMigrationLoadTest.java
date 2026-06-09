@@ -10,6 +10,7 @@ import eu.okaeri.configs.exception.ValidationException;
 import eu.okaeri.configs.migrate.ConfigMigration;
 import eu.okaeri.configs.serdes.commons.SerdesCommons;
 import eu.okaeri.configs.yaml.bukkit.YamlBukkitConfigurer;
+import gg.eventalerts.sdk.object.EAEvent;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.jetbrains.annotations.NotNull;
@@ -56,7 +57,7 @@ public class ConfigMigrationLoadTest {
 
         assertAll(
                 () -> assertEquals(Set.of(EventType.SIGHTING), config.event_messages.ignored_types),
-                () -> assertEquals(Set.of(PingRole.HOUSING, PingRole.CIVILIZATION), config.event_messages.ignored_partner_roles),
+                () -> assertEquals(Set.of(EAEvent.PingRole.HOUSING, EAEvent.PingRole.CIVILIZATION), config.event_messages.ignored_partner_roles),
                 () -> assertEquals(Set.of(), config.event_messages.ignored_formats),
                 () -> assertEquals(Set.of(), config.event_messages.host_filter),
                 () -> assertTrue(config.advanced.websocket.retry),
@@ -142,7 +143,7 @@ public class ConfigMigrationLoadTest {
                 () -> assertTrue(config.event_messages.enabled),
                 () -> assertFalse(config.event_messages.detect_ips),
                 () -> assertEquals(Set.of(EventType.SIGHTING, EventType.FAMOUS), config.event_messages.ignored_types),
-                () -> assertEquals(Set.of(PingRole.MONEY, PingRole.HOUSING), config.event_messages.ignored_partner_roles),
+                () -> assertEquals(Set.of(EAEvent.PingRole.MONEY, EAEvent.PingRole.HOUSING), config.event_messages.ignored_partner_roles),
                 () -> assertEquals(Set.of(EventFormat.CUSTOM, EventFormat.BUILT), config.event_messages.ignored_formats),
                 () -> assertEquals(Set.of("670c8827e780b066783c9154", "242385234992037888"), config.event_messages.host_filter),
                 () -> assertTrue(config.advanced.use_testing_api),
@@ -191,7 +192,7 @@ public class ConfigMigrationLoadTest {
                 () -> assertTrue(config.event_messages.enabled),
                 () -> assertFalse(config.event_messages.detect_ips),
                 () -> assertEquals(Set.of(EventType.SIGHTING, EventType.FAMOUS), config.event_messages.ignored_types),
-                () -> assertEquals(Set.of(PingRole.MONEY), config.event_messages.ignored_partner_roles),
+                () -> assertEquals(Set.of(EAEvent.PingRole.MONEY), config.event_messages.ignored_partner_roles),
                 () -> assertEquals(Set.of(EventFormat.CUSTOM), config.event_messages.ignored_formats),
                 () -> assertEquals(Set.of("670c8827e780b066783c9154", "242385234992037888"), config.event_messages.host_filter));
 

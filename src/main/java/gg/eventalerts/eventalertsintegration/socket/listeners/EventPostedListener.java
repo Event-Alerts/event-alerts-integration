@@ -1,24 +1,19 @@
-package gg.eventalerts.eventalertsintegration.socket.clients;
+package gg.eventalerts.eventalertsintegration.socket.listeners;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import gg.eventalerts.eventalertsintegration.json.GSONProvider;
+import gg.eventalerts.eventalertsintegration.object.sdk.EventUtility;
 import gg.eventalerts.eventalertsintegration.reflection.org.bukkit.entity.RefPlayer;
 import gg.eventalerts.eventalertsintegration.utility.EAStringUtility;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.config.EventFormat;
 import gg.eventalerts.eventalertsintegration.config.EventType;
-import gg.eventalerts.eventalertsintegration.config.PingRole;
-import gg.eventalerts.eventalertsintegration.objects.Event;
-import gg.eventalerts.eventalertsintegration.objects.Server;
-import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
-import gg.eventalerts.eventalertsintegration.socket.SocketClient;
+import gg.eventalerts.sdk.object.EAEvent;
+import gg.eventalerts.sdk.websocket.handler.EventPostedHandler;
+import gg.eventalerts.sdk.websocket.message.event.SocketEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.jetbrains.annotations.NotNull;
-import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
 import xyz.srnyx.annoyingapi.libs.javautilities.StringUtility;
 import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.DurationFormatter;
 
@@ -28,39 +23,44 @@ import static gg.eventalerts.eventalertsintegration.EventAlertsIntegration.MINI_
 import static gg.eventalerts.eventalertsintegration.utility.EventMessageUtility.*;
 
 
-public class EventPostedClient extends SocketClient<Event> {
-    public EventPostedClient(@NotNull EventAlertsIntegration plugin) {
-        super(plugin, SocketEndpoint.EVENT_POSTED, Event.class);
+public class EventPostedListener extends EventPostedHandler {
+    @NotNull private final EventAlertsIntegration plugin;
+
+    public EventPostedListener(@NotNull EventAlertsIntegration plugin) {
+        this.plugin = plugin;
     }
 
     @Override
-    public boolean shouldConnect() {
+    public boolean shouldSubscribe() {
         return plugin.config.event_messages.enabled && !plugin.config.event_messages.ignored_types.containsAll(EventType.REGULAR_TYPES);
     }
 
     @Override
-    public void onMessage(@NotNull Event object) {
+    public void onMessage(@NotNull SocketEvent<EAEvent> event) {
+        final EAEvent eaEvent = event.data;
+        if (eaEvent == null) return;
+
         // Get/check type
-        final EventType type = object.server != null ? EventType.PARTNER : EventType.COMMUNITY;
+        final EventType type = eaEvent.server != null ? EventType.PARTNER : EventType.COMMUNITY;
         if (plugin.config.event_messages.ignored_types.contains(type)) return;
 
         // Get/check format
-        final EventFormat format = object.custom() ? EventFormat.CUSTOM : EventFormat.BUILT;
+        final EventFormat format = Boolean.TRUE.equals(eaEvent.custom) ? EventFormat.CUSTOM : EventFormat.BUILT;
         if (plugin.config.event_messages.ignored_formats.contains(format)) return;
 
         // Check server
-        if (object.server != null && !plugin.config.event_messages.isInHostFilter(object.server)) return;
+        if (eaEvent.server != null && !plugin.config.event_messages.isInHostFilter(eaEvent.server)) return;
 
         // Check host
-        if (object.host != null && !plugin.config.event_messages.isInHostFilter(object.host)) return;
+        if (eaEvent.host != null && !plugin.config.event_messages.isInHostFilter(eaEvent.host)) return;
 
         // Check Partner ping roles
-        final boolean hasRoles = object.rolesNamed != null && !object.rolesNamed.isEmpty();
-        final Set<PingRole> ignoredPartnerRoles = plugin.config.event_messages.ignored_partner_roles;
-        if (hasRoles && object.rolesNamed.stream().anyMatch(ignoredPartnerRoles::contains)) return;
+        final boolean hasRoles = eaEvent.rolesNamed != null && !eaEvent.rolesNamed.isEmpty();
+        final Set<EAEvent.PingRole> ignoredPartnerRoles = plugin.config.event_messages.ignored_partner_roles;
+        if (hasRoles && eaEvent.rolesNamed.stream().anyMatch(ignoredPartnerRoles::contains)) return;
 
         // Replace emojis in description
-        String description = object.description;
+        String description = eaEvent.description;
         final boolean hasDescription = description != null;
         if (hasDescription) description = EAStringUtility.replaceEmojis(plugin, description);
 
@@ -71,8 +71,8 @@ public class EventPostedClient extends SocketClient<Event> {
 
         // Title
         String title = "New event!";
-        if (object.title != null) {
-            title = object.title.replaceAll("\\s+", " ");
+        if (eaEvent.title != null) {
+            title = eaEvent.title.replaceAll("\\s+", " ");
         } else if (hasDescription) {
             title = description.split("\n")[0];
         }
@@ -80,7 +80,7 @@ public class EventPostedClient extends SocketClient<Event> {
         // roles
         if (hasRoles) {
             final TextComponent.Builder rolesComponent = Component.text().color(NamedTextColor.YELLOW);
-            for (final PingRole role : object.rolesNamed) rolesComponent.append(Component.text(" @" + role.name));
+            for (final EAEvent.PingRole role : eaEvent.rolesNamed) rolesComponent.append(Component.text(" @" + EventUtility.PingRole.getName(role)));
             builder.append(rolesComponent);
         }
         // description
@@ -88,54 +88,42 @@ public class EventPostedClient extends SocketClient<Event> {
                 .append(LINE)
                 .append(Component.text(descriptionLine, NamedTextColor.GRAY));
         // time
-        final Long timeUntil = object.getTimeUntil();
+        final Long timeUntil = eaEvent.getTimeUntil();
         if (timeUntil != null) builder
                 .append(LINE)
                 .append(LINE)
                 .append(MINI_MESSAGE.deserialize("<yellow>\uD83D\uDD51 Starts in: <gold>" + DurationFormatter.formatDuration(timeUntil, "H'h' m'm' s's'")));
         // prize
-        if (object.prize != null) builder
+        if (eaEvent.prize != null) builder
                 .append(LINE)
-                .append(MINI_MESSAGE.deserialize("<#87ffa9>\uD83C\uDFC6 Prize: <green>" + object.prize));
+                .append(MINI_MESSAGE.deserialize("<#87ffa9>\uD83C\uDFC6 Prize: <green>" + eaEvent.prize));
         // IP
-        if (object.ip != null) builder
+        if (eaEvent.ip != null) builder
                 .append(LINE)
                 .append(LINE)
-                .append(MINI_MESSAGE.deserialize("<#88a7b5>» <#bfebff>IP: <aqua>" + object.ip));
+                .append(MINI_MESSAGE.deserialize("<#88a7b5>» <#bfebff>IP: <aqua>" + eaEvent.ip));
         // platform & version
         final StringBuilder platformVersion = new StringBuilder();
-        if (object.platforms != null && !object.platforms.isEmpty()) platformVersion.append(Event.Platform.toString(object.platforms)).append(" ");
-        if (object.version != null) platformVersion.append(object.version);
+        if (eaEvent.platforms != null && !eaEvent.platforms.isEmpty()) platformVersion.append(EventUtility.Platform.toString(eaEvent.platforms)).append(" ");
+        if (eaEvent.version != null) platformVersion.append(eaEvent.version);
         if (!platformVersion.isEmpty()) builder
                 .append(LINE)
                 .append(MINI_MESSAGE.deserialize("<#88a7b5>» <#bfebff>Version: <aqua>" + platformVersion));
         // server
-        if (object.server != null) {
+        if (eaEvent.server != null) {
             // Get name from API
-            String name = null;
-            final JsonObject json = HttpUtility
-                    .getJson(plugin.getUserAgent(), plugin.getApiHost() + "servers/id/" + object.server, null)
-                    .map(JsonElement::getAsJsonObject)
-                    .orElse(null);
-            if (json != null && json.has("server")) {
-                final JsonElement serverElement = json.get("server");
-                if (serverElement.isJsonObject()) {
-                    final Server server = GSONProvider.GSON.fromJson(serverElement.getAsJsonObject(), Server.class);
-                    if (server != null) name = server.name;
-                }
-            }
-
-            // Append to builder
-            if (name != null) builder
-                    .append(LINE)
-                    .append(MINI_MESSAGE.deserialize("<#88a7b5>» <#bfebff>Server: <aqua>" + name));
+            plugin.http.partnerServers.retrieveOneById(eaEvent.server)
+                    .onErrorReturnNull()
+                    .ifPresent(server -> builder
+                            .append(LINE)
+                            .append(MINI_MESSAGE.deserialize("<#88a7b5>» <#bfebff>Server: <aqua>" + server.name)));
         }
 
         // Join button
         if (plugin.config.event_messages.detect_ips && RefPlayer.TRANSFER != null) {
             EAStringUtility.IpPort ipPort = null;
             // Get from dedicated IP field
-            if (object.ip != null) ipPort = EAStringUtility.extractIpPort(object.ip, null);
+            if (eaEvent.ip != null) ipPort = EAStringUtility.extractIpPort(eaEvent.ip, null);
             // Find in description
             if (ipPort == null && hasDescription) ipPort = EAStringUtility.extractIpPort(description, null);
             // Append to builder

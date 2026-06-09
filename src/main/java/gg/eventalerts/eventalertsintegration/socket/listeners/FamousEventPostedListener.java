@@ -1,13 +1,13 @@
-package gg.eventalerts.eventalertsintegration.socket.clients;
+package gg.eventalerts.eventalertsintegration.socket.listeners;
 
 import gg.eventalerts.eventalertsintegration.IDMappings;
 import gg.eventalerts.eventalertsintegration.config.EventType;
 import gg.eventalerts.eventalertsintegration.reflection.org.bukkit.entity.RefPlayer;
 import gg.eventalerts.eventalertsintegration.utility.EAStringUtility;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
-import gg.eventalerts.eventalertsintegration.objects.FamousEvent;
-import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
-import gg.eventalerts.eventalertsintegration.socket.SocketClient;
+import gg.eventalerts.sdk.object.EAFamousEvent;
+import gg.eventalerts.sdk.websocket.handler.FamousEventPostedHandler;
+import gg.eventalerts.sdk.websocket.message.event.SocketEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -25,37 +25,40 @@ import java.util.regex.Pattern;
 import static gg.eventalerts.eventalertsintegration.utility.EventMessageUtility.*;
 
 
-public class FamousEventPostedClient extends SocketClient<FamousEvent> {
+public class FamousEventPostedListener extends FamousEventPostedHandler {
     @NotNull private final Pattern ID_PATTERN = Pattern.compile("<@[!&]?(\\d+)>|<#(\\d+)>");
     @Nullable private static final TextColor MENTION_HIGHLIGHT = TextColor.color(215, 215, 215);
 
-    public FamousEventPostedClient(@NotNull EventAlertsIntegration plugin) {
-        super(plugin, SocketEndpoint.FAMOUS_EVENT_POSTED, FamousEvent.class);
+    @NotNull private final EventAlertsIntegration plugin;
+
+    public FamousEventPostedListener(@NotNull EventAlertsIntegration plugin) {
+        this.plugin = plugin;
     }
 
     @Override
-    public boolean shouldConnect() {
+    public boolean shouldSubscribe() {
         return plugin.config.event_messages.enabled && !plugin.config.event_messages.ignored_types.containsAll(EventType.FAMOUS_TYPES);
     }
 
     @Override
-    public void onMessage(@NotNull FamousEvent object) {
-        if (object.type == null || object.message == null) {
-            AnnoyingPlugin.log(Level.WARNING, "Invalid FamousEvent: " + object);
+    public void onMessage(@NotNull SocketEvent<EAFamousEvent> event) {
+        final EAFamousEvent famousEvent = event.data;
+        if (famousEvent == null || famousEvent.type == null || famousEvent.message == null) {
+            AnnoyingPlugin.log(Level.WARNING, "Invalid FamousEvent: " + famousEvent);
             return;
         }
 
         // Check type
-        if (plugin.config.event_messages.ignored_types.contains(object.type)) return;
+        if (plugin.config.event_messages.ignored_types.contains(famousEvent.type)) return;
 
         // Build message
         final TextComponent.Builder builder = Component.text()
                 .append(BEGINNING)
                 .append(LINE)
-                .append(Component.text("NEW " + object.type.name() + " EVENT!", NamedTextColor.GOLD, TextDecoration.BOLD));
+                .append(Component.text("NEW " + famousEvent.type.name() + " EVENT!", NamedTextColor.GOLD, TextDecoration.BOLD));
 
         // Replace emojis
-        final String message = EAStringUtility.replaceEmojis(plugin, object.message);
+        final String message = EAStringUtility.replaceEmojis(plugin, famousEvent.message);
 
         // Append message to builder
         for (final String line : message.split("\n")) {
