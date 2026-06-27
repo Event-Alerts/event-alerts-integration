@@ -1,4 +1,4 @@
-name: Build
+name: Publish
 on:
   push:
     branches:
@@ -10,11 +10,12 @@ on:
       - 'settings.gradle.kts'
       - 'gradlew'
       - 'gradlew.bat'
+  release:
+    types:
+      - published
   workflow_dispatch:
 
 jobs:
   build:
-    uses: srnyx/tools/.github/workflows/build.yml@main
-    with:
-      name: Event Alerts Integration
-      java: 21
+    uses: srnyx/tools/.github/workflows/publish.yml@main
+    secrets: inherit
