@@ -1,6 +1,10 @@
-@file:Suppress("AvoidDuplicateDependencies")
+import xyz.srnyx.gradlegalaxy.data.annoyingapi.Relocation
+import xyz.srnyx.gradlegalaxy.data.annoyingapi.RuntimeLibrary
 import xyz.srnyx.gradlegalaxy.data.config.DependencyConfig
 import xyz.srnyx.gradlegalaxy.data.config.JavaSetupConfig
+import xyz.srnyx.gradlegalaxy.data.config.annoyingapi.CustomRuntimeLibrariesConfig
+import xyz.srnyx.gradlegalaxy.data.config.publishing.PublishingPlatformConfig
+import xyz.srnyx.gradlegalaxy.data.platforms.PluginPlatform
 import xyz.srnyx.gradlegalaxy.enums.Repository
 import xyz.srnyx.gradlegalaxy.enums.repository
 import xyz.srnyx.gradlegalaxy.utility.*
@@ -8,89 +12,120 @@ import xyz.srnyx.gradlegalaxy.utility.*
 
 plugins {
     java
-    id("xyz.srnyx.gradle-galaxy") version "3.0.1"
-    id("com.gradleup.shadow") version "9.4.2"
-    id("net.kyori.blossom") version "2.2.0"
-    id("org.jetbrains.gradle.plugin.idea-ext") version "1.4.1"
+    id("xyz.srnyx.gradle-galaxy") version "bd1b0c1"
+    id("com.gradleup.shadow") version "9.4.3"
+    id("me.modmuss50.mod-publish-plugin") version "2.1.1"
 }
+
+// Runtime libraries
+val eventAlertsSdkVersion: String = "05c69df"
+val runtimeLibraries = listOf(
+    RuntimeLibrary(
+        name = "gson",
+        repositories = listOf(Repository.MAVEN_CENTRAL.url),
+        group = "com.google.code.gson",
+        artifact = "gson",
+        version = "2.14.0",
+        relocations = listOf(Relocation("com.google.gson"))),
+    RuntimeLibrary(
+        name = "bson",
+        repositories = listOf(Repository.MAVEN_CENTRAL.url),
+        group = "org.mongodb",
+        artifact = "bson",
+        version = "5.7.0",
+        relocations = listOf(
+            Relocation("org.bson"),
+            Relocation("org.checkerframework"))),
+    RuntimeLibrary(
+        name = "java_websocket",
+        repositories = listOf(Repository.MAVEN_CENTRAL.url),
+        group = "org.java-websocket",
+        artifact = "Java-WebSocket",
+        version = "1.6.0",
+        relocations = listOf(Relocation("org.java_websocket"))),
+    RuntimeLibrary(
+        name = "event_alerts_sdk_core",
+        repositories = listOf(
+            Repository.SRNYX_RELEASES.url,
+            Repository.SRNYX_SNAPSHOTS.url),
+        group = "gg.eventalerts.sdk",
+        artifact = "core",
+        version = eventAlertsSdkVersion,
+        relocations = listOf(Relocation("gg.eventalerts.sdk")),
+        dependencies = listOf(
+            "gson",
+            "bson")),
+    RuntimeLibrary(
+        name = "event_alerts_sdk_http",
+        repositories = listOf(
+            Repository.SRNYX_RELEASES.url,
+            Repository.SRNYX_SNAPSHOTS.url),
+        group = "gg.eventalerts.sdk",
+        artifact = "http",
+        version = eventAlertsSdkVersion,
+        relocations = listOf(Relocation("gg.eventalerts.sdk")),
+        dependencies = listOf("event_alerts_sdk_core")),
+    RuntimeLibrary(
+        name = "event_alerts_sdk_websocket",
+        repositories = listOf(
+            Repository.SRNYX_RELEASES.url,
+            Repository.SRNYX_SNAPSHOTS.url),
+        group = "gg.eventalerts.sdk",
+        artifact = "websocket",
+        version = eventAlertsSdkVersion,
+        relocations = listOf(Relocation("gg.eventalerts.sdk")),
+        dependencies = listOf(
+            "event_alerts_sdk_core",
+            "java_websocket")),
+    RuntimeLibrary(
+        name = "nova",
+        repositories = listOf(Repository.TRIUMPH_SNAPSHOTS.url),
+        group = "dev.triumphteam",
+        artifact = "nova",
+        version = "1.0.0-SNAPSHOT",
+        relocations = listOf(Relocation("dev.triumphteam"))),
+    RuntimeLibrary(
+        name = "triumph_gui_core",
+        repositories = listOf(Repository.TRIUMPH_SNAPSHOTS.url),
+        group = "dev.triumphteam",
+        artifact = "triumph-gui-core",
+        version = "4.0.0-SNAPSHOT",
+        relocations = listOf(Relocation("dev.triumphteam")),
+        dependencies = listOf("nova")),
+    RuntimeLibrary(
+        name = "triumph_gui_paper",
+        repositories = listOf(Repository.TRIUMPH_SNAPSHOTS.url),
+        group = "dev.triumphteam",
+        artifact = "triumph-gui-paper",
+        version = "4.0.0-SNAPSHOT",
+        relocations = listOf(Relocation("dev.triumphteam")),
+        dependencies = listOf("triumph_gui_core")),
+    RuntimeLibrary(
+        name = "jemoji",
+        repositories = listOf(Repository.MAVEN_CENTRAL.url),
+        group = "net.fellbaum",
+        artifact = "jemoji",
+        version = "2.0.0",
+        relocations = listOf(Relocation("net.fellbaum"))))
 
 paper(DependencyConfig(version = "1.18.2"))
 setupAnnoyingAPI(
     javaSetupConfig = JavaSetupConfig(
         group = "gg.eventalerts",
-        version = "1.1.0",
         description = "A plugin to integrate your Minecraft server with the Event Alerts ecosystem",
         javaVersion = JavaVersion.VERSION_21),
-    annoyingAPIConfig = DependencyConfig(version = "90afed0"))
-
-// Runtime dependency versions
-val eventAlertsSdkVersion: String = "84b3cac"
-val okaeriConfigsVersion: String = "6.1.0-beta.4"
-val javaWebSocketVersion: String = "1.6.0"
-val bsonVersion: String = "5.7.0"
-val triumphGuiVersion: String = "4.0.0-SNAPSHOT"
-val jEmojiVersion: String = "2.0.0"
-
-// Blossom (see java-templates module)
-sourceSets.main { blossom.javaSources {
-    property("event_alerts_sdk_version", eventAlertsSdkVersion)
-    property("okaeri_configs_version", okaeriConfigsVersion)
-    property("java_websocket_version", javaWebSocketVersion)
-    property("bson_version", bsonVersion)
-    property("triumph_gui_version", triumphGuiVersion)
-    property("jemoji_version", jEmojiVersion)
-} }
+    annoyingAPIConfig = DependencyConfig(version = "c158171"),
+    customRuntimeLibrariesConfig = CustomRuntimeLibrariesConfig(runtimeLibraries),
+    publishingPlatformConfig = PublishingPlatformConfig(platforms = mapOf(PluginPlatform.MODRINTH to "DmjI2XpF")))
 
 // Repositories
-repository("https://repo.okaeri.cloud/releases")
-repository(Repository.TRIUMPH_SNAPSHOTS, Repository.PLACEHOLDER_API)
+repository(Repository.PLACEHOLDER_API)
 
 // Dependencies
-val okaeriConfigsYamlBukkit: String = "eu.okaeri:okaeri-configs-yaml-bukkit:$okaeriConfigsVersion"
-val okaeriConfigsSerdesBukkit: String = "eu.okaeri:okaeri-configs-serdes-bukkit:$okaeriConfigsVersion"
-val okaeriConfigsSerdesCommons: String = "eu.okaeri:okaeri-configs-serdes-commons:$okaeriConfigsVersion"
-val okaeriConfigsValidatorOkaeri: String = "eu.okaeri:okaeri-configs-validator-okaeri:$okaeriConfigsVersion"
 dependencies {
-    // Downloaded on runtime
-    compileOnly("gg.eventalerts.sdk:http:$eventAlertsSdkVersion")
-    compileOnly("gg.eventalerts.sdk:websocket:$eventAlertsSdkVersion")
-    compileOnly(okaeriConfigsYamlBukkit)
-    compileOnly(okaeriConfigsSerdesBukkit)
-    compileOnly(okaeriConfigsSerdesCommons)
-    compileOnly(okaeriConfigsValidatorOkaeri)
-    compileOnly("org.java-websocket:Java-WebSocket:1.6.0") {
-        relocate("org.java_websocket")
-    }
-    compileOnly("org.mongodb:bson:5.7.0") {
-        relocate("org.bson")
-        relocate("org.checkerframework")
-    }
-    compileOnly("dev.triumphteam:triumph-gui-paper:4.0.0-SNAPSHOT") {
-        relocate("dev.triumphteam")
-    }
-    compileOnly("net.fellbaum:jemoji:2.0.0") {
-        relocate("net.fellbaum")
-    }
-
     // Optional
     compileOnly("me.clip:placeholderapi:2.12.2")
-
-    // Unit tests
-    testImplementation("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
-    testImplementation("gg.eventalerts.sdk:core:$eventAlertsSdkVersion")
-    testImplementation(okaeriConfigsYamlBukkit)
-    testImplementation(okaeriConfigsSerdesBukkit)
-    testImplementation(okaeriConfigsSerdesCommons)
-    testImplementation(okaeriConfigsValidatorOkaeri)
-    testImplementation(platform("org.junit:junit-bom:6.1.0"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
-
-// Event Alerts SDK
-relocate("gg.eventalerts.sdk")
-// Okaeri Configs
-relocate("eu.okaeri")
 
 // Unknown relocations
 val projectPackage = getPackage()
@@ -100,6 +135,7 @@ relocate("com.google.thirdparty", "$projectPackage.libs.google.thirdparty")
 relocate("javax.annotation")
 relocate("com.google.j2objc.annotations")
 
-tasks.test {
-    useJUnitPlatform()
-}
+// Testing
+setupMockBukkit(
+    junitBomConfig = DependencyConfig(version = "6.1.0"),
+    mockBukkitDependencyConfig = DependencyConfig(version = "3.9.0"))

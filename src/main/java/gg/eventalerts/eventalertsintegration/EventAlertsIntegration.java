@@ -1,8 +1,12 @@
 package gg.eventalerts.eventalertsintegration;
 
-import gg.eventalerts.eventalertsintegration.config.ConfigCreator;
 import gg.eventalerts.eventalertsintegration.config.ConfigYml;
+import gg.eventalerts.eventalertsintegration.config.migration.C0001_Migrate_sound_to_nested_structure;
+import gg.eventalerts.eventalertsintegration.config.migration.C0002_Migrate_negative_retry_delay;
+import gg.eventalerts.eventalertsintegration.config.migration.C0003_Migrate_websockets_to_websocket;
 import gg.eventalerts.eventalertsintegration.gui.GuiInputType;
+import gg.eventalerts.eventalertsintegration.library.EventAlertsIntegrationLibrary;
+import gg.eventalerts.eventalertsintegration.messages.EAMessagesProvider;
 import gg.eventalerts.eventalertsintegration.socket.listeners.CrossBanListener;
 import gg.eventalerts.eventalertsintegration.socket.listeners.EventChatListener;
 import gg.eventalerts.eventalertsintegration.socket.listeners.EventPostedListener;
@@ -19,9 +23,9 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
+import org.java_websocket.framing.CloseFrame;
 import org.jetbrains.annotations.NotNull;
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
-import xyz.srnyx.annoyingapi.PluginPlatform;
 import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
 
 import java.util.HashMap;
@@ -44,7 +48,7 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
             .append(Component.text(" for more information"))
             .build();
 
-    @NotNull public final ConfigYml config;
+    public ConfigYml config;
     public EAHTTP http;
     public EAWebSocket webSocket;
     @NotNull public final StatsCollector statsCollector = new StatsCollector();
@@ -55,62 +59,77 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
 
     public EventAlertsIntegration() {
         options
-                .pluginOptions(pluginOptions -> pluginOptions.updatePlatforms(PluginPlatform.modrinth("DmjI2XpF")))
+                .pluginOptions(pluginOptions -> pluginOptions.libraries(
+                        EventAlertsIntegrationLibrary.EVENT_ALERTS_SDK_HTTP,
+                        EventAlertsIntegrationLibrary.EVENT_ALERTS_SDK_WEBSOCKET,
+                        EventAlertsIntegrationLibrary.TRIUMPH_GUI_PAPER))
                 .statsOptions(statsOptions -> statsOptions
                         .bStats(bStatsOptions -> bStatsOptions.id(24443))
-                        .fastStats(fastStatsOptions -> fastStatsOptions.loader(FastStats.class)))
-                .registrationOptions.automaticRegistration.packages(
-                        "gg.eventalerts.eventalertsintegration.commands",
-                        "gg.eventalerts.eventalertsintegration.listeners");
-
-        // Load libraries
-        libraryManager.loadLibrary(EALibrary.EVENT_ALERTS_SDK_HTTP);
-        libraryManager.loadLibrary(EALibrary.EVENT_ALERTS_SDK_WEBSOCKET);
-        libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_YAML_BUKKIT);
-        libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_SERDES_COMMONS);
-        libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_SERDES_BUKKIT);
-        libraryManager.loadLibrary(EALibrary.OKAERI_CONFIGS_VALIDATOR_OKAERI);
-        libraryManager.loadLibrary(EALibrary.TRIUMPH_GUI_PAPER);
-
-        // Configure config
-        config = ConfigCreator.create(this);
+                        .fastStats(fastStatsOptions -> fastStatsOptions.loader(FastStats.class)));
     }
 
     @Override
-    public void enable() {
-        reload(); // Websocket retry task requires plugin to be enabled
+    public void load() {
+        // Build config
+        config = configLoader.build(builder -> builder
+                .config(new ConfigYml(this))
+                .internalStateMigrations(
+                        new C0001_Migrate_sound_to_nested_structure(),
+                        new C0002_Migrate_negative_retry_delay(),
+                        new C0003_Migrate_websockets_to_websocket()));
+
+        loadReloadTasks();
     }
 
     @Override
     public void reload() {
-        // Load config
+        // Reload config
         config.load(true);
 
+        loadReloadTasks();
+    }
+
+    private void loadReloadTasks() {
         // Toggle debug
         setDebug(config.advanced.debug);
 
-        // Reload HTTP and websocket
-        setupHTTP();
-        setupWebSocket();
+        // Load SDK
+        loadSDK();
     }
 
     @Override
     public void disable() {
-        if (webSocket != null) webSocket.close(1000, "Plugin disable");
+        if (webSocket != null) webSocket.close(CloseFrame.NORMAL, "Plugin disable");
     }
 
-    public void setupHTTP() {
-        http = new EAHTTP.Builder(getUserAgent())
-                .url(getApiHost())
+    @Override @NotNull
+    public EAMessagesProvider getMessages() {
+        return (EAMessagesProvider) super.getMessages();
+    }
+
+    public void setDebug(boolean debug) {
+        AnnoyingPlugin.LOGGER.setLevel(debug ? Level.FINE : Level.INFO);
+        HttpUtility.DEBUG = debug;
+    }
+
+    public void loadSDK() {
+        final String userAgent = getName() + "/" + getDescription().getVersion() + " (MC/" + AnnoyingPlugin.MINECRAFT_VERSION + ")";
+
+        // Load HTTP
+        http = new EAHTTP.Builder(userAgent)
+                .url(config.advanced.use_testing_api ? "http://localhost:8080/api/v1/" : "https://eventalerts.gg/api/v1/")
                 .playerKey(config.api_keys.getPlayer())
                 .serverKey(config.api_keys.getServer())
                 .build();
-    }
 
-    public void setupWebSocket() {
-        if (webSocket != null) webSocket.close(1000, "Plugin reload");
-        webSocket = new EAWebSocket.Builder(getUserAgent())
-                .url(getSocketHost())
+        // Load WebSocket
+        if (webSocket != null) try {
+            webSocket.closeBlocking();
+        } catch (final InterruptedException e) {
+            log(Level.WARNING, "Failed to close WebSocket", e);
+        }
+        webSocket = new EAWebSocket.Builder(userAgent)
+                .url(config.advanced.use_testing_api ? "ws://localhost:9090/api/v1/socket" : "wss://eventalerts.gg/api/v1/socket")
                 .handler(new CrossBanListener(this))
                 .handler(new EventChatListener(this))
                 .handler(new EventPostedListener(this))
@@ -121,26 +140,6 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
                 .playerKey(config.api_keys.getPlayer())
                 .serverKey(config.api_keys.getServer())
                 .buildThenConnect();
-    }
-
-    @NotNull
-    public String getApiHost() {
-        return config.advanced.use_testing_api ? "http://localhost:8080/api/v1/" : "https://eventalerts.gg/api/v1/";
-    }
-
-    @NotNull
-    public String getSocketHost() {
-        return config.advanced.use_testing_api ? "ws://localhost:9090/api/v1/socket" : "wss://eventalerts.gg/api/v1/socket";
-    }
-
-    @NotNull
-    public String getUserAgent() {
-        return getName() + "/" + getDescription().getVersion() + " (MC/" + AnnoyingPlugin.MINECRAFT_VERSION + ")";
-    }
-
-    public void setDebug(boolean debug) {
-        AnnoyingPlugin.LOGGER.setLevel(debug ? Level.FINE : Level.INFO);
-        HttpUtility.DEBUG = debug;
     }
 
     public void runOnMainThread(@NotNull Runnable runnable) {

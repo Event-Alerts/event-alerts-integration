@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import xyz.srnyx.annoyingapi.libs.javautilities.StringUtility;
 import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.DurationFormatter;
 
+import java.util.Objects;
 import java.util.Set;
 
 import static gg.eventalerts.eventalertsintegration.EventAlertsIntegration.MINI_MESSAGE;
@@ -96,27 +97,32 @@ public class EventPostedListener extends EventPostedHandler {
         // prize
         if (eaEvent.prize != null) builder
                 .append(LINE)
-                .append(MINI_MESSAGE.deserialize("<#87ffa9>\uD83C\uDFC6 Prize: <green>" + eaEvent.prize));
+                .append(MINI_MESSAGE.deserialize("<#87ffa9>\uD83C\uDFC6 Prize: "))
+                .append(Component.text(eaEvent.prize, NamedTextColor.GREEN));
         // IP
         if (eaEvent.ip != null) builder
                 .append(LINE)
                 .append(LINE)
-                .append(MINI_MESSAGE.deserialize("<#88a7b5>» <#bfebff>IP: <aqua>" + eaEvent.ip));
+                .append(MINI_MESSAGE.deserialize("<#88a7b5>» <#bfebff>IP: "))
+                .append(Component.text(eaEvent.ip, NamedTextColor.AQUA));
         // platform & version
         final StringBuilder platformVersion = new StringBuilder();
         if (eaEvent.platforms != null && !eaEvent.platforms.isEmpty()) platformVersion.append(EventUtility.Platform.toString(eaEvent.platforms)).append(" ");
         if (eaEvent.version != null) platformVersion.append(eaEvent.version);
         if (!platformVersion.isEmpty()) builder
                 .append(LINE)
-                .append(MINI_MESSAGE.deserialize("<#88a7b5>» <#bfebff>Version: <aqua>" + platformVersion));
+                .append(MINI_MESSAGE.deserialize("<#88a7b5>» <#bfebff>Version: "))
+                .append(Component.text(platformVersion.toString(), NamedTextColor.AQUA));
         // server
         if (eaEvent.server != null) {
             // Get name from API
             plugin.http.partnerServers.retrieveOneById(eaEvent.server)
+                    .map(server -> server.name)
                     .onErrorReturnNull()
-                    .ifPresent(server -> builder
-                            .append(LINE)
-                            .append(MINI_MESSAGE.deserialize("<#88a7b5>» <#bfebff>Server: <aqua>" + server.name)));
+                    .ifPresent(name -> builder
+                                .append(LINE)
+                                .append(MINI_MESSAGE.deserialize("<#88a7b5>» <#bfebff>Server: "))
+                                .append(Component.text(Objects.requireNonNull(name), NamedTextColor.AQUA)));
         }
 
         // Join button

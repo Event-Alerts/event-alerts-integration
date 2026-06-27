@@ -1,22 +1,18 @@
 package gg.eventalerts.eventalertsintegration.config;
 
-import gg.eventalerts.eventalertsintegration.config.migration.C0001_Rename_hyphen_names_to_snake_case;
-import gg.eventalerts.eventalertsintegration.config.migration.C0002_Migrate_sound_to_nested_structure;
-import gg.eventalerts.eventalertsintegration.config.migration.C0003_Migrate_negative_retry_delay;
-import gg.eventalerts.eventalertsintegration.config.migration.C0004_Migrate_websockets_to_websocket;
-import gg.eventalerts.eventalertsintegration.config.serdes.PlayableSoundSerializer;
-import gg.eventalerts.eventalertsintegration.config.validator.EAConfigValidator;
-import eu.okaeri.configs.exception.ValidationException;
+import com.cryptomorin.xseries.XSound;
 import eu.okaeri.configs.migrate.ConfigMigration;
-import eu.okaeri.configs.serdes.commons.SerdesCommons;
-import eu.okaeri.configs.yaml.bukkit.YamlBukkitConfigurer;
+import gg.eventalerts.eventalertsintegration.MockTestSupport;
+import gg.eventalerts.eventalertsintegration.config.migration.C0001_Migrate_sound_to_nested_structure;
+import gg.eventalerts.eventalertsintegration.config.migration.C0002_Migrate_negative_retry_delay;
+import gg.eventalerts.eventalertsintegration.config.migration.C0003_Migrate_websockets_to_websocket;
+import eu.okaeri.configs.exception.ValidationException;
 import gg.eventalerts.sdk.object.EAEvent;
-import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
+import xyz.srnyx.annoyingapi.file.okaeri.ConfigBuilder;
+import xyz.srnyx.annoyingapi.file.okaeri.validator.AnnoyingConfigValidator;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -33,9 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-public class ConfigMigrationLoadTest {
-    @TempDir(cleanup = CleanupMode.NEVER)
-    Path tempDir;
+public class ConfigMigrationTest extends MockTestSupport {
+    @TempDir Path tempDir;
 
     @Test
     void loadsCurrentDefaultsWithoutNullCollections() throws IOException {
@@ -62,8 +57,8 @@ public class ConfigMigrationLoadTest {
                 () -> assertEquals(Set.of(), config.event_messages.host_filter),
                 () -> assertTrue(config.advanced.websocket.retry),
                 () -> assertEquals(Duration.ofMinutes(5), config.advanced.websocket.retry_delay),
-                () -> assertEquals(Sound.BLOCK_NOTE_BLOCK_CHIME, config.event_messages.sound.sound.sound),
-                () -> assertEquals(SoundCategory.AMBIENT, config.event_messages.sound.sound.category));
+                () -> assertEquals(XSound.BLOCK_NOTE_BLOCK_CHIME, config.event_messages.sound.sound.sound),
+                () -> assertEquals(XSound.Category.AMBIENT, config.event_messages.sound.sound.category));
     }
 
     @Test
@@ -96,7 +91,7 @@ public class ConfigMigrationLoadTest {
                   detect-ips: false
                   sound:
                     enabled: true
-                    sound: BLOCK_BELL
+                    sound: BLOCK_BELL_USE
                     category: AMBIENT
                     volume: 0.5
                     pitch: 1.25
@@ -124,10 +119,9 @@ public class ConfigMigrationLoadTest {
                 """);
 
         final ConfigYml config = loadConfig(configFile,
-                new C0001_Rename_hyphen_names_to_snake_case(),
-                new C0002_Migrate_sound_to_nested_structure(),
-                new C0003_Migrate_negative_retry_delay(),
-                new C0004_Migrate_websockets_to_websocket());
+                new C0001_Migrate_sound_to_nested_structure(),
+                new C0002_Migrate_negative_retry_delay(),
+                new C0003_Migrate_websockets_to_websocket());
 
         assertAll(
                 () -> assertEquals("EA.Player.1.0123456789abcdef01234567", config.api_keys.getPlayer()),
@@ -161,53 +155,6 @@ public class ConfigMigrationLoadTest {
     }
 
     @Test
-    void migratesMixedStateConfigWithAlreadyRenamedParents() throws IOException {
-        final Path configFile = writeConfig("""
-                cross_ban:
-                  enabled: true
-                  check-on-join: false
-                  allow-join-on-failure: true
-
-                event_messages:
-                  enabled: true
-                  detect-ips: false
-                  ignored-types:
-                    - SIGHTING
-                    - FAMOUS
-                  ignored-partner-roles:
-                    - MONEY
-                  ignored-formats:
-                    - CUSTOM
-                  host-filter:
-                    - 670c8827e780b066783c9154
-                    - '242385234992037888'
-                """);
-
-        final ConfigYml config = loadConfig(configFile, new C0001_Rename_hyphen_names_to_snake_case());
-
-        assertAll(
-                () -> assertTrue(config.cross_ban.enabled),
-                () -> assertFalse(config.cross_ban.check_on_join),
-                () -> assertTrue(config.cross_ban.allow_join_on_failure),
-                () -> assertTrue(config.event_messages.enabled),
-                () -> assertFalse(config.event_messages.detect_ips),
-                () -> assertEquals(Set.of(EventType.SIGHTING, EventType.FAMOUS), config.event_messages.ignored_types),
-                () -> assertEquals(Set.of(EAEvent.PingRole.MONEY), config.event_messages.ignored_partner_roles),
-                () -> assertEquals(Set.of(EventFormat.CUSTOM), config.event_messages.ignored_formats),
-                () -> assertEquals(Set.of("670c8827e780b066783c9154", "242385234992037888"), config.event_messages.host_filter));
-
-        final String migrated = Files.readString(configFile, StandardCharsets.UTF_8);
-        assertAll(
-                () -> assertFalse(migrated.contains("check-on-join")),
-                () -> assertFalse(migrated.contains("allow-join-on-failure")),
-                () -> assertFalse(migrated.contains("detect-ips")),
-                () -> assertFalse(migrated.contains("ignored-types")),
-                () -> assertFalse(migrated.contains("ignored-partner-roles")),
-                () -> assertFalse(migrated.contains("ignored-formats")),
-                () -> assertFalse(migrated.contains("host-filter")));
-    }
-
-    @Test
     void migratesLegacyNegativeRetryDelayToDisabledRetryAndDefaultDelay() throws IOException {
         final Path configFile = writeConfig("""
                 advanced:
@@ -218,9 +165,8 @@ public class ConfigMigrationLoadTest {
                 """);
 
         final ConfigYml config = loadConfig(configFile,
-                new C0001_Rename_hyphen_names_to_snake_case(),
-                new C0003_Migrate_negative_retry_delay(),
-                new C0004_Migrate_websockets_to_websocket());
+                new C0002_Migrate_negative_retry_delay(),
+                new C0003_Migrate_websockets_to_websocket());
 
         assertAll(
                 () -> assertFalse(config.advanced.websocket.retry),
@@ -240,7 +186,7 @@ public class ConfigMigrationLoadTest {
         final ConfigYml config = new ConfigYml(null);
         config.advanced.websocket.retry_delay = Duration.ofMinutes(2);
 
-        assertThrows(ValidationException.class, () -> new EAConfigValidator().isValid(config.advanced.websocket));
+        assertThrows(ValidationException.class, () -> new AnnoyingConfigValidator().isValid(config.advanced.websocket));
     }
 
     @Test
@@ -261,10 +207,9 @@ public class ConfigMigrationLoadTest {
                 """);
 
         final ConfigYml firstLoad = loadConfig(configFile,
-                new C0001_Rename_hyphen_names_to_snake_case(),
-                new C0002_Migrate_sound_to_nested_structure(),
-                new C0003_Migrate_negative_retry_delay(),
-                new C0004_Migrate_websockets_to_websocket());
+                new C0001_Migrate_sound_to_nested_structure(),
+                new C0002_Migrate_negative_retry_delay(),
+                new C0003_Migrate_websockets_to_websocket());
         final String afterFirstLoad = Files.readString(configFile, StandardCharsets.UTF_8);
 
         final ConfigYml secondLoad = loadConfig(configFile);
@@ -288,16 +233,10 @@ public class ConfigMigrationLoadTest {
 
     @NotNull
     private ConfigYml loadConfig(@NotNull Path configFile, @NotNull ConfigMigration... migrations) {
-        return (ConfigYml) new ConfigYml(null)
-                .configure(opt -> {
-                    opt.configurer(new YamlBukkitConfigurer(), new SerdesCommons(), registry -> registry.register(new PlayableSoundSerializer()));
-                    opt.validator(new EAConfigValidator());
-                    opt.bindFile(configFile.toFile());
-                    opt.removeOrphans(true);
-                })
-                .load()
-                .migrate(migrations)
-                .saveDefaults();
+        return new ConfigBuilder(PLUGIN, configFile.toFile())
+                .config(new ConfigYml(null))
+                .internalStateMigrations(migrations)
+                .build();
     }
 
     @NotNull

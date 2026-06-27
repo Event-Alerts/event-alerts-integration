@@ -7,8 +7,8 @@ import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.Mapper;
 import static eu.okaeri.configs.migrate.ConfigMigrationDsl.*;
 
 
-public class C0003_Migrate_negative_retry_delay extends NamedMigration {
-    public C0003_Migrate_negative_retry_delay() {
+public class C0002_Migrate_negative_retry_delay extends NamedMigration {
+    public C0002_Migrate_negative_retry_delay() {
         super("sets 'advanced.websockets.retry' to false if 'advanced.websockets.retry_delay' is -1",
                 when(
                         match("advanced.websockets.retry_delay", value -> {

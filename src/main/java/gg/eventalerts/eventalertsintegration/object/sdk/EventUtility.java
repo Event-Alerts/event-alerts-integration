@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class EventUtility {
     public static class PingRole {
         @NotNull public static final Set<EAEvent.PingRole> PARTNER_PINGABLE = Arrays.stream(EAEvent.PingRole.values())
-                .filter(role -> role.partnerPingable)
+                .filter(role -> role.partnerToggleable)
                 .collect(Collectors.toSet());
 
         @NotNull

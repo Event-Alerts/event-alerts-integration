@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 
 public abstract class EAGui {
@@ -42,9 +43,12 @@ public abstract class EAGui {
     }
 
     public void back(boolean sound) {
-        if (parent == null) throw new UnsupportedOperationException("Cannot go back from the main GUI");
-        if (sound) playPageSound();
-        parent.open(true);
+        if (parent == null) {
+            open(sound);
+            plugin.logErrorTrack(Level.WARNING, "Cannot go back from the main GUI!");
+            return;
+        }
+        parent.open(sound);
     }
 
     @NotNull

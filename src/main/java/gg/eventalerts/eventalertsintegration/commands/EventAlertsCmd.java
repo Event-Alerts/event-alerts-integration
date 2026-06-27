@@ -1,30 +1,32 @@
 package gg.eventalerts.eventalertsintegration.commands;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import gg.eventalerts.eventalertsintegration.gui.config.ConfigGui;
 import gg.eventalerts.eventalertsintegration.object.sdk.CrossBanUtility;
 import gg.eventalerts.eventalertsintegration.reflection.org.bukkit.entity.RefPlayer;
 import gg.eventalerts.sdk.object.EACrossBan;
+import gg.eventalerts.sdk.object.EAPlayer;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 import xyz.srnyx.annoyingapi.command.AnnoyingCommand;
 import xyz.srnyx.annoyingapi.command.AnnoyingSender;
-import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
-import xyz.srnyx.annoyingapi.libs.javautilities.MiscUtility;
 import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.Mapper;
-import xyz.srnyx.annoyingapi.message.AnnoyingMessage;
 import xyz.srnyx.annoyingapi.utility.BukkitUtility;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 
@@ -51,7 +53,7 @@ public class EventAlertsCmd extends AnnoyingCommand {
         if (sender.argEquals(0, "reload")) {
             if (!sender.checkPermission("eventalerts.reload")) return;
             plugin.reloadPlugin();
-            new AnnoyingMessage(plugin, "command.reload").send(sender);
+            plugin.getMessages().get().command.reload.newMessage().send(sender);
             return;
         }
 
@@ -74,18 +76,13 @@ public class EventAlertsCmd extends AnnoyingCommand {
                         .collect(Collectors.joining(","));
 
                 // Make API request
-                HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "players?minecraft_uuid=" + onlineString, null)
-                        .flatMap(json -> MiscUtility.handleException(json::getAsJsonObject))
-                        .flatMap(json -> MiscUtility.handleException(() -> json.getAsJsonArray("players")))
-                        .ifPresent(players -> {
+                plugin.http.players.retrievePage(Map.of("minecraft_uuid", onlineString)).queue(
+                        page -> {
                             // Get linked
                             final Set<UUID> linked = new HashSet<>();
-                            for (final JsonElement player : players)
-                                MiscUtility.handleException(player::getAsJsonObject)
-                                        .flatMap(json -> MiscUtility.handleException(() -> json.getAsJsonObject("minecraft")))
-                                        .flatMap(json -> MiscUtility.handleException(() -> json.get("uuid").getAsString()))
-                                        .flatMap(uuidString -> MiscUtility.handleException(() -> UUID.fromString(uuidString)))
-                                        .ifPresent(linked::add);
+                            for (final EAPlayer player : page.items) {
+                                if (player.minecraft != null && player.minecraft.uuid != null) linked.add(player.minecraft.uuid);
+                            }
 
                             // Get unlinked
                             final Set<Player> unlinked = new HashSet<>(online);
@@ -100,11 +97,16 @@ public class EventAlertsCmd extends AnnoyingCommand {
                             unlinked.forEach(player -> player.kick(reason));
 
                             // Send message
-                            new AnnoyingMessage(plugin, "command.linking.check.result")
+                            plugin.getMessages().get().command.linking.check.result.newMessage()
                                     .replace("%linked%", linked.size())
                                     .replace("%unlinked%", unlinked.size())
                                     .replace("%total%", online.size())
                                     .send(sender);
+                        },
+                        t -> {
+                            // Failure
+                            AnnoyingPlugin.log(Level.WARNING, "Failed to retrieve linked players!", t);
+                            sender.cmdSender.sendMessage(Component.text("Failed to retrieve linked players! Check console for more details.", NamedTextColor.RED));
                         });
                 return;
             }
@@ -139,36 +141,36 @@ public class EventAlertsCmd extends AnnoyingCommand {
                 }
 
                 // Make API request
-                HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "players/minecraft/uuid/" + uuid, null)
-                        .flatMap(json -> MiscUtility.handleException(json::getAsJsonObject))
-                        .flatMap(json -> MiscUtility.handleException(() -> json.getAsJsonObject("player")))
-                        .ifPresentOrElse(
-                                // Player found
-                                player -> {
-                                    // Get Discord
-                                    final JsonObject discord = player.getAsJsonObject("discord");
-                                    if (discord == null) {
-                                        new AnnoyingMessage(plugin, "command.linking.discord.not-linked")
-                                                .replace("%input%", argument)
-                                                .send(sender);
-                                        return;
-                                    }
-
-                                    // Get ID and username
-                                    final String id = MiscUtility.handleException(() -> discord.get("id").getAsString()).orElse("&cUnknown");
-                                    final String username = MiscUtility.handleException(() -> discord.get("username").getAsString()).orElse("&cUnknown");
-
-                                    // Send message
-                                    new AnnoyingMessage(plugin, "command.linking.discord.linked")
-                                            .replace("%input%", argument)
-                                            .replace("%id%", id)
-                                            .replace("%username%", username)
-                                            .send(sender);
-                                },
-                                // No player found
-                                () -> new AnnoyingMessage(plugin, "command.linking.discord.not-linked")
+                plugin.http.players.retrieveOneByMinecraftUuid(uuid).queue(
+                        player -> {
+                            // Doesn't exist
+                            if (player == null) {
+                                plugin.getMessages().get().command.linking.discord.not_linked.newMessage()
                                         .replace("%input%", argument)
-                                        .send(sender));
+                                        .send(sender);
+                                return;
+                            }
+
+                            // Not linked
+                            if (player.discord == null) {
+                                plugin.getMessages().get().command.linking.discord.not_linked.newMessage()
+                                        .replace("%input%", argument)
+                                        .send(sender);
+                                return;
+                            }
+
+                            // Send message
+                            plugin.getMessages().get().command.linking.discord.linked.newMessage()
+                                    .replace("%input%", argument)
+                                    .replace("%id%", Objects.requireNonNullElse(player.discord.id, "&cUnknown"))
+                                    .replace("%username%", Objects.requireNonNullElse(player.discord.username, "&cUnknown"))
+                                    .send(sender);
+                        },
+                        t -> {
+                            // Failure
+                            AnnoyingPlugin.log(Level.WARNING, "Failed to retrieve linked player!", t);
+                            sender.cmdSender.sendMessage(Component.text("Failed to retrieve linked player! Check console for more details.", NamedTextColor.RED));
+                        });
                 return;
             }
 
@@ -187,67 +189,98 @@ public class EventAlertsCmd extends AnnoyingCommand {
                 final Long id = Mapper.toLong(argument).orElse(null);
                 if (id != null) {
                     // Make API request
-                    HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "players/discord/id/" + id, null)
-                            .flatMap(json -> MiscUtility.handleException(json::getAsJsonObject))
-                            .flatMap(json -> MiscUtility.handleException(() -> json.getAsJsonObject("player")))
-                            .ifPresentOrElse(
-                                    // Player found
-                                    player -> {
-                                        // Get Minecraft
-                                        final JsonObject minecraft = player.getAsJsonObject("minecraft");
-                                        if (minecraft == null) {
-                                            new AnnoyingMessage(plugin, "command.linking.minecraft.not-linked")
-                                                    .replace("%input%", argument)
-                                                    .send(sender);
-                                            return;
-                                        }
-
-                                        // Get UUID and username
-                                        final String uuid = MiscUtility.handleException(() -> minecraft.get("uuid").getAsString()).orElse("&cUUID Unknown");
-                                        final String username = MiscUtility.handleException(() -> minecraft.get("username").getAsString()).orElse("&cUsername Unknown");
-
-                                        // Send message
-                                        new AnnoyingMessage(plugin, "command.linking.minecraft.linked")
-                                                .replace("%input%", argument)
-                                                .replace("%uuid%", uuid)
-                                                .replace("%username%", username)
-                                                .send(sender);
-                                    },
-                                    // No player found
-                                    () -> new AnnoyingMessage(plugin, "command.linking.minecraft.not-linked")
+                    plugin.http.players.retrieveOneByDiscordId(id).queue(
+                            player -> {
+                                // Doesn't exist
+                                if (player == null) {
+                                    plugin.getMessages().get().command.linking.minecraft.not_linked.newMessage()
                                             .replace("%input%", argument)
-                                            .send(sender));
+                                            .send(sender);
+                                    return;
+                                }
+
+                                // Not linked
+                                if (player.minecraft == null) {
+                                    plugin.getMessages().get().command.linking.minecraft.not_linked.newMessage()
+                                            .replace("%input%", argument)
+                                            .send(sender);
+                                    return;
+                                }
+
+                                // Send message
+                                plugin.getMessages().get().command.linking.minecraft.linked.newMessage()
+                                        .replace("%input%", argument)
+                                        .replace("%uuid%", Objects.requireNonNullElse(player.minecraft.uuid, "&cUUID Unknown"))
+                                        .replace("%username%", Objects.requireNonNullElse(player.minecraft.username, "&cUsername Unknown"))
+                                        .send(sender);
+                            },
+                            t -> {
+                                // Failure
+                                AnnoyingPlugin.log(Level.WARNING, "Failed to retrieve linked player!", t);
+                                sender.cmdSender.sendMessage(Component.text("Failed to retrieve linked player! Check console for more details.", NamedTextColor.RED));
+                            });
                     return;
                 }
 
                 // Get through username: Make API request
-                HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "players?discord_username=" + argument, null)
-                        .flatMap(json -> MiscUtility.handleException(json::getAsJsonObject))
-                        .flatMap(json -> MiscUtility.handleException(() -> json.getAsJsonArray("players")))
-                        .ifPresentOrElse(
-                                // Players found
-                                players -> {
-                                    // Build message
-                                    final StringBuilder builder = new StringBuilder("<gold><b>Found " + players.size() + " players:</b>\n");
-                                    for (final JsonElement element : players) MiscUtility.handleException(element::getAsJsonObject)
-                                            .flatMap(json -> MiscUtility.handleException(() -> json.getAsJsonObject("minecraft")))
-                                            .ifPresent(player -> {
-                                                // Get UUID and username
-                                                final String uuid = MiscUtility.handleException(() -> player.get("uuid").getAsString()).orElse("<red>UUID Unknown</red>");
-                                                final String username = MiscUtility.handleException(() -> player.get("username").getAsString()).orElse("<red>Username Unknown</red>");
-
-                                                // Append to message
-                                                builder.append("<gold>- <yellow>").append(username).append(" <i>(").append(uuid).append(")</i>\n");
-                                            });
-                                    builder.setLength(builder.length() - 1);
-
-                                    // Send message
-                                    sender.cmdSender.sendMessage(EventAlertsIntegration.MINI_MESSAGE.deserialize(builder.toString()));
-                                },
-                                // No players found
-                                () -> new AnnoyingMessage(plugin, "command.linking.minecraft.not-linked")
+                plugin.http.players.retrievePage(Map.of("discord_username", argument)).queue(
+                        page -> {
+                            // No players found
+                            if (page.count == 0) {
+                                plugin.getMessages().get().command.linking.minecraft.not_linked.newMessage()
                                         .replace("%input%", argument)
-                                        .send(sender));
+                                        .send(sender);
+                                return;
+                            }
+
+                            // Build message
+                            final TextComponent.Builder builder = Component.text()
+                                    .append(Component.text("Found " + page.count + " players:", NamedTextColor.GOLD, TextDecoration.BOLD));
+                            for (final EAPlayer player : page.items) {
+                                // Get UUID and username
+                                final UUID uuid = player.minecraft != null ? player.minecraft.uuid : null;
+                                final String username = player.minecraft != null ? player.minecraft.username : null;
+
+                                // Get hover event
+                                final HoverEvent<?> hover = uuid != null
+                                        ? HoverEvent.showEntity(
+                                                Key.key("minecraft", "player"),
+                                                uuid,
+                                                username != null ? Component.text(username, NamedTextColor.YELLOW) : null)
+                                        : HoverEvent.showText(Component.text("UUID Unknown", NamedTextColor.RED));
+
+                                // Get click event
+                                final StringBuilder clickText = new StringBuilder();
+                                if (username != null) {
+                                    // USERNAME (UUID)
+                                    clickText.append(username);
+                                    if (uuid != null) clickText.append(" (").append(uuid).append(")");
+                                } else {
+                                    // UUID
+                                    if (uuid != null) clickText.append(uuid);
+                                }
+                                final ClickEvent click = uuid != null ? ClickEvent.copyToClipboard(clickText.toString()) : null;
+
+                                // Append to message
+                                final Component usernameComponent = username != null
+                                        ? Component.text(username, NamedTextColor.YELLOW)
+                                        : Component.text("Username Unknown", NamedTextColor.RED);
+                                builder
+                                        .append(Component.newline())
+                                        .append(Component.text("- ", NamedTextColor.GOLD))
+                                        .append(usernameComponent
+                                                .hoverEvent(hover)
+                                                .clickEvent(click));
+                            }
+
+                            // Send message
+                            sender.cmdSender.sendMessage(builder);
+                        },
+                        t -> {
+                            // Failure
+                            AnnoyingPlugin.log(Level.WARNING, "Failed to retrieve linked players!", t);
+                            sender.cmdSender.sendMessage(Component.text("Failed to retrieve linked players! Check console for more details.", NamedTextColor.RED));
+                        });
                 return;
             }
 
@@ -260,44 +293,44 @@ public class EventAlertsCmd extends AnnoyingCommand {
             if (!sender.checkPermission("eventalerts.crossban.check")) return;
 
             // Get online players
-            final String onlineString = Bukkit.getOnlinePlayers().stream()
+            final Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+            final String onlineString = players.stream()
                     .map(player -> player.getUniqueId().toString())
                     .collect(Collectors.joining(","));
 
             // Make API request
-            final List<EACrossBan> crossBans = plugin.http.crossBans.retrieveMany(Map.of("minecraft_uuid", onlineString))
+            plugin.http.crossBans.retrieveMany(players.size(), Map.of("minecraft_uuid", onlineString))
                     .onErrorReturnEmptyList()
-                    .complete();
-            if (crossBans.isEmpty()) return;
+                    .queue(crossBans -> plugin.runOnMainThread(() -> {
+                        // Kick banned players
+                        int banned = 0;
+                        final TextComponent reason = Component.text()
+                                .append(EventAlertsIntegration.GATE)
+                                .append(Component.text("You have been cross-banned from all event servers!", NamedTextColor.RED))
+                                .build();
+                        for (final EACrossBan ban : crossBans) {
+                            if (ban.minecraftUuid == null) continue;
+                            final Player player = Bukkit.getPlayer(ban.minecraftUuid);
+                            if (player == null) continue;
+                            player.kick(Component.text()
+                                    .append(reason)
+                                    .append(CrossBanUtility.getReasonExpires(ban))
+                                    .build());
+                            banned++;
+                        }
 
-            // Kick banned players
-            int banned = 0;
-            final TextComponent reason = Component.text()
-                    .append(EventAlertsIntegration.GATE)
-                    .append(Component.text("You have been cross-banned from all event servers!", NamedTextColor.RED))
-                    .build();
-            for (final EACrossBan ban : crossBans) {
-                if (ban.minecraftUuid == null) continue;
-                final Player player = Bukkit.getPlayer(ban.minecraftUuid);
-                if (player == null) continue;
-                banned++;
-                player.kick(Component.text()
-                        .append(reason)
-                        .append(CrossBanUtility.getReasonExpires(ban))
-                        .build());
-            }
-
-            // Send message
-            new AnnoyingMessage(plugin, "command.crossban.check.result")
-                    .replace("%banned%", banned)
-                    .send(sender);
+                        // Send message
+                        plugin.getMessages().get().command.crossban.check.result.newMessage()
+                                .replace("%banned%", banned)
+                                .send(sender);
+                    }));
             return;
         }
 
         // transfer <host> [port]
         if (sender.args.length >= 2 && sender.argEquals(0, "transfer")) {
             if (RefPlayer.TRANSFER == null) {
-                new AnnoyingMessage(plugin, "command.transfer.disabled").send(sender);
+                plugin.getMessages().get().command.transfer.disabled.newMessage().send(sender);
                 return;
             }
             if (!sender.checkPlayer()) return;
@@ -311,7 +344,7 @@ public class EventAlertsCmd extends AnnoyingCommand {
             // Transfer
             try {
                 // Send message
-                new AnnoyingMessage(plugin, "command.transfer.transferring")
+                plugin.getMessages().get().command.transfer.transferring.newMessage()
                         .replace("%server%", host + ":" + port)
                         .send(sender);
 
@@ -321,7 +354,7 @@ public class EventAlertsCmd extends AnnoyingCommand {
                 // Transfer
                 RefPlayer.TRANSFER.invoke(sender.getPlayer(), host, port);
             } catch (final IllegalAccessException | InvocationTargetException e) {
-                new AnnoyingMessage(plugin, "command.transfer.disabled").send(sender);
+                plugin.getMessages().get().command.transfer.disabled.newMessage().send(sender);
             }
             return;
         }

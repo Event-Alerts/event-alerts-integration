@@ -1,7 +1,7 @@
 package gg.eventalerts.eventalertsintegration.utility;
 
-import gg.eventalerts.eventalertsintegration.EALibrary;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
+import gg.eventalerts.eventalertsintegration.library.EventAlertsIntegrationLibrary;
 import net.fellbaum.jemoji.Emoji;
 import net.fellbaum.jemoji.EmojiManager;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +23,7 @@ public class EAStringUtility {
         emojiMatcher.reset();
 
         // Load JEmoji library for EmojiManager
-        if (!plugin.libraryManager.loadIfNotLoaded(EALibrary.JEMOJI)) return string;
+        if (!plugin.libraryManager.loadIfNotLoaded(EventAlertsIntegrationLibrary.JEMOJI)) return string;
 
         // Replace emojis
         final StringBuilder description = new StringBuilder();

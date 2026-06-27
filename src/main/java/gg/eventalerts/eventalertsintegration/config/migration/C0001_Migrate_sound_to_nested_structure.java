@@ -5,8 +5,8 @@ import eu.okaeri.configs.migrate.builtin.NamedMigration;
 import static eu.okaeri.configs.migrate.ConfigMigrationDsl.*;
 
 
-public class C0002_Migrate_sound_to_nested_structure extends NamedMigration {
-    public C0002_Migrate_sound_to_nested_structure() {
+public class C0001_Migrate_sound_to_nested_structure extends NamedMigration {
+    public C0001_Migrate_sound_to_nested_structure() {
         super("migrates sound to nested structure inside sound key",
                 when(
                         // Only migrate if sound not already nested
