@@ -1,14 +1,11 @@
 package gg.eventalerts.eventalertsintegration.listeners;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
-import gg.eventalerts.eventalertsintegration.json.GSONProvider;
-import gg.eventalerts.eventalertsintegration.objects.CrossBan;
-import gg.eventalerts.eventalertsintegration.objects.PlayerConnection;
-import gg.eventalerts.eventalertsintegration.socket.SocketClient;
-import gg.eventalerts.eventalertsintegration.socket.SocketEndpoint;
-import gg.eventalerts.eventalertsintegration.socket.clients.PlayerConnectionClient;
+import gg.eventalerts.eventalertsintegration.object.sdk.CrossBanUtility;
+import gg.eventalerts.sdk.object.EACrossBan;
+import gg.eventalerts.sdk.object.EAPlayer;
+import gg.eventalerts.sdk.websocket.SocketActionName;
+import gg.eventalerts.sdk.websocket.message.action.EAPlayerConnectionAction;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
@@ -20,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xyz.srnyx.annoyingapi.AnnoyingListener;
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
-import xyz.srnyx.annoyingapi.libs.javautilities.HttpUtility;
 
 import java.util.Date;
 import java.util.UUID;
@@ -43,36 +39,28 @@ public class PlayerListener extends AnnoyingListener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(@NotNull PlayerLoginEvent event) {
-        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED || plugin.config.api_keys.getServer() == null) return;
-
-        // Get PlayerConnectionClient
-        final SocketClient<?> client = plugin.webSockets.clients.get(SocketEndpoint.PLAYER_CONNECTION);
-        if (client == null || !client.isOpen() || !(client instanceof PlayerConnectionClient connectionClient)) return;
+        if (!plugin.config.syncing.minecraft_to_discord.connections || event.getResult() != PlayerLoginEvent.Result.ALLOWED || plugin.config.api_keys.getServer() == null) return;
 
         // Send JOIN message
         final Player player = event.getPlayer();
-        connectionClient.send(new PlayerConnection(
+        plugin.webSocket.send(SocketActionName.PLAYER_CONNECTION, new EAPlayerConnectionAction(
                 player.getUniqueId(),
                 player.getName(),
                 new Date(),
-                PlayerConnection.Type.JOIN));
+                EAPlayerConnectionAction.Type.JOIN));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
-        if (plugin.config.api_keys.getServer() == null) return;
-
-        // Get PlayerConnectionClient
-        final SocketClient<?> client = plugin.webSockets.clients.get(SocketEndpoint.PLAYER_CONNECTION);
-        if (client == null || !client.isOpen() || !(client instanceof PlayerConnectionClient connectionClient)) return;
+        if (!plugin.config.syncing.minecraft_to_discord.connections || plugin.config.api_keys.getServer() == null) return;
 
         // Send QUIT message
         final Player player = event.getPlayer();
-        connectionClient.send(new PlayerConnection(
+        plugin.webSocket.send(SocketActionName.PLAYER_CONNECTION, new EAPlayerConnectionAction(
                 player.getUniqueId(),
                 player.getName(),
                 new Date(),
-                PlayerConnection.Type.QUIT));
+                EAPlayerConnectionAction.Type.QUIT));
     }
 
     @EventHandler
@@ -91,51 +79,34 @@ public class PlayerListener extends AnnoyingListener {
         if (player.hasPermission("eventalerts.linking.bypass")) return true;
         final UUID uuid = player.getUniqueId();
 
-        // Make API request
-        final JsonObject json;
-        try {
-            json = HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "players/minecraft/uuid/" + uuid, null)
-                    .map(JsonElement::getAsJsonObject)
-                    .orElse(null);
-        } catch (final Exception e) {
-            failLinking(event, "Exception", e);
-            return false;
-        }
-        if (json == null) {
-            failLinking(event, "Failed to get JSON response", null);
-            return false;
-        }
-
-        // Check code
-        final int code = json.get("code").getAsInt();
-        if (code != 200) {
-            failLinking(event, "Invalid code: " + code, null);
-            return false;
-        }
-
         // Get player
-        final JsonElement playerElement = json.get("player");
-        if (playerElement == null) {
-            failLinking(event, "Failed to get player", null);
+        final EAPlayer eaPlayer;
+        try {
+            eaPlayer = plugin.http.players.retrieveOneByMinecraftUuid(uuid).complete();
+        } catch (final Exception e) {
+            AnnoyingPlugin.log(Level.SEVERE, "Failed to check linking status for " + player.getName(), e);
+
+            // Can join on failure
+            if (plugin.config.linking.allow_join_on_failure) return true;
+
+            // Can't join on failure
+            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, Component.text()
+                    .append(EventAlertsIntegration.GATE)
+                    .append(MINI_MESSAGE.deserialize("<red>Failed to check linking status, try again later!\n\n<gray>If this issue persists, contact support"))
+                    .build());
             return false;
         }
+
+        // Is linked
+        if (eaPlayer != null) return true;
 
         // Disallow if not linked
-        if (!playerElement.isJsonNull()) return true;
         event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, Component.text()
                 .append(EventAlertsIntegration.GATE)
                 .append(Component.text("You must link your Minecraft account with Event Alerts to join this server!\n\n", NamedTextColor.RED))
                 .append(EventAlertsIntegration.LINKING_INSTRUCTIONS)
                 .build());
         return false;
-    }
-
-    private void failLinking(@NotNull PlayerLoginEvent event, @NotNull String reason, @Nullable Exception exception) {
-        AnnoyingPlugin.log(Level.SEVERE, "Failed to check linking status for " + event.getPlayer().getName() + ": " + reason, exception);
-        if (!plugin.config.linking.allow_join_on_failure) event.disallow(PlayerLoginEvent.Result.KICK_OTHER, Component.text()
-                .append(EventAlertsIntegration.GATE)
-                .append(MINI_MESSAGE.deserialize("<red>Failed to check linking status, try again later!\n\n<gray>If this issue persists, contact support"))
-                .build());
     }
 
     /**
@@ -148,36 +119,26 @@ public class PlayerListener extends AnnoyingListener {
         // Check permission
         if (player.hasPermission("eventalerts.crossban.bypass")) return true;
 
-        // Make API request
-        final JsonObject json;
+        // Make request
+        final EACrossBan crossBan;
         try {
-            json = HttpUtility.getJson(plugin.getUserAgent(), plugin.getApiHost() + "cross_bans/minecraft_uuid/" + player.getUniqueId(), null)
-                    .map(JsonElement::getAsJsonObject)
-                    .orElse(null);
+            crossBan = plugin.http.crossBans.retrieveOneByMinecraftUuid(player.getUniqueId()).complete();
         } catch (final Exception e) {
-            failCrossBan(event, "Exception", e);
-            return false;
-        }
-        if (json == null) {
-            failCrossBan(event, "Failed to get JSON response", null);
+            AnnoyingPlugin.log(Level.SEVERE, "Failed to check cross-ban status for " + player.getName(), e);
+
+            // Can join on failure
+            if (plugin.config.cross_ban.allow_join_on_failure) return true;
+
+            // Can't join on failure
+            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, Component.text()
+                    .append(EventAlertsIntegration.GATE)
+                    .append(MINI_MESSAGE.deserialize("<red>Failed to check cross-ban status, try again later!\n\n<gray>If this issue persists, contact support"))
+                    .build());
             return false;
         }
 
-        // Check code
-        final int code = json.get("code").getAsInt();
-        if (code != 200) {
-            failCrossBan(event, "Invalid code: " + code, null);
-            return false;
-        }
-
-        // Get ban
-        final JsonElement ban = json.get("cross_ban");
-        if (ban == null || ban.isJsonNull()) return true;
-        final CrossBan crossBan = GSONProvider.GSON.fromJson(ban.getAsJsonObject(), CrossBan.class);
-        if (crossBan == null) {
-            failCrossBan(event, "Failed to parse CrossBan", null);
-            return false;
-        }
+        // Not cross-banned
+        if (crossBan == null) return true;
 
         // Check expiration
         if (crossBan.expiration != null && crossBan.expiration.getTime() < System.currentTimeMillis()) return true;
@@ -186,16 +147,8 @@ public class PlayerListener extends AnnoyingListener {
         event.disallow(PlayerLoginEvent.Result.KICK_BANNED, Component.text()
                 .append(EventAlertsIntegration.GATE)
                 .append(Component.text("You are cross-banned from all event servers!", NamedTextColor.RED))
-                .append(crossBan.getReasonExpires())
+                .append(CrossBanUtility.getReasonExpires(crossBan))
                 .build());
         return false;
-    }
-
-    private void failCrossBan(@NotNull PlayerLoginEvent event, @NotNull String reason, @Nullable Exception exception) {
-        AnnoyingPlugin.log(Level.SEVERE, "Failed to check cross-ban status for " + event.getPlayer().getName() + ": " + reason, exception);
-        if (!plugin.config.cross_ban.allow_join_on_failure) event.disallow(PlayerLoginEvent.Result.KICK_OTHER, Component.text()
-                .append(EventAlertsIntegration.GATE)
-                .append(MINI_MESSAGE.deserialize("<red>Failed to check cross-ban status, try again later!\n\n<gray>If this issue persists, contact support"))
-                .build());
     }
 }

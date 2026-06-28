@@ -1,5 +1,6 @@
 package gg.eventalerts.eventalertsintegration.listeners;
 
+import com.cryptomorin.xseries.XSound;
 import eu.okaeri.configs.schema.GenericsDeclaration;
 import eu.okaeri.configs.serdes.SerdesContext;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
@@ -21,7 +22,6 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.jetbrains.annotations.NotNull;
@@ -70,10 +70,8 @@ public class ChatListener extends AnnoyingListener {
         }
 
         // Get sound
-        final Sound sound;
-        try {
-            sound = Sound.valueOf(message.toUpperCase());
-        } catch (final IllegalArgumentException e) {
+        final XSound sound = XSound.of(message).orElse(null);
+        if (sound == null) {
             player.sendMessage(Component.text()
                     .color(NamedTextColor.RED)
                     .append(Component.text("\n" + message, NamedTextColor.DARK_RED))

@@ -35,7 +35,7 @@ public class SoundGui extends EventMessagesGui {
                 .statelessComponent(container -> container.setItem(1, ItemBuilder.from(Material.NOTE_BLOCK)
                         .name(unitalicize(Component.text("Sound", NamedTextColor.GOLD)))
                         .lore(lore("The ID/name of the sound that will play\n\n<gray>Current value: <green>" + plugin.config.event_messages.sound.sound.sound.name()))
-                        .asGuiItem((player, context) -> { //TODO switch to anvil GUI when Triumph GUI updates
+                        .asGuiItem((player, context) -> { //TODO switch to category-like options GUI
                             // Send chat message
                             player.sendMessage(Component.text()
                                     .color(NamedTextColor.GREEN)

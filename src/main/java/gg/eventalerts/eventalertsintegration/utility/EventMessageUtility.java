@@ -5,9 +5,11 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static gg.eventalerts.eventalertsintegration.EventAlertsIntegration.MINI_MESSAGE;
 
@@ -15,14 +17,14 @@ import static gg.eventalerts.eventalertsintegration.EventAlertsIntegration.MINI_
 public class EventMessageUtility {
     @NotNull public static final TextComponent LINE = Component.text("\n│ ", NamedTextColor.DARK_GRAY);
     @NotNull public static final TextComponent BEGINNING = Component.text("┌──────────────────────", NamedTextColor.DARK_GRAY);
-    @NotNull public static final TextComponent END = Component.text()
-            .append(LINE)
-            .append(LINE)
-            .append(MINI_MESSAGE.deserialize("<#f5f4c1>ᴍᴏʀᴇ ɪɴꜰᴏ ᴀᴛ <#f7e05c><b>ᴇᴠᴇɴᴛᴀʟᴇʀᴛꜱ.ɢɢ")
-                    .hoverEvent(Component.text("Click to open the website!", NamedTextColor.GREEN))
-                    .clickEvent(ClickEvent.openUrl("https://eventalerts.gg")))
-            .append(Component.text("\n└──────────────────────", NamedTextColor.DARK_GRAY))
-            .build();
+    @NotNull public static final TextComponent END = Component.text("\n└──────────────────────", NamedTextColor.DARK_GRAY);
+
+    @NotNull
+    public static Component getWebsiteLink(@Nullable ObjectId eventId) {
+        return MINI_MESSAGE.deserialize("<#f5f4c1>ᴍᴏʀᴇ ɪɴꜰᴏ ᴀᴛ <#f7e05c><b>ᴇᴠᴇɴᴛᴀʟᴇʀᴛꜱ.ɢɢ")
+                .hoverEvent(Component.text("Click to open the website!", NamedTextColor.GREEN))
+                .clickEvent(ClickEvent.openUrl("https://eventalerts.gg" + (eventId != null ? "/events/" + eventId : "")));
+    }
 
     @NotNull
     public static TextComponent getJoinButton(@NotNull EAStringUtility.IpPort ipPort) {
