@@ -87,6 +87,9 @@ public class FamousEventPostedListener extends FamousEventPostedHandler {
             if (ipPort != null) builder.append(getJoinButton(ipPort));
         }
 
+        // Website link
+        builder.append(getWebsiteLink(null));
+
         // Broadcast
         broadcast(plugin, builder.append(END).build());
     }

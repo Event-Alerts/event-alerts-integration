@@ -12,13 +12,13 @@ import xyz.srnyx.gradlegalaxy.utility.*
 
 plugins {
     java
-    id("xyz.srnyx.gradle-galaxy") version "bd1b0c1"
+    id("xyz.srnyx.gradle-galaxy") version "8d36906"
     id("com.gradleup.shadow") version "9.4.3"
     id("me.modmuss50.mod-publish-plugin") version "2.1.1"
 }
 
 // Runtime libraries
-val eventAlertsSdkVersion: String = "05c69df"
+val eventAlertsSdkVersion: String = "1.0.0"
 val runtimeLibraries = listOf(
     RuntimeLibrary(
         name = "gson",
@@ -114,7 +114,7 @@ setupAnnoyingAPI(
         group = "gg.eventalerts",
         description = "A plugin to integrate your Minecraft server with the Event Alerts ecosystem",
         javaVersion = JavaVersion.VERSION_21),
-    annoyingAPIConfig = DependencyConfig(version = "c158171"),
+    annoyingAPIConfig = DependencyConfig(version = "f4f8d33"),
     customRuntimeLibrariesConfig = CustomRuntimeLibrariesConfig(runtimeLibraries),
     publishingPlatformConfig = PublishingPlatformConfig(platforms = mapOf(PluginPlatform.MODRINTH to "DmjI2XpF")))
 

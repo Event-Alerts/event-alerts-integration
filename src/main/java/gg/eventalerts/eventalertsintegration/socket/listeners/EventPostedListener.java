@@ -136,6 +136,12 @@ public class EventPostedListener extends EventPostedHandler {
             if (ipPort != null) builder.append(getJoinButton(ipPort));
         }
 
+        // Website link
+        builder
+                .append(LINE)
+                .append(LINE)
+                .append(getWebsiteLink(eaEvent.id));
+
         // Broadcast
         broadcast(plugin, builder.append(END).build());
     }
