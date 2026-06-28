@@ -12,7 +12,7 @@ import xyz.srnyx.gradlegalaxy.utility.*
 
 plugins {
     java
-    id("xyz.srnyx.gradle-galaxy") version "8d36906"
+    id("xyz.srnyx.gradle-galaxy") version "cf22393"
     id("com.gradleup.shadow") version "9.4.3"
     id("me.modmuss50.mod-publish-plugin") version "2.1.1"
 }
@@ -116,7 +116,11 @@ setupAnnoyingAPI(
         javaVersion = JavaVersion.VERSION_21),
     annoyingAPIConfig = DependencyConfig(version = "f4f8d33"),
     customRuntimeLibrariesConfig = CustomRuntimeLibrariesConfig(runtimeLibraries),
-    publishingPlatformConfig = PublishingPlatformConfig(platforms = mapOf(PluginPlatform.MODRINTH to "DmjI2XpF")))
+    publishingPlatformConfig = PublishingPlatformConfig(
+        platforms = mapOf(PluginPlatform.MODRINTH to "DmjI2XpF"),
+        minecraftVersionStart = "1.18.2",
+        loaders = listOf("paper", "purpur"),
+        modrinthAction = { optional("placeholderapi") }))
 
 // Repositories
 repository(Repository.PLACEHOLDER_API)
