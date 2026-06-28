@@ -18,4 +18,5 @@ on:
 jobs:
   build:
     uses: srnyx/tools/.github/workflows/publish.yml@main
-    secrets: inherit
+    secrets:
+      MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
