@@ -22,9 +22,4 @@ public class MockEventAlertsIntegration extends EventAlertsIntegration {
         // Registrables don't work in tests, so it would try to cast default/anonymous provider to EAMessagesProvider
         return new EAMessagesProvider(this);
     }
-
-    @Override
-    public void loadSDK() {
-        // Don't connect to Event Alerts servers
-    }
 }

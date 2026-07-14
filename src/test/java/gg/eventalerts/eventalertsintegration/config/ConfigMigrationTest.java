@@ -7,6 +7,7 @@ import gg.eventalerts.eventalertsintegration.config.migration.C0001_Migrate_soun
 import gg.eventalerts.eventalertsintegration.config.migration.C0002_Migrate_negative_retry_delay;
 import gg.eventalerts.eventalertsintegration.config.migration.C0003_Migrate_websockets_to_websocket;
 import eu.okaeri.configs.exception.ValidationException;
+import gg.eventalerts.eventalertsintegration.config.serdes.ApiKeySerializer;
 import gg.eventalerts.sdk.object.EAEvent;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -124,8 +125,8 @@ public class ConfigMigrationTest extends MockTestSupport {
                 new C0003_Migrate_websockets_to_websocket());
 
         assertAll(
-                () -> assertEquals("EA.Player.1.0123456789abcdef01234567", config.api_keys.getPlayer()),
-                () -> assertEquals("EA.PartnerServer.1.89abcdef0123456701234567", config.api_keys.getServer()),
+                () -> assertEquals("EA.Player.1.0123456789abcdef01234567", config.api_keys.player.key),
+                () -> assertEquals("EA.PartnerServer.1.89abcdef0123456701234567", config.api_keys.server.key),
                 () -> assertTrue(config.syncing.discord_to_minecraft.messages.enabled),
                 () -> assertEquals("<gray>[<event_type>] <event_title>", config.syncing.discord_to_minecraft.messages.format),
                 () -> assertFalse(config.syncing.minecraft_to_discord.connections),
@@ -183,7 +184,7 @@ public class ConfigMigrationTest extends MockTestSupport {
 
     @Test
     void rejectsBelowMinimumRetryDelayDuringLoad() {
-        final ConfigYml config = new ConfigYml(null);
+        final ConfigYml config = new ConfigYml(MockTestSupport.PLUGIN);
         config.advanced.websocket.retry_delay = Duration.ofMinutes(2);
 
         assertThrows(ValidationException.class, () -> new AnnoyingConfigValidator().isValid(config.advanced.websocket));
@@ -234,7 +235,8 @@ public class ConfigMigrationTest extends MockTestSupport {
     @NotNull
     private ConfigYml loadConfig(@NotNull Path configFile, @NotNull ConfigMigration... migrations) {
         return new ConfigBuilder(PLUGIN, configFile.toFile())
-                .config(new ConfigYml(null))
+                .config(new ConfigYml(PLUGIN))
+                .configure(configure -> configure.serdes(new ApiKeySerializer()))
                 .internalStateMigrations(migrations)
                 .build();
     }

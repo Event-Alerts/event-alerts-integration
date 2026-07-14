@@ -23,7 +23,7 @@ public class EventChatListener extends EventChatHandler {
 
     @Override
     public boolean shouldSubscribe() {
-        return plugin.config.syncing.discord_to_minecraft.messages.enabled && (plugin.config.api_keys.getPlayer() != null || plugin.config.api_keys.getServer() != null);
+        return plugin.config.syncing.discord_to_minecraft.messages.enabled && (plugin.config.api_keys.player.key != null || plugin.config.api_keys.server.key != null);
     }
 
     @Override

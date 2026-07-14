@@ -14,7 +14,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import xyz.srnyx.annoyingapi.AnnoyingListener;
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
 
@@ -39,7 +38,7 @@ public class PlayerListener extends AnnoyingListener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(@NotNull PlayerLoginEvent event) {
-        if (!plugin.config.syncing.minecraft_to_discord.connections || event.getResult() != PlayerLoginEvent.Result.ALLOWED || plugin.config.api_keys.getServer() == null) return;
+        if (!plugin.config.syncing.minecraft_to_discord.connections || event.getResult() != PlayerLoginEvent.Result.ALLOWED || plugin.config.api_keys.server.key == null) return;
 
         // Send JOIN message
         final Player player = event.getPlayer();
@@ -52,7 +51,7 @@ public class PlayerListener extends AnnoyingListener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
-        if (!plugin.config.syncing.minecraft_to_discord.connections || plugin.config.api_keys.getServer() == null) return;
+        if (!plugin.config.syncing.minecraft_to_discord.connections || plugin.config.api_keys.server.key == null) return;
 
         // Send QUIT message
         final Player player = event.getPlayer();
