@@ -13,20 +13,13 @@ import xyz.srnyx.gradlegalaxy.utility.*
 plugins {
     java
     id("xyz.srnyx.gradle-galaxy") version "ac4875a"
-    id("com.gradleup.shadow") version "9.5.1"
+    id("com.gradleup.shadow") version "9.6.0"
     id("me.modmuss50.mod-publish-plugin") version "4e494b3"
 }
 
 // Runtime libraries
 val eventAlertsSdkVersion: String = "c149ccb"
 val runtimeLibraries = listOf(
-    RuntimeLibrary(
-        name = "gson",
-        repositories = listOf(Repository.MAVEN_CENTRAL.url),
-        group = "com.google.code.gson",
-        artifact = "gson",
-        version = "2.14.0",
-        relocations = listOf(Relocation("com.google.gson"))),
     RuntimeLibrary(
         name = "bson",
         repositories = listOf(Repository.MAVEN_CENTRAL.url),
@@ -52,9 +45,7 @@ val runtimeLibraries = listOf(
         artifact = "core",
         version = eventAlertsSdkVersion,
         relocations = listOf(Relocation("gg.eventalerts.sdk")),
-        dependencies = listOf(
-            "gson",
-            "bson")),
+        dependencies = listOf("bson")),
     RuntimeLibrary(
         name = "event_alerts_sdk_http",
         repositories = listOf(
@@ -114,7 +105,7 @@ setupAnnoyingAPI(
         group = "gg.eventalerts",
         description = "A plugin to integrate your Minecraft server with the Event Alerts ecosystem",
         javaVersion = JavaVersion.VERSION_21),
-    annoyingAPIConfig = DependencyConfig(version = "dd4dc3e"),
+    annoyingAPIConfig = DependencyConfig(version = "ab08072"),
     customRuntimeLibrariesConfig = CustomRuntimeLibrariesConfig(runtimeLibraries),
     publishingPlatformConfig = PublishingPlatformConfig(
         platforms = mapOf(PluginPlatform.MODRINTH to "DmjI2XpF"),

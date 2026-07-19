@@ -2,7 +2,6 @@ package gg.eventalerts.eventalertsintegration.stats;
 
 import dev.faststats.Metrics;
 import dev.faststats.data.Metric;
-import eu.okaeri.configs.OkaeriConfig;
 import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
 import org.jetbrains.annotations.NotNull;
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
@@ -10,9 +9,7 @@ import xyz.srnyx.annoyingapi.stats.loader.FastStatsLoader;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.Map;
 import java.util.Properties;
-import java.util.function.Supplier;
 import java.util.logging.Level;
 
 
@@ -31,11 +28,6 @@ public class FastStats extends FastStatsLoader {
     @Override @NotNull
     public String getId() {
         return "ed6c97dcc635a7bf6dd4a9119f4c6788";
-    }
-
-    @Override @NotNull
-    public Map<String, Supplier<OkaeriConfig>> getConfigs() {
-        return Map.of("config", () -> plugin.config);
     }
 
     @Override
@@ -60,14 +52,9 @@ public class FastStats extends FastStatsLoader {
                 // FLUSH (reset cumulative metrics)
                 .onFlush(() -> plugin.statsCollector.joinButtonClicks.set(0))
 
-                // General
+                // Metrics
+                .addMetric(config("config", () -> plugin.config))
                 .addMetric(Metric.bool("server_properties_accepts_transfer", () -> finalServerPropertiesTransferBoolean))
-                .addMetric(Metric.number("join_button_clicks", plugin.statsCollector.joinButtonClicks::get))
-
-                // Config
-                .addMetric(enumArray("config_event_messages_ignored_types", () -> plugin.config.event_messages.ignored_types))
-                .addMetric(enumArray("config_event_messages_ignored_partner_roles", () -> plugin.config.event_messages.ignored_partner_roles))
-                .addMetric(enumArray("config_event_messages_ignored_formats", () -> plugin.config.event_messages.ignored_formats))
-                .addMetric(stringArray("config_event_messages_host_filter", () -> plugin.config.event_messages.host_filter));
+                .addMetric(Metric.number("join_button_clicks", plugin.statsCollector.joinButtonClicks::get));
     }
 }

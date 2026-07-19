@@ -1,5 +1,6 @@
 package gg.eventalerts.eventalertsintegration.config.key;
 
+import com.google.gson.JsonPrimitive;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xyz.srnyx.annoyingapi.stats.Statable;
@@ -21,7 +22,7 @@ public abstract class ApiKey implements Statable {
     public abstract String getPrefix();
 
     @Override @NotNull
-    public Object toStatValue() {
-        return key != null;
+    public JsonPrimitive toStat() {
+        return new JsonPrimitive(key != null);
     }
 }

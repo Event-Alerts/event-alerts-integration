@@ -22,6 +22,7 @@ import org.bukkit.Bukkit;
 import org.java_websocket.framing.CloseFrame;
 import org.jetbrains.annotations.NotNull;
 import xyz.srnyx.annoyingapi.AnnoyingPlugin;
+import xyz.srnyx.annoyingapi.library.AnnoyingAPILibrary;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,6 +56,7 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
     public EventAlertsIntegration() {
         options
                 .pluginOptions(pluginOptions -> pluginOptions.libraries(
+                        AnnoyingAPILibrary.GSON,
                         EventAlertsIntegrationLibrary.EVENT_ALERTS_SDK_HTTP,
                         EventAlertsIntegrationLibrary.EVENT_ALERTS_SDK_WEBSOCKET,
                         EventAlertsIntegrationLibrary.TRIUMPH_GUI_PAPER))
