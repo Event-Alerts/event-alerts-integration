@@ -63,7 +63,7 @@ public class EventPostedListener extends EventPostedHandler {
         // Replace emojis in description
         String description = eaEvent.description;
         final boolean hasDescription = description != null;
-        if (hasDescription) description = EAStringUtility.replaceEmojis(plugin, description);
+        if (hasDescription) description = plugin.replaceEmojis(description);
 
         // Build message
         final TextComponent.Builder builder = Component.text()

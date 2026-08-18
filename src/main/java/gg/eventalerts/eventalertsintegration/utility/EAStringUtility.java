@@ -1,9 +1,5 @@
 package gg.eventalerts.eventalertsintegration.utility;
 
-import gg.eventalerts.eventalertsintegration.EventAlertsIntegration;
-import gg.eventalerts.eventalertsintegration.library.EventAlertsIntegrationLibrary;
-import net.fellbaum.jemoji.Emoji;
-import net.fellbaum.jemoji.EmojiManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xyz.srnyx.annoyingapi.libs.javautilities.manipulation.Mapper;
@@ -13,26 +9,7 @@ import java.util.regex.Pattern;
 
 
 public class EAStringUtility {
-    @NotNull private static final Pattern EMOJI_PATTERN = Pattern.compile(":([a-zA-Z0-9_]+):");
     @NotNull private static final Pattern IP_PATTERN = Pattern.compile("((?:[a-zA-Z\\d](?:[a-zA-Z\\d-]*[a-zA-Z\\d])?\\.)+[a-zA-Z]{2,}|(?:\\d{1,3}\\.){3}\\d{1,3})(:\\d{1,5})?");
-
-    @NotNull
-    public static String replaceEmojis(@NotNull EventAlertsIntegration plugin, @NotNull String string) {
-        final Matcher emojiMatcher = EMOJI_PATTERN.matcher(string);
-        if (!emojiMatcher.find()) return string;
-        emojiMatcher.reset();
-
-        // Load JEmoji library for EmojiManager
-        if (!plugin.libraryManager.loadIfNotLoaded(EventAlertsIntegrationLibrary.JEMOJI)) return string;
-
-        // Replace emojis
-        final StringBuilder description = new StringBuilder();
-        while (emojiMatcher.find()) emojiMatcher.appendReplacement(description, EmojiManager.getByDiscordAlias(emojiMatcher.group(1))
-                .map(Emoji::getEmoji)
-                .orElse(emojiMatcher.group()));
-        emojiMatcher.appendTail(description);
-        return description.toString();
-    }
 
     @Nullable
     public static IpPort extractIpPort(@NotNull String string, @Nullable String defaultIp) {

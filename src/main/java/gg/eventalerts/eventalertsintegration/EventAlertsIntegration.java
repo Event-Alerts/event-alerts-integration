@@ -12,6 +12,8 @@ import gg.eventalerts.eventalertsintegration.stats.FastStats;
 import gg.eventalerts.eventalertsintegration.stats.StatsCollector;
 import gg.eventalerts.sdk.http.EAHTTP;
 import gg.eventalerts.sdk.websocket.EAWebSocket;
+import net.fellbaum.jemoji.Emoji;
+import net.fellbaum.jemoji.EmojiManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -28,6 +30,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class EventAlertsIntegration extends AnnoyingPlugin {
@@ -43,6 +47,7 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
                     .clickEvent(ClickEvent.copyToClipboard("/linking help")))
             .append(Component.text(" for more information"))
             .build();
+    @NotNull private static final Pattern EMOJI_PATTERN = Pattern.compile(":([a-zA-Z0-9_]+):");
 
     public ConfigYml config;
     public EAHTTP http;
@@ -101,5 +106,23 @@ public class EventAlertsIntegration extends AnnoyingPlugin {
         } else {
             scheduler.runSync(runnable);
         }
+    }
+
+    @NotNull
+    public String replaceEmojis(@NotNull String string) {
+        final Matcher emojiMatcher = EMOJI_PATTERN.matcher(string);
+        if (!emojiMatcher.find()) return string;
+        emojiMatcher.reset();
+
+        // Load JEmoji library for EmojiManager
+        if (libraryManager != null && !libraryManager.loadIfNotLoaded(EventAlertsIntegrationLibrary.JEMOJI)) return string;
+
+        // Replace emojis
+        final StringBuilder description = new StringBuilder();
+        while (emojiMatcher.find()) emojiMatcher.appendReplacement(description, EmojiManager.getByDiscordAlias(emojiMatcher.group(1))
+                .map(Emoji::getEmoji)
+                .orElse(emojiMatcher.group()));
+        emojiMatcher.appendTail(description);
+        return description.toString();
     }
 }

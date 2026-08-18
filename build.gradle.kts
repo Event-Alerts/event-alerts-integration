@@ -1,6 +1,6 @@
 plugins {
     java
-    id("xyz.srnyx.gradle-galaxy") version "f930f7e"
+    id("xyz.srnyx.gradle-galaxy") version "2bf5d52"
     id("com.gradleup.shadow") version "9.6.1"
     id("me.modmuss50.mod-publish-plugin") version "675051c"
     id("xyz.jpenilla.run-paper") version "3.1.0"
@@ -73,6 +73,27 @@ galaxy {
                     artifact = "jemoji"
                     version = "2.0.0"
                     relocate("net.fellbaum")
+
+                    dependency("jackson_core") {
+                        repositories.add(MAVEN_CENTRAL)
+                        group = "tools.jackson.core"
+                        artifact = "jackson-core"
+                        version = "3.1.2"
+                        relocate("tools.jackson")
+                        relocate("com.fasterxml.jackson")
+
+                        library("jackson_databind") {
+                            artifact = "jackson-databind"
+                        }
+                    }
+
+                    dependency("jackson_annotations") {
+                        repositories.add(MAVEN_CENTRAL)
+                        group = "com.fasterxml.jackson.core"
+                        artifact = "jackson-annotations"
+                        version = "2.21"
+                        relocate("com.fasterxml.jackson")
+                    }
                 }
             }
         }

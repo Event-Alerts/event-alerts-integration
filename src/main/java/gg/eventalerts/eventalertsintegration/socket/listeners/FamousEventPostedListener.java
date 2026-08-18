@@ -58,7 +58,7 @@ public class FamousEventPostedListener extends FamousEventPostedHandler {
                 .append(Component.text("NEW " + famousEvent.type.name() + " EVENT!", NamedTextColor.GOLD, TextDecoration.BOLD));
 
         // Replace emojis
-        final String message = EAStringUtility.replaceEmojis(plugin, famousEvent.message);
+        final String message = plugin.replaceEmojis(famousEvent.message);
 
         // Append message to builder
         for (final String line : message.split("\n")) {
